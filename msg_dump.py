@@ -5,7 +5,9 @@ dir = os.curdir
 
 msgs = [os.path.join(dir, 'OR', m) for m in os.listdir(os.path.join(dir, 'OR')) if m.endswith('.MSG')]
 
-assert len(msgs) == 248
+print len(msgs)
+
+#assert len(msgs) == 248
 
 workbook = xlsxwriter.Workbook('appareden_dump.xlsx')
 header = workbook.add_format({'bold': True, 'align': 'center', 'bottom': True, 'bg_color': 'gray'})
@@ -58,9 +60,11 @@ for m in msgs:
             continue
 
         worksheet = workbook.add_worksheet(m.split('\\')[-1])
-        worksheet.set_column('B:B', 100)
+        worksheet.set_column('B:B', 60)
+        worksheet.set_column('C:C', 60)
         worksheet.write(0, 0, 'Offset', header)
         worksheet.write(0, 1, 'Japanese', header)
+        worksheet.write(0, 2, 'English', header)
         row = 1
         for s in sjis_strings:
             loc = '0x' + hex(s[0]).lstrip('0x').zfill(4)

@@ -1,36 +1,46 @@
-file_blocks = {
-    'ORBTL.EXE': [(0x24ee4, 0x24efa),
-                  (0x24f82, 0x25182),
-                  (0x26098, 0x260b2),
-                  (0x2670a, 0x2675a),
-                  (0x2685b, 0x269ad),
-                  (0x27728, 0x281d9),
-                  (0x28217, 0x28270),
-                  (0x292e8, 0x2a616),
-                  (0x2c87e, 0x2cee1),
-                  (0x2e02a, 0x2e07d),
-                  (0x2e0b3, 0x2e0b9),
-                  ],
-    'NEKORUN.EXE': [(0xa840, 0xa8aa),
-                    (0xacc0, 0xacda),
-                    (0xaecc, 0xaefe),
-                    ],
-    'ORFIELD.EXE': [(0x25f34, 0x25f4a),
-                    (0x25f82, 0x25fc9),
-                    (0x26130, 0x261a4),
-                    (0x26378, 0x26453),
-                    (0x2664d, 0x26786),
-                    (0x267fe, 0x2695e),
-                    (0x26a1b, 0x26a9f),
-                    (0x26b50, 0x27636),
-                    (0x28053, 0x28768),
-                    (0x2896d, 0x290cc),
-                    (0x2a2ca, 0x2cc55),
-                    (0x2d032, 0x2d3d4),
-                    (0x2d9da, 0x2e708),
-                    (0x2ea11, 0x2ef8b),
-                    ],
-    'ORMAIN.EXE': [(0x1584, 0x1735),
-                   (0x3ee4, 0x4547),
-                   ]
+FILES = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'NEKORUN.EXE', 'SFIGHT.EXE', 'ENDING.EXE',]
+
+FILE_BLOCKS = {
+'ENDING.EXE': [(0x64bb, 0x6512),],  # memory error texts
+'NEKORUN.EXE': [(0xa840, 0xa8aa),   # error text + scene text
+                (0xacc0, 0xacda),   # memory error text
+                (0xaecc, 0xaf00),],  # ems driver version text"
+'ORBTL.EXE': [(0x25130, 0x25150),   # null pointer error
+                (0x251d2, 0x2524b), # battle commands
+                (0x252dd, 0x252fd), # run/surprise
+                (0x25330, 0x253d2), # after battle
+                (0x262e8, 0x26302), # memory error text
+                (0x2715a, 0x271aa), # ems driver version texts
+                (0x27282, 0x27345), # hp/mp
+                (0x27352, 0x2738e), # skill sheets
+                (0x2739b, 0x273fd), # insufficient stuff text
+                (0x28178, 0x28c9c), # skill/spell names/descriptions
+                (0x28ca3, 0x28cc9), # item menu
+                (0x29d38, 0x2b066), # item descriptions
+                (0x2d2ce, 0x2d931), # people, places, things
+                (0x2ea7a, 0x2eb0d)],  # stealing msgs"
+'ORFIELD.EXE': [(0x25f20, 0x25f40), # null pointer error
+                (0x25f72, 0x25fba), # ems driver version texts
+                (0x26120, 0x26195), # names and memory error text
+                (0x26368, 0x26444), # memory and disk switches
+                (0x26641, 0x26776), # save and ui texts
+                (0x267ef, 0x2694e), # ui texts
+                (0x26a0b, 0x26a8f), # places
+                (0x26b28, 0x27557), # shops and inns
+                (0x275f0, 0x275fe), # death msg
+                (0x2760e, 0x27676), # ship msg
+                (0x28044, 0x290bc), # menu msgs
+                (0x2a2ba, 0x2cc45), # items and weapons
+                (0x2d022, 0x2d3c4), # result msgs
+                (0x2da79, 0x2e690), # skills/spells names/descriptions
+                (0x2e9b2, 0x2ef13)],  # result msgs"
+'ORMAIN.EXE': [(0x1580, 0x167b),   # null pointer msgs
+                (0x1706, 0x1735),   # ems driver msgs
+                (0x3ee4, 0x4547),],   # names, menus, things"
+'ORTITLE.EXE': [(0x3ec0, 0x3ee0),   # null pointer msgs
+                (0x3f48, 0x4104),   # main menus
+                (0x5000, 0x501a),],   # memory error"
+'SFIGHT.EXE': [(0xd090, 0xd135),   # null pointer msgs
+                (0xd4ea, 0xd586),   # names and things
+                (0xd6c6, 0xd6fa)],    # ems driver msgs"
 }
