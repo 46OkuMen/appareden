@@ -47,7 +47,7 @@ for filename in FILES:
                     cursor += 1
                     sjis_buffer += contents[cursor]
 
-                # ASCII $
+                # ASCII space
                 elif ord(contents[cursor]) == 0x20:
                     sjis_buffer += " "
 
