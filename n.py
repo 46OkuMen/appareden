@@ -3,10 +3,9 @@ Appareden internally uses 'n' (0x6e) as a newline control code. That's obviously
 not very convenient for an English translation, so we'd like to change that.
 """
 
-with open('original_ORFIELD.EXE', 'rb') as f:
-    file_contents = f.read()
-    ns = [i for i in xrange(len(file_contents)) if file_contents.find('n', i) == i]
-    # 286 n's.
+from romtools.disk import Disk
+
+# So, there are 286 n's. When replaced
 
 # 0 to 2: fine
 # 0 to 10: fine
@@ -82,12 +81,17 @@ with open('original_ORFIELD.EXE', 'rb') as f:
 # 106 155d6 = cmp byte ptr es:[bx], 6e
 # 107 155ee = mov byte ptr [bx], 6e
 # 108 15624 = jmp loc_21D94 (yeah, so don't mess with this)
-# 109 15b1d = cmp byte ptr [bx+di], 6e
-# 110 15b5f = cmp byte ptr [bx+di], 6e
+# 109 15b1d = cmp byte ptr [bx+di], 6e     -- part of printLine
+# 110 15b5f = cmp byte ptr [bx+di], 6e     -- part of printLine
 
-# 6 to 69 (inclusive): that big table of n's
+# 6 to 69 (inclusive): that big table of n's. Seems to have no effect when changed
 
-ns_to_replace = ns[6:69] + [ns[109], ns[110]]
+with open('original_ORFIELD.EXE', 'rb') as f:
+    file_contents = f.read()
+    ns = [i for i in xrange(len(file_contents)) if file_contents.find('n', i) == i]
+    # 286 n's.
+
+ns_to_replace = [ns[109], ns[110]]
 print [hex(n) for n in ns_to_replace]
 
 for n in ns_to_replace:
@@ -95,3 +99,8 @@ for n in ns_to_replace:
 
 with open('ORFIELD.EXE', 'wb') as f:
     f.write(file_contents)
+
+AppareDisk = Disk('appareden-patched.hdi')
+
+AppareDisk.insert('ORFIELD.EXE', 'TGL/OR')
+AppareDisk.insert('SCN02400.MSG', 'TGL/OR')
