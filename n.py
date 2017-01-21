@@ -90,14 +90,43 @@ from romtools.disk import Disk
 
 with open('original_ORFIELD.EXE', 'rb') as f:
     file_contents = f.read()
-    ns = [i for i in xrange(len(file_contents)) if file_contents.find('n', i) == i]
-    # 286 n's.
+    ns = [i for i in xrange(len(file_contents)) if file_contents.find('n', i) == i] # 286
+    cs = [i for i in xrange(len(file_contents)) if file_contents.find('c', i) == i] # 95
+    ws = [i for i in xrange(len(file_contents)) if file_contents.find('w', i) == i] # 200
 
 ns_to_replace = [ns[104], ns[105], ns[106], ns[107], ns[109], ns[110],]
 print [hex(n) for n in ns_to_replace]
 
 for n in ns_to_replace:
     file_contents = file_contents[:n] + "/" + file_contents[n+1:]
+
+#for i, c in enumerate(cs):
+#    print i, hex(c)
+
+# 95 cs.
+
+# 26 11f80
+# 27 129f6
+# 28 12ab3
+# 31 15241
+# 32 15b16 = cmp byte ptr [bx+di], 63
+# 33 15b6c = cmp byte ptr [bx+di], 63
+# 39 2551b = cmp ax, 63
+
+cs_to_replace = [cs[32], cs[33], cs[39],]
+for c in cs_to_replace:
+    file_contents = file_contents[:c] + "$" + file_contents[c+1:]
+
+#for i, w in enumerate(ws):
+#    print i, hex(w)
+
+# 63 151b7 = cmp byte ptr [bp+var_6+1], 77
+# 67 15b0f = cmp byte ptr [bx+di], 77
+# 68 15b99 = cmp byte ptr [bx+di], 77
+
+ws_to_replace = [ws[63], ws[67], ws[68]]
+for w in ws_to_replace:
+    file_contents = file_contents[:w] + "}" + file_contents[w+1:]
 
 with open('ORFIELD.EXE', 'wb') as f:
     f.write(file_contents)
