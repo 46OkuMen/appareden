@@ -84,6 +84,8 @@ from romtools.disk import Disk
 # 109 15b1d = cmp byte ptr [bx+di], 6e     -- part of printLine
 # 110 15b5f = cmp byte ptr [bx+di], 6e     -- part of printLine
 
+# The solution: 104, 105, 106, 107, 109, and 110 need to be changed.
+
 # 6 to 69 (inclusive): that big table of n's. Seems to have no effect when changed
 
 with open('original_ORFIELD.EXE', 'rb') as f:
@@ -91,11 +93,11 @@ with open('original_ORFIELD.EXE', 'rb') as f:
     ns = [i for i in xrange(len(file_contents)) if file_contents.find('n', i) == i]
     # 286 n's.
 
-ns_to_replace = [ns[109], ns[110]]
+ns_to_replace = [ns[104], ns[105], ns[106], ns[107], ns[109], ns[110],]
 print [hex(n) for n in ns_to_replace]
 
 for n in ns_to_replace:
-    file_contents = file_contents[:n] + "<" + file_contents[n+1:]
+    file_contents = file_contents[:n] + "/" + file_contents[n+1:]
 
 with open('ORFIELD.EXE', 'wb') as f:
     f.write(file_contents)
