@@ -1,0 +1,1 @@
+Dialogue box lines should be 36 chars max. No automatic line breaks, it just flows off the screen if allowed to.

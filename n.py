@@ -22,9 +22,9 @@ from romtools.disk import Disk
     # m: Treats the first m as a newline maybe?? But the two n's are still newlines. (& graphics crash)
     # o: Skips the first line, and the only line begins with "Pp" as if o were the newline...
         # then the graphics crash really hard
-# 105: no printing, lots of graphical errors
+# 105: no print(ing, lots of graphical errors
     # m: same
-    # o: doesn't print anything, prints a lot of transparent blue window material
+    # o: doesn't print( anything, print(s a lot of transparent blue window material
     # p:
 # 106: display until end of line, then horrible text-displaying errors
     # o: Catastrophic crash, but there's text in the middle of the screen beginning with "p"
@@ -32,9 +32,9 @@ from romtools.disk import Disk
 # 107: more weird text-displaying errors
     # m: displays lm, then weird text gets displayed everywhere
     # o: displays lm, then weird text gets displayed everywhere
-# 108: image printing error, prints lots of control codes (but still newlines with n)
+# 108: image print(ing error, print(s lots of control codes (but still newlines with n)
     # o: same.
-# 109: text stops printing after the nametag (and before the m!!)
+# 109: text stops print(ing after the nametag (and before the m!!)
     # o: displays up to m, then text gets weird and it crashes
     # p: displays up to o, then text gets weird and it crashes
 # 110: text gets weird (is that an n in there??)
@@ -81,27 +81,43 @@ from romtools.disk import Disk
 # 106 155d6 = cmp byte ptr es:[bx], 6e
 # 107 155ee = mov byte ptr [bx], 6e
 # 108 15624 = jmp loc_21D94 (yeah, so don't mess with this)
-# 109 15b1d = cmp byte ptr [bx+di], 6e     -- part of printLine
-# 110 15b5f = cmp byte ptr [bx+di], 6e     -- part of printLine
-
-# The solution: 104, 105, 106, 107, 109, and 110 need to be changed.
+# 109 15b1d = cmp byte ptr [bx+di], 6e     -- part of print(Line
+# 110 15b5f = cmp byte ptr [bx+di], 6e     -- part of print(Line
 
 # 6 to 69 (inclusive): that big table of n's. Seems to have no effect when changed
 
+# 109 and 110 replaced with <: displays n but still does a linebreak afterwards
+# 108, 109, 110: displays window, but can't display faces
+# 105, 109, 110: same as just 109 and 110?
+# 105, 106, 109, 110: Graphical glitches/crash. BUT it does display an n without a newline afterwards
+# 106, 109, 110: Worse graphical glitch than above, but still n without newline
+# 105, 106, 107, 109, 110: Milder graphical glitch than those two, but still n without newline
+# 105, 107, 109, 110: Doesn't display n's anymore, they're newlines again
+# 106, 107, 109, 110: Same as 105, 106, 109, 110
+# 104, 106, 109, 110: Like 105 106 109 110, but with more graphical glitches and crashes
+# 106, 109, 110, 111: Same, but more graphical glitches
+# 106, 109, 110, 112: Same
+# 106, 109, 110, 113: Same
+#                114: Same
+# 104, 106: Freaks out during the first line break, tons of graphical glitches
+
+# The solution: 104, 105, 106, 107, 109, and 110 need to be changed.
+
+
 with open('original_ORFIELD.EXE', 'rb') as f:
     file_contents = f.read()
-    ns = [i for i in xrange(len(file_contents)) if file_contents.find('n', i) == i] # 286
-    cs = [i for i in xrange(len(file_contents)) if file_contents.find('c', i) == i] # 95
-    ws = [i for i in xrange(len(file_contents)) if file_contents.find('w', i) == i] # 200
+    ns = [i for i in range(len(file_contents)) if file_contents.find(b'n', i) == i] # 286
+    cs = [i for i in range(len(file_contents)) if file_contents.find(b'c', i) == i] # 95
+    ws = [i for i in range(len(file_contents)) if file_contents.find(b'w', i) == i] # 200
 
 ns_to_replace = [ns[104], ns[105], ns[106], ns[107], ns[109], ns[110],]
-print [hex(n) for n in ns_to_replace]
+print( [hex(n) for n in ns_to_replace])
 
 for n in ns_to_replace:
-    file_contents = file_contents[:n] + "/" + file_contents[n+1:]
+    file_contents = file_contents[:n] + b'/' + file_contents[n+1:]
 
 #for i, c in enumerate(cs):
-#    print i, hex(c)
+#    print( i, hex(c)
 
 # 95 cs.
 
@@ -114,24 +130,26 @@ for n in ns_to_replace:
 # 39 2551b = cmp ax, 63
 
 cs_to_replace = [cs[32], cs[33], cs[39],]
+print( [hex(c) for c in cs_to_replace])
 for c in cs_to_replace:
-    file_contents = file_contents[:c] + "$" + file_contents[c+1:]
+    file_contents = file_contents[:c] + b'$' + file_contents[c+1:]
 
 #for i, w in enumerate(ws):
-#    print i, hex(w)
+#    print( i, hex(w)
 
 # 63 151b7 = cmp byte ptr [bp+var_6+1], 77
 # 67 15b0f = cmp byte ptr [bx+di], 77
 # 68 15b99 = cmp byte ptr [bx+di], 77
 
 ws_to_replace = [ws[63], ws[67], ws[68]]
+print( [hex(w) for w in ws_to_replace])
 for w in ws_to_replace:
-    file_contents = file_contents[:w] + "}" + file_contents[w+1:]
+    file_contents = file_contents[:w] + b'}' + file_contents[w+1:]
 
 with open('ORFIELD.EXE', 'wb') as f:
     f.write(file_contents)
 
-AppareDisk = Disk('appareden-patched.hdi')
+AppareDisk = Disk('patched/Appareden.hdi')
 
-AppareDisk.insert('ORFIELD.EXE', 'TGL/OR')
-AppareDisk.insert('SCN02400.MSG', 'TGL/OR')
+AppareDisk.insert('ORFIELD.EXE', path_in_disk='TGL\\OR')
+AppareDisk.insert('SCN02400.MSG', path_in_disk='TGL\\OR')
