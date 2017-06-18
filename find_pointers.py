@@ -15,6 +15,9 @@ def find_all(a_str, sub):
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 Dump = DumpExcel(DUMP_XLS_PATH)
 
+MSG_DUMP_XLSX_PATH = 'appareden_msg_dump.xlsx'
+MsgDump = DumpExcel(MSG_DUMP_XLSX_PATH)
+
 
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump)
 files_to_search = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFIGHT.EXE']
@@ -47,7 +50,7 @@ for f in files_to_search:
             look_for = look_for_int.to_bytes(2, byteorder='little')
             if GF.filestring.count(look_for) == 1 and GF.filestring.find(look_for) > POINTER_CONSTANT[f]:
                 pointer_location = GF.filestring.find(look_for)
-                print("%s: %s" % (hex(t.location), hex(pointer_location)))
+                #print("%s: %s" % (hex(t.location), hex(pointer_location)))
             else:
                 all_locs = list(find_all(GF.filestring, look_for))
                 all_locs = [l for l in all_locs if l > POINTER_CONSTANT[f] ]
@@ -76,3 +79,13 @@ for f in files_to_search:
             if pointer_location != "?":
                 last_pointer_location = pointer_location
 PtrXl.workbook.close()
+
+# While we have all these variables, get a count of all the lines in the msg files
+count = 0
+for w in MsgDump.workbook.worksheets:
+    rows = list(w.rows)[1:]
+    for r in rows:
+        if r[0].value is not None:
+            count += 1
+    print(w, count)
+print(count)
