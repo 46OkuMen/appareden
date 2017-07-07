@@ -4,7 +4,7 @@ from rominfo import FILES, FILE_BLOCKS
 
 dir = os.curdir
 
-workbook = xlsxwriter.Workbook('appareden_UI_dump.xlsx')
+workbook = xlsxwriter.Workbook('appareden_sys_dump.xlsx')
 header = workbook.add_format({'bold': True, 'align': 'center', 'bottom': True, 'bg_color': 'gray'})
 block_division = workbook.add_format({'top': True, })
 
@@ -26,7 +26,7 @@ for filename in FILES:
     row = 1
 
     print "\n" + filename + "\n"
-    with open(os.path.join('OR', filename), 'rb') as f:
+    with open(os.path.join('original', 'OR', filename), 'rb') as f:
         for block in FILE_BLOCKS[filename]:
             block_length = block[1] - block[0]
             print "block:", hex(block[0])
@@ -41,7 +41,8 @@ for filename in FILES:
             while cursor < len(contents):
 
                 # First byte of SJIS text. Read the next one, too
-                if 0x80 <= ord(contents[cursor]) & 0Xf0 <= 0x9f:
+                #if 0x80 <= ord(contents[cursor]) & 0Xf0 <= 0x9f:
+                if 0x80 <= ord(contents[cursor]) <= 0x9f or 0xe0 <= ord(contents[cursor]) <= 0xef:
                     print hex(sjis_buffer_start)
                     sjis_buffer += contents[cursor]
                     cursor += 1

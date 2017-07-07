@@ -1,3 +1,7 @@
+"""Appareden reinserter.
+   Replaces text, adjusts pointers, and implements manual assembly hacks.
+"""
+
 import os
 
 from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK
