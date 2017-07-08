@@ -6,14 +6,14 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 ### Reinsertion Progress
 | Segment      | %    |  Strings            | 
 | -------------|-----:|:-------------------:|
-| Title        |   0% |   (0 / 25)          |
-| Main         |   0% |   (0 / 204)         |
+| Title        | 100% |  (18 / 18)          |
+| Main         |   7% |  (16 / 202)         |
 | Field        |   0% |   (0 / 1064)        |
-| Battle       |   0% |   (0 / 709)         |
+| Battle       |   4% |  (35 / 708)         |
 | Cat Minigame |   0% |   (0 / 7)           |
-| Dialogue     |   0% |   (0 / 13078)      |
+| Dialogue     |   0% |   (0 / 13078)       |
 | Images       |   0% |   (0 / 2+?)         |
-| Total        |   0% |   (0 / 15089)      |
+| Total        |   0% |  (69 / 15089)       |
 
 
 ### How do I use this?

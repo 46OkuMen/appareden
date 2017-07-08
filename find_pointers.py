@@ -81,11 +81,11 @@ for f in files_to_search:
 PtrXl.workbook.close()
 
 # While we have all these variables, get a count of all the lines in the msg files
-count = 0
-for w in MsgDump.workbook.worksheets:
-    rows = list(w.rows)[1:]
-    for r in rows:
-        if r[0].value is not None:
-            count += 1
-    print(w, count)
-print(count)
+#count = 0
+#for w in MsgDump.workbook.worksheets:
+#    rows = list(w.rows)[1:]
+#    for r in rows:
+#        if r[0].value is not None:
+#            count += 1
+#    #print(w, count)
+#print(count)

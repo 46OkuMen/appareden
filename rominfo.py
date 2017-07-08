@@ -43,7 +43,8 @@ FILE_BLOCKS = {
                    (0x1706, 0x1735),   # ems driver msgs
                    (0x3ee4, 0x4547), ],   # names, menus, things"
     'ORTITLE.EXE': [(0x3ec0, 0x3ee0),   # null pointer msgs
-                    (0x3f48, 0x4104),   # main menus
+                    (0x3f48, 0x407b),   # main menus
+                    (0x407b, 0x4104),   # release dates?
                     (0x5000, 0x501a), ],   # memory error"
     'SFIGHT.EXE': [(0xd090, 0xd135),   # null pointer msgs
                (0xd4ea, 0xd586),   # names and things
@@ -56,4 +57,8 @@ POINTER_CONSTANT = {
     'ORFIELD.EXE': 0x25f10,
     'ORBTL.EXE': 0x25120,
     'SFIGHT.EXE': 0xd080,
+}
+
+SPARE_BLOCKS = {
+  'ORMAIN.EXE': (0x1765, 0x1f6b),
 }
