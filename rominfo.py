@@ -1,4 +1,5 @@
 import os
+import re
 
 SRC_DISK = os.path.join('original', 'Appareden.HDI')
 DEST_DISK = os.path.join('patched', 'Appareden.HDI')
@@ -59,6 +60,49 @@ POINTER_CONSTANT = {
     'SFIGHT.EXE': 0xd080,
 }
 
-SPARE_BLOCKS = {
+SPARE_BLOCK = {
   'ORMAIN.EXE': (0x1765, 0x1f6b),
+  'ORBTL.EXE': (0x26303, 0x26b54),
 }
+
+POINTER_DISAMBIGUATION = {
+  0x3fe8: 0x1ffc
+}
+
+def effective_length(s):
+    """The length of a string, ignoring the control codes."""
+
+    # TODO: Not working properly yet.
+    length = 0
+    chars = s.split()
+    while chars:
+        if chars[0] != b'[':
+            length += 1
+            chars.pop(0)
+        else:
+            while chars[0] != b']':
+                chars.pop(0)
+            chars.pop(0)
+
+    return length
+
+def typeset(s):
+    if len(s) <= 37:
+        return s
+
+    words = s.split(b' ')
+    lines = []
+
+    while words:
+        line = b''
+        while len(line) <= 37 and words:
+            if len(line + words[0] + b' ') > 37:
+                break
+            line += words.pop(0) + b' '
+
+        line = line.rstrip()
+        lines.append(line)
+    for l in lines:
+        print(l)
+
+    return b'/'.join(lines)

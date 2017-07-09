@@ -1,8 +1,10 @@
 import os
 import re
-from rominfo import FILES, FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK
+from rominfo import FILES, FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK, POINTER_DISAMBIGUATION
 from romtools.dump import BorlandPointer, DumpExcel, PointerExcel
 from romtools.disk import Gamefile, Block, Disk
+
+strings_to_skip = ['ポインタが使われました', '      体', '       心', 'ＥＭＳ']
 
 def find_all(a_str, sub):
     start = 0
@@ -25,6 +27,8 @@ files_to_search = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFI
 # NEKORUN.EXE might not have pointers. Edit it manually? Mostly error messages anyway.
 # ENDING.EXE is only error messages...?
 
+problem_count = 0
+
 try:
     os.remove('appareden_pointer_dump.xlsx')
 except WindowsError:
@@ -45,19 +49,23 @@ for f in files_to_search:
         last_pointer_location = POINTER_CONSTANT[f]
         pointer_location = last_pointer_location
         for t in Dump.get_translations(blk, include_blank=True):
+            if any([s in t.japanese.decode('shift_jis') for s in strings_to_skip]):
+                continue
             text_location = t.location
             look_for_int = t.location - POINTER_CONSTANT[f]
             look_for = look_for_int.to_bytes(2, byteorder='little')
-            if GF.filestring.count(look_for) == 1 and GF.filestring.find(look_for) > POINTER_CONSTANT[f]:
+            if GF.filestring.count(look_for) == 1: #and GF.filestring.find(look_for) > POINTER_CONSTANT[f]:
                 pointer_location = GF.filestring.find(look_for)
-                #print("%s: %s" % (hex(t.location), hex(pointer_location)))
             else:
                 all_locs = list(find_all(GF.filestring, look_for))
-                all_locs = [l for l in all_locs if l > POINTER_CONSTANT[f] ]
-                for a in all_locs:
-                    if last_pointer_location < a < last_pointer_location + 0x100:
-                        pointer_location = a
-                #pointer_location = "Not found"
+                if text_location in POINTER_DISAMBIGUATION:
+                    pointer_location = POINTER_DISAMBIGUATION[text_location]
+                else:
+                    for a in all_locs:
+                        if len(all_locs) == 1:
+                            pointer_location = all_locs[0]
+                        elif last_pointer_location < a < last_pointer_location + 0x100:
+                            pointer_location = a
 
             if pointer_location == last_pointer_location:
                 pointer_location = "?"
@@ -67,18 +75,23 @@ for f in files_to_search:
             try:
                 worksheet.write(row, 1, hex(pointer_location))
             except TypeError:
+                problem_count += 1
+                if len(all_locs) == 0:
+                    print("Problem finding %s" % t.japanese.decode('shift_jis'), "not found")
+                elif len(all_locs) == 1:
+                    print(t.japanese.decode('shift_jis'), 'seems fine')
+                else:
+                    print("Problem finding %s" % t.japanese.decode('shift_jis'), "multiple found")
                 worksheet.write(row, 1, pointer_location)
                 worksheet.write(row, 3, "%s" % ([hex(a) for a in all_locs]))
 
             worksheet.write(row, 2, obj.text())
-            #try:
-            #    worksheet.write(row, 2, obj.text())
-            #except:
-            #    worksheet.write(row, 2, '')
             row += 1
             if pointer_location != "?":
                 last_pointer_location = pointer_location
 PtrXl.workbook.close()
+
+print("%s problems found" % problem_count)
 
 # While we have all these variables, get a count of all the lines in the msg files
 #count = 0
