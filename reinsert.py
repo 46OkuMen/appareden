@@ -5,7 +5,7 @@
 import os
 import re
 from math import floor
-from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset
+from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
@@ -29,7 +29,7 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
-FILES_TO_REINSERT = ['SCN02400.MSG', 'ORTITLE.EXE', 'ORBTL.EXE', 'ORFIELD.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'SCN02400.MSG',]
 
 total_reinserted_strings = 0
 
@@ -55,6 +55,17 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x15b99, b'\x7d')      # w = "}"
         gamefile.edit(0x2551b, b'\x24')      # c = "$"
 
+
+        #gamefile.edit(0x34900, b'\x00'*0x4000)
+
+        # Space/capitals compression
+        gamefile.edit(0x8c0a, b'\x3c\x5e\x75\x05\xac\x0f\x84\x3a\x00\x3c\x5a\x0f\x8f\x34\x00\x3c\x40\x0f\x8c\x2e\x00\x47\x04\x20\xe9\x28\x00')
+        # Best not to use it until more pointers are sorted out.
+
+        # The same old failed attempt at ROM expansion as usual
+        #gamefile.edit(0x04, b'\xc6')
+        #gamefile.edit(0x389ca, b'A'*512)
+
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.
 
@@ -78,18 +89,22 @@ for filename in FILES_TO_REINSERT:
         gamefile.filestring = gamefile.filestring.replace(b'CC', b'>c')
 
         for t in MsgDump.get_translations(filename):
-            t.japanese = t.japanese.replace(b'[LN]', bytes([0x2f]))
-            t.english = t.english.replace(b'[LN]', bytes([0x2f]))
+            #t.japanese = t.japanese.replace(b'[LN]', bytes([0x2f]))
+            #t.english = t.english.replace(b'[LN]', bytes([0x2f]))
+
+            for cc in CONTROL_CODES:
+                t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
+                t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
             #i = gamefile.filestring.index(t.japanese)
             #j = gamefile.filestring.count(t.japanese)
 
-            print(t.japanese.decode('shift_jis'))
+            #print(t.japanese.decode('shift_jis'))
 
             try:
                 gamefile.filestring = gamefile.filestring.replace(t.japanese, typeset(t.english), 1)
             except ValueError:
-                print ("Couldn't find that one")
+                print ("Couldn't find this one:", t.english)
 
 
     if filename.endswith('.EXE'):
@@ -100,48 +115,64 @@ for filename in FILES_TO_REINSERT:
             overflow_start = 0
             diff = 0
             for t in Dump.get_translations(block):
-                if t.en_bytestring != t.jp_bytestring:
-                    loc_in_block = t.location - block.start + diff
+                #if t.en_bytestring != t.jp_bytestring:
+                if t.en_bytestring == b'':
+                    t.en_bytestring = t.jp_bytestring
 
-                    this_diff = len(t.en_bytestring) - len(t.jp_bytestring)
+                loc_in_block = t.location - block.start + diff
 
-                    this_string_end = t.location + diff + len(t.en_bytestring) + this_diff
-                    if this_string_end > block.stop and not overflowing:
-                        overflowing = True
-                        overflow_start = loc_in_block
+                this_diff = len(t.en_bytestring) - len(t.jp_bytestring)
 
-                    i = block.blockstring.index(t.jp_bytestring)
-                    j = block.blockstring.count(t.jp_bytestring)
+                this_string_end = t.location + diff + len(t.en_bytestring) + this_diff
+                print(hex(this_string_end), hex(block.stop))
+                if this_string_end > block.stop and not overflowing:
+                    overflowing = True
+                    overflow_start = loc_in_block
+                    inter_block_diff = SPARE_BLOCK[filename][0] - (block.start + overflow_start)
+                    diff += inter_block_diff
+                    print("It's overflowing at %s" % hex(block.start + loc_in_block))
 
-                    index = 0
-                    while index < len(block.blockstring):
-                        index = block.blockstring.find(t.jp_bytestring, index)
-                        if index == -1:
-                            break
-                        #print('jp bytestring found at', index)
-                        index += len(t.jp_bytestring) # +2 because len('ll') == 2
+                print(hex(t.location), t.jp_bytestring)
+                i = block.blockstring.index(t.jp_bytestring)
+                j = block.blockstring.count(t.jp_bytestring)
 
-                    #if j > 1:
-                    #    print("%s multiples of this string found" % j)
-                    assert loc_in_block == i, (hex(loc_in_block), hex(i))
+                index = 0
+                while index < len(block.blockstring):
+                    index = block.blockstring.find(t.jp_bytestring, index)
+                    if index == -1:
+                        break
+                    #print('jp bytestring found at', index)
+                    index += len(t.jp_bytestring) # +2 because len('ll') == 2
 
-                    block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
-                    reinserted_string_count += 1
+                #if j > 1:
+                #    print("%s multiples of this string found" % j)
+                print(t.english)
+                if loc_in_block == i:
+                    print("Warning: String not where expected")
 
-                    gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
-                    previous_text_offset = t.location
+                block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
+                reinserted_string_count += 1
 
-                    diff += this_diff
+                gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
+                previous_text_offset = t.location
+
+                diff += this_diff
 
 
             block_diff = len(block.blockstring) - len(block.original_blockstring)
+
+            print(block_diff)
 
             if block_diff > 0 and SPARE_BLOCK[filename]:
                 overflow_string = block.blockstring[overflow_start:]
                 print(overflow_string)
 
-                inter_block_diff = block.start + overflow_start - SPARE_BLOCK[filename][0]
-                gamefile.edit_pointers_in_range((block.start+overflow_start, block.stop), inter_block_diff)
+                print("Overflow begins at:", hex(block.start + overflow_start))
+
+
+                #inter_block_diff = SPARE_BLOCK[filename][0] - (block.start + overflow_start)
+                #print("Editing pointers between %s and %s" % (hex(block.start+overflow_start), hex(block.stop+diff)))
+                #gamefile.edit_pointers_in_range((block.start+overflow_start, block.stop+diff), inter_block_diff)
                 gamefile.edit(SPARE_BLOCK[filename][0], overflow_string)
                 block.blockstring = block.blockstring[:overflow_start]
 

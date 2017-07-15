@@ -49,6 +49,7 @@ for f in files_to_search:
         last_pointer_location = POINTER_CONSTANT[f]
         pointer_location = last_pointer_location
         for t in Dump.get_translations(blk, include_blank=True):
+            all_locs = []
             if any([s in t.japanese.decode('shift_jis') for s in strings_to_skip]):
                 continue
             text_location = t.location
@@ -57,7 +58,7 @@ for f in files_to_search:
             if GF.filestring.count(look_for) == 1: #and GF.filestring.find(look_for) > POINTER_CONSTANT[f]:
                 pointer_location = GF.filestring.find(look_for)
             else:
-                all_locs = list(find_all(GF.filestring, look_for))
+                all_locs = sorted(list(find_all(GF.filestring, look_for)))
                 if text_location in POINTER_DISAMBIGUATION:
                     pointer_location = POINTER_DISAMBIGUATION[text_location]
                 else:
@@ -82,7 +83,9 @@ for f in files_to_search:
                     print(t.japanese.decode('shift_jis'), 'seems fine')
                 else:
                     print("Problem finding %s" % t.japanese.decode('shift_jis'), "multiple found")
-                worksheet.write(row, 1, pointer_location)
+
+                worksheet.write(row, 1, '?')
+            if len(all_locs) > 0:
                 worksheet.write(row, 3, "%s" % ([hex(a) for a in all_locs]))
 
             worksheet.write(row, 2, obj.text())

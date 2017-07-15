@@ -1,0 +1,35 @@
+in the text loading code:
+cmp al, 5e
+jne 271c9
+
+(taking code from: 2443:580a 3c81 cmp al, 81)
+Taking away code to handle 2-byte SJIS
+	
+
+cmp al, 5e       ; ^ = "skip the compression" code
+
+jnz $+4   ; if not 5e, go to the above-Z check
+lodsb     ; if 5e, load the next character
+je $+the end of this  ; skip the compression checks
+
+First round: Just this code
+cmp al, 5a       ; Check if above Z
+jg x584d         ; jump to end if yes
+
+cmp al, 40     ; Check if below A
+jl x584d        ; jump to end if yes
+
+inc edi (0x47) ; increase cursor
+add al, 20     ; lower the letter
+
+jmp x584d      ; (Don't want kanji stuff happening)
+
+3c5e 7505 ac 0f843a00 3c5a 0f8f3400 3c40 0f8c2e00 47 0420 e92800
+
+It is correctly ignoring the lowercase letters, but doing a weird kanji or blank space thing with uppercase.
+
+Probably need to jump at the end.
+
+Now it works; still need to use a ^ control code for real uppercase letters.
+
+Now it's working. Need to figure out a better way to encode space separated capitalized words...
