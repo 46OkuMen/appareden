@@ -55,11 +55,11 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x15b99, b'\x7d')      # w = "}"
         gamefile.edit(0x2551b, b'\x24')      # c = "$"
 
+        # Overline handling (requirpes Shadoff compression below)
+        #gamefile.edit(0x8c0a, b'\x3c\x7e\x75\x01\x4f'
 
-        #gamefile.edit(0x34900, b'\x00'*0x4000)
-
-        # Space/capitals compression
-        gamefile.edit(0x8c0a, b'\x3c\x7e\x75\x01\x4f\x3c\x5e\x75\x05\xac\x0f\x84\x35\x00\x3c\x5a\x0f\x8f\x2f\x00\x3c\x40\x0f\x8c\x29\x00\x47\x04\x20\xe9\x23\x00')
+        # Shadoff compression
+        #gamefile.edit(0x8c0f, b'\x3c\x5e\x75\x05\xac\x0f\x84\x35\x00\x3c\x5a\x0f\x8f\x2f\x00\x3c\x40\x0f\x8c\x29\x00\x47\x04\x20\xe9\x23\x00')
         # Best not to use it until more pointers are sorted out.
 
         # The same old failed attempt at ROM expansion as usual
@@ -124,7 +124,7 @@ for filename in FILES_TO_REINSERT:
                 this_diff = len(t.en_bytestring) - len(t.jp_bytestring)
 
                 this_string_end = t.location + diff + len(t.en_bytestring) + this_diff
-                print(hex(this_string_end), hex(block.stop))
+                #print(hex(this_string_end), hex(block.stop))
                 if this_string_end > block.stop and not overflowing:
                     overflowing = True
                     overflow_start = loc_in_block
@@ -132,7 +132,7 @@ for filename in FILES_TO_REINSERT:
                     diff += inter_block_diff
                     print("It's overflowing at %s" % hex(block.start + loc_in_block))
 
-                print(hex(t.location), t.jp_bytestring)
+                #print(hex(t.location), t.jp_bytestring)
                 i = block.blockstring.index(t.jp_bytestring)
                 j = block.blockstring.count(t.jp_bytestring)
 
@@ -163,22 +163,23 @@ for filename in FILES_TO_REINSERT:
 
             print(block_diff)
 
-            if block_diff > 0 and SPARE_BLOCK[filename]:
-                overflow_string = block.blockstring[overflow_start:]
-                print(overflow_string)
+            #if block_diff > 0 and SPARE_BLOCK[filename]:
+            #    overflow_string = block.blockstring[overflow_start:]
+                #print(overflow_string)
 
-                print("Overflow begins at:", hex(block.start + overflow_start))
+                #print("Overflow begins at:", hex(block.start + overflow_start))
 
 
                 #inter_block_diff = SPARE_BLOCK[filename][0] - (block.start + overflow_start)
                 #print("Editing pointers between %s and %s" % (hex(block.start+overflow_start), hex(block.stop+diff)))
                 #gamefile.edit_pointers_in_range((block.start+overflow_start, block.stop+diff), inter_block_diff)
-                gamefile.edit(SPARE_BLOCK[filename][0], overflow_string)
-                block.blockstring = block.blockstring[:overflow_start]
+            #    gamefile.edit(SPARE_BLOCK[filename][0], overflow_string)
+            #    block.blockstring = block.blockstring[:overflow_start]
 
             block_diff = len(block.blockstring) - len(block.original_blockstring)
 
             if block_diff < 0:
+                #print(block.blockstring)
                 block.blockstring += (-1)*block_diff*b'\x00'
             block_diff = len(block.blockstring) - len(block.original_blockstring)
             assert block_diff == 0, block_diff

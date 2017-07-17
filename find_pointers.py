@@ -55,7 +55,10 @@ for f in files_to_search:
             text_location = t.location
             look_for_int = t.location - POINTER_CONSTANT[f]
             look_for = look_for_int.to_bytes(2, byteorder='little')
-            if GF.filestring.count(look_for) == 1: #and GF.filestring.find(look_for) > POINTER_CONSTANT[f]:
+            codeblock_look_for = b'\x68' + look_for
+            both_count = GF.filestring.count(look_for) + GF.filestring.count(codeblock_look_for)
+
+            if GF.filestring.count(look_for) == 1:
                 pointer_location = GF.filestring.find(look_for)
             else:
                 all_locs = sorted(list(find_all(GF.filestring, look_for)))
@@ -63,6 +66,8 @@ for f in files_to_search:
                     pointer_location = POINTER_DISAMBIGUATION[text_location]
                 else:
                     for a in all_locs:
+                        if a < POINTER_CONSTANT[f]:
+                            print(hex(GF.filestring[a-1]))
                         if len(all_locs) == 1:
                             pointer_location = all_locs[0]
                         elif last_pointer_location < a < last_pointer_location + 0x100:

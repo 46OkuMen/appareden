@@ -36,9 +36,19 @@ FILE_BLOCKS = {
                 (0x275f0, 0x275fe),  # death msg
                 (0x2760e, 0x27676),  # ship msg
                 (0x28044, 0x280bf),  # Pause menu
-                (0x281c9, 0x2847d), # Status and settings
-                (0x2847d, 0x28758),
-                (0x2894e, 0x29020), # Equipment and such
+                (0x281c9, 0x28214),
+                (0x28265, 0x28279),  # Main menu, status select, setting names
+                (0x282e0, 0x283c0),  # Status screen
+                (0x283c0, 0x2847d),  # Settings
+                (0x2847d, 0x28567),  # Equip screen header, "whose"
+                (0x286b1, 0x28758),  # Equip screen
+                (0x2894e, 0x28989),  # Equipment categories
+                (0x2899c, 0x289c7),  # Unequip message, "who will use it"
+                (0x28a15, 0x28a3d),
+                (0x28c36, 0x28ccf),
+                (0x28ce2, 0x28cf0),
+                (0x28d3e, 0x28d67),
+                (0x28f60, 0x29020), # Equipment and such
                 (0x29020, 0x290bc),  # menu msgs
                 (0x2a2ba, 0x2cc45),  # items and weapons
                 (0x2d022, 0x2d3c4),  # result msgs
