@@ -10,14 +10,25 @@ jne 271c9
 (taking code from: 2443:580a 3c81 cmp al, 81)
 Taking away code to handle 2-byte SJIS
 
+_x space control code:
+cmp al 5f   ; _
+jnz 5813 ; jump to overline handling code
+ac lodsb    ; load the number of spaces to repeat
+88c1 mov cl, al
+inc di
+loop 5811 ; repeat "inc di"
+lodsb       ; load the next actual character
+
+
+
+
 Overline handling code:
-cmp al, 7e
+cmp al, 7e   ; overline
 jnz $+2
 dec edi  (x04f)
 	
 
 cmp al, 5e       ; ^ = "skip the compression" code
-
 jnz $+4   ; if not 5e, go to the above-Z check
 lodsb     ; if 5e, load the next character
 jz $+the end of this  ; skip the compression checks
@@ -26,15 +37,16 @@ First round: Just this code
 cmp al, 5a       ; Check if above Z
 jg x584d         ; jump to end if yes
 
-cmp al, 40     ; Check if below A
-jl x584d        ; jump to end if yes
+cmp al, 40       ; Check if below A
+jl x584d         ; jump to end if yes
 
-inc edi (0x47) ; increase cursor
-add al, 20     ; lower the letter
+inc edi (0x47)   ; increase cursor
+add al, 20       ; lower the letter
 
 jmp x584d      ; (Don't want kanji stuff happening)
 
-3c7e 7501 4f 3c5e 7505 ac 0f843500 3c5a 0f8f2f00 3c40 0f8c2900 47 0420 e92300
+|---spacecode -------------| |-overline-| |--------------------------shadoff-----------------------------|
+3c5f 750c ac 88c1 47 e2fd ac 3c7e 7501 4f 3c5e 7505 ac 0f842a00 3c5a 0f8f2400 3c40 0f8c1e00 47 0420 e91800
 
 It is correctly ignoring the lowercase letters, but doing a weird kanji or blank space thing with uppercase.
 
@@ -43,3 +55,8 @@ Probably need to jump at the end.
 Now it works; still need to use a ^ control code for real uppercase letters.
 
 Now it's working. Need to figure out a better way to encode space separated capitalized words...
+
+
+SPACECODE ISSUES
+The game seems to calculate the width of windows and cursor highlights based on the length in bytes, not the cursor position.
+	As a result, windows are too small and cursor highlights don't reach across the screen, and the screen isn't refreshed properly.

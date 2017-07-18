@@ -157,6 +157,55 @@ def typeset(s):
 
     return b'/'.join(lines)
 
+def shadoff_compress(s):
+    # Definitely don't compress filenames!
+    if b'.GEM' in s:
+        return s
+
+    s = s.decode('shift-jis')
+    compressed = ''
+
+    chars = list(s)
+
+    continuous_spaces = 0
+    while chars:
+        c = chars.pop(0)
+        if c == ' ':
+            continuous_spaces += 1
+        elif c.isupper():
+            if continuous_spaces > 2:
+                compressed += '_' + chr(continuous_spaces)
+            elif continuous_spaces > 0:
+                compressed += ' '*(continuous_spaces)
+            continuous_spaces = 0
+            compressed += '^'
+            compressed += c
+        else:
+            if continuous_spaces > 2:
+                compressed += '_' + chr(continuous_spaces)
+                c = c.upper()
+            elif continuous_spaces > 0:
+                compressed += ' '*(continuous_spaces-1)
+                c = c.upper()
+            continuous_spaces = 0
+            compressed += c
+
+
+
+    """
+    words = s.split()
+    compressed = ''
+    for w in words:
+        if w[0].isupper():
+            w = '^' + w
+        else:
+            w = w[0].upper() + w[1:]
+        compressed += w
+    """
+    print(s)
+    print(compressed)
+    return bytes(compressed, encoding='shift-jis')
+
 CONTROL_CODES = {
   b'[LN]': bytes([0x2f]),
   b'[WAIT1]': bytes([0x77, 0x01]),
@@ -166,3 +215,7 @@ CONTROL_CODES = {
   b'[WAIT5]': bytes([0x77, 0x05]),
   b'[WAIT6]': bytes([0x77, 0x06]),
 }
+
+SPACECODE_ASM = b'\x3c\x5f\x75\x0c\xac\x88\xc1\x47\xe2\xfd\xac'
+OVERLINE_ASM =  b'\x3c\x7e\x75\x01\x4f'
+SHADOFF_ASM =   b'\x3c\x5e\x75\x05\xac\x0f\x84\x2a\x00\x3c\x5a\x0f\x8f\x24\x00\x3c\x40\x0f\x8c\x1e\x00\x47\x04\x20\xe9\x18\x00'

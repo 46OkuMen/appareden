@@ -5,7 +5,8 @@
 import os
 import re
 from math import floor
-from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES
+from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, shadoff_compress
+from rominfo import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
@@ -55,16 +56,10 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x15b99, b'\x7d')      # w = "}"
         gamefile.edit(0x2551b, b'\x24')      # c = "$"
 
-        # Overline handling (requirpes Shadoff compression below)
-        #gamefile.edit(0x8c0a, b'\x3c\x7e\x75\x01\x4f'
-
-        # Shadoff compression
-        #gamefile.edit(0x8c0f, b'\x3c\x5e\x75\x05\xac\x0f\x84\x35\x00\x3c\x5a\x0f\x8f\x2f\x00\x3c\x40\x0f\x8c\x29\x00\x47\x04\x20\xe9\x23\x00')
-        # Best not to use it until more pointers are sorted out.
-
-        # The same old failed attempt at ROM expansion as usual
-        #gamefile.edit(0x04, b'\xc6')
-        #gamefile.edit(0x389ca, b'A'*512)
+        # ORFIELD.EXE text handling ASM
+        gamefile.edit(0x8c0a, SPACECODE_ASM)
+        gamefile.edit(0x8c0a+len(SPACECODE_ASM), OVERLINE_ASM)
+        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM), SHADOFF_ASM)
 
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.
@@ -89,9 +84,6 @@ for filename in FILES_TO_REINSERT:
         gamefile.filestring = gamefile.filestring.replace(b'CC', b'>c')
 
         for t in MsgDump.get_translations(filename):
-            #t.japanese = t.japanese.replace(b'[LN]', bytes([0x2f]))
-            #t.english = t.english.replace(b'[LN]', bytes([0x2f]))
-
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
@@ -114,16 +106,19 @@ for filename in FILES_TO_REINSERT:
             overflowing = False
             overflow_start = 0
             diff = 0
+            not_translated = False
             for t in Dump.get_translations(block):
-                #if t.en_bytestring != t.jp_bytestring:
-                if t.en_bytestring == b'':
-                    t.en_bytestring = t.jp_bytestring
+                if t.english == b'':
+                    not_translated = True
+                    t.english = t.japanese
+
+                t.english = shadoff_compress(t.english)
 
                 loc_in_block = t.location - block.start + diff
 
-                this_diff = len(t.en_bytestring) - len(t.jp_bytestring)
+                this_diff = len(t.english) - len(t.japanese)
 
-                this_string_end = t.location + diff + len(t.en_bytestring) + this_diff
+                this_string_end = t.location + diff + len(t.english) + this_diff
                 #print(hex(this_string_end), hex(block.stop))
                 if this_string_end > block.stop and not overflowing:
                     overflowing = True
@@ -133,16 +128,16 @@ for filename in FILES_TO_REINSERT:
                     print("It's overflowing at %s" % hex(block.start + loc_in_block))
 
                 #print(hex(t.location), t.jp_bytestring)
-                i = block.blockstring.index(t.jp_bytestring)
-                j = block.blockstring.count(t.jp_bytestring)
+                i = block.blockstring.index(t.japanese)
+                j = block.blockstring.count(t.japanese)
 
                 index = 0
                 while index < len(block.blockstring):
-                    index = block.blockstring.find(t.jp_bytestring, index)
+                    index = block.blockstring.find(t.japanese, index)
                     if index == -1:
                         break
                     #print('jp bytestring found at', index)
-                    index += len(t.jp_bytestring) # +2 because len('ll') == 2
+                    index += len(t.japanese) # +2 because len('ll') == 2
 
                 #if j > 1:
                 #    print("%s multiples of this string found" % j)
@@ -150,8 +145,10 @@ for filename in FILES_TO_REINSERT:
                 if loc_in_block == i:
                     print("Warning: String not where expected")
 
-                block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
-                reinserted_string_count += 1
+                #block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
+                if not not_translated:
+                    block.blockstring = block.blockstring.replace(t.japanese, t.english, 1)
+                    reinserted_string_count += 1
 
                 gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
                 previous_text_offset = t.location

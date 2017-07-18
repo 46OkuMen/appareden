@@ -8,12 +8,12 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | -------------|-----:|:-------------------:|
 | Title        | 100% |  (18 / 18)          |
 | Main         |   7% |  (16 / 202)         |
-| Field        |  14% | (154 / 1050)        |
+| Field        |  28% | (302 / 1050)        |
 | Battle       |   4% |  (35 / 708)         |
 | Cat Minigame |   0% |   (0 / 7)           |
 | Dialogue     |   0% |  (60 / 13078)       |
 | Images       |   0% |   (0 / 44?)         |
-| Total        |   1% | (283 / 15107)       |
+| Total        |   2% | (431 / 15107)       |
 
 
 ### How do I use this?
