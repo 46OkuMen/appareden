@@ -25,7 +25,7 @@ FILE_BLOCKS = {
               (0x29d38, 0x2b066),  # item descriptions
               (0x2d2ce, 0x2d931),  # people, places, things
               (0x2ea7a, 0x2eb0d)],  # stealing msgs"
-    'ORFIELD.EXE': [(0x25f20, 0x25f40),  # null pointer error
+    'ORFIELD.EXE': [(0x25f20, 0x25f40),  # null pointer error                  # TODO: Try to end blocks after section headers!! That'll keep their length where it needs to be.
                 (0x25f72, 0x25fba),  # ems driver version texts
                 (0x26120, 0x26195),  # names and memory error text
                 (0x26368, 0x26444),  # memory and disk switches

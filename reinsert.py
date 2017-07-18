@@ -177,7 +177,7 @@ for filename in FILES_TO_REINSERT:
 
             if block_diff < 0:
                 #print(block.blockstring)
-                block.blockstring += (-1)*block_diff*b'\x00'
+                block.blockstring += (-1)*block_diff*b'\x20'
             block_diff = len(block.blockstring) - len(block.original_blockstring)
             assert block_diff == 0, block_diff
 
