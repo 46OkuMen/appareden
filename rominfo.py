@@ -32,7 +32,13 @@ FILE_BLOCKS = {
                 (0x26641, 0x26776),  # save and ui texts
                 (0x267ef, 0x2694e),  # ui texts
                 (0x26a0b, 0x26a8f),  # places
-                (0x26b28, 0x27557),  # shops and inns
+                (0x26b28, 0x26bbd),
+                (0x26e16, 0x26e8a),
+                (0x26e94, 0x26f1c),
+                (0x2718d, 0x271ac),
+                (0x271c1, 0x271e6),
+                (0x271f8, 0x2723d),
+                (0x27496, 0x27557),
                 (0x275f0, 0x275fe),  # death msg
                 (0x2760e, 0x27676),  # ship msg
                 (0x28044, 0x280bf),  # Pause menu
@@ -202,18 +208,30 @@ def shadoff_compress(s):
             w = w[0].upper() + w[1:]
         compressed += w
     """
-    print(s)
-    print(compressed)
     return bytes(compressed, encoding='shift-jis')
 
 CONTROL_CODES = {
   b'[LN]': bytes([0x2f]),
-  b'[WAIT1]': bytes([0x77, 0x01]),
-  b'[WAIT2]': bytes([0x77, 0x02]),
-  b'[WAIT3]': bytes([0x77, 0x03]),
-  b'[WAIT4]': bytes([0x77, 0x04]),
-  b'[WAIT5]': bytes([0x77, 0x05]),
-  b'[WAIT6]': bytes([0x77, 0x06]),
+  b'[WAIT1]': b'{01',
+  b'[WAIT2]': b'{02',
+  b'[WAIT3]': b'{03',
+  b'[WAIT4]': b'{04',
+  b'[WAIT5]': b'{05',
+  b'[WAIT6]': b'{06',
+  b'[00]': bytes([0x00]),
+}
+
+# TODO: Need a control code that escapes spaces. I need to pad out some
+# headers, and the space compression is preventing me from doing that...
+
+ORIGINAL_CONTROL_CODES = {
+    b'[LN]': b'n',
+    b'[WAIT1]': b'w01',
+    b'[WAIT2]': b'w02',
+    b'[WAIT3]': b'w03',
+    b'[WAIT4]': b'w04',
+    b'[WAIT5]': b'w05',
+    b'[WAIT6]': b'w06',
 }
 
 SPACECODE_ASM = b'\x3c\x5f\x75\x0c\xac\x88\xc1\x47\xe2\xfd\xac'

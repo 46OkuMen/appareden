@@ -5,7 +5,7 @@
 import os
 import re
 from math import floor
-from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, shadoff_compress
+from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, ORIGINAL_CONTROL_CODES, shadoff_compress
 from rominfo import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
@@ -30,7 +30,9 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', 'SCN02400.MSG',]
+FILES_TO_REINSERT = ['ORFIELD.EXE']
+
+FILES_TO_REINSERT += ['SCN%s.MSG' % str(t).zfill(5) for t in range(2400, 2405)]
 
 total_reinserted_strings = 0
 
@@ -70,7 +72,12 @@ for filename in FILES_TO_REINSERT:
 
         #print(pattern.match(gamefile.filestring))
 
-        #gamefile.filestring = gamefile.filestring.replace(b'>w', b'WW')
+        #gamefile.filestring = gamefile.filestring.replace(b'\x83\x6e', b'QQ')
+        #gamefile.filestring = gamefile.filestring.replace(b'\x83\x63', b'RR')
+        #gamefile.filestring = gamefile.filestring.replace(b'\x81\x63', b'RW')
+        #gamefile.filestring = gamefile.filestring.replace(b'\x93\x6e', b'QR')
+
+
         gamefile.filestring = gamefile.filestring.replace(b'>n', b'NN')
         gamefile.filestring = gamefile.filestring.replace(b'>c', b'CC')
 
@@ -83,18 +90,38 @@ for filename in FILES_TO_REINSERT:
         gamefile.filestring = gamefile.filestring.replace(b'NN', b'>n')
         gamefile.filestring = gamefile.filestring.replace(b'CC', b'>c')
 
+
+        #gamefile.filestring = gamefile.filestring.replace(b'QQ', b'\x83\x6e')
+        #gamefile.filestring = gamefile.filestring.replace(b'RR', b'\x83\x63')
+        #gamefile.filestring = gamefile.filestring.replace(b'RW', b'\x81\x63')
+        #gamefile.filestring = gamefile.filestring.replace(b'QR', b'\x93\x6e')
+
+        # TODO: The issue is that replacing w, n, c, etc. also replaces it as a part of 2-byte SJIS sequences.
+        # Manually doing this (QQ, RR, etc.) above isn't going to work out. Too many things to escape...
+        # My idea is to use a regex that finds n, w, and c where the preceding character isn't > or 8x or 9x.
+
+
+
         for t in MsgDump.get_translations(filename):
+            for cc in ORIGINAL_CONTROL_CODES:
+                t.japanese = t.japanese.replace(cc, ORIGINAL_CONTROL_CODES[cc])
+
             for cc in CONTROL_CODES:
-                t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
+                #t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-            #i = gamefile.filestring.index(t.japanese)
+            t.english = typeset(t.english)
+            t.english = shadoff_compress(t.english)
+
             #j = gamefile.filestring.count(t.japanese)
 
             #print(t.japanese.decode('shift_jis'))
 
+            #print(t)
+
             try:
-                gamefile.filestring = gamefile.filestring.replace(t.japanese, typeset(t.english), 1)
+                i = gamefile.filestring.index(t.japanese)
+                gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
             except ValueError:
                 print ("Couldn't find this one:", t.english)
 
@@ -111,6 +138,10 @@ for filename in FILES_TO_REINSERT:
                 if t.english == b'':
                     not_translated = True
                     t.english = t.japanese
+
+                for cc in CONTROL_CODES:
+                    t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
+                    t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
                 t.english = shadoff_compress(t.english)
 
@@ -141,7 +172,7 @@ for filename in FILES_TO_REINSERT:
 
                 #if j > 1:
                 #    print("%s multiples of this string found" % j)
-                print(t.english)
+                #print(t.english)
                 if loc_in_block == i:
                     print("Warning: String not where expected")
 
