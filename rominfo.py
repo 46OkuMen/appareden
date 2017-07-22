@@ -6,6 +6,10 @@ DEST_DISK = os.path.join('patched', 'Appareden.HDI')
 
 FILES = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'NEKORUN.EXE', 'SFIGHT.EXE', 'ENDING.EXE',]
 
+SJIS_FIRST_BYTES = [0x81, 0x82, 0x83, 0x84, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0xad, 0x8e, 0x8f, 0x90, 0x91, 0x92,
+                    0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f, 0xe0, 0xe1,
+                    0xe2, 0xe3, 0xe4, 0x35, 0xe6, 0xe7, 0xe8, 0xe9, 0xea]
+
 FILE_BLOCKS = {
     'ENDING.EXE': [(0x64bb, 0x6512), ],  # memory error texts
     'NEKORUN.EXE': [(0xa840, 0xa8aa),   # error text + scene text
@@ -205,6 +209,23 @@ def shadoff_compress(s):
             compressed += c
 
     return bytes(compressed, encoding='shift-jis')
+
+def replace_control_codes(s):
+    s = s.decode('shift-jis')
+    cursor = 0
+    while cursor < len(s):
+        c = s[cursor]
+        if c == 'n':
+            if s[cursor-1] != '>':
+                s = s[:cursor] + '/' + s[cursor+1:]
+        if c == 'w':
+            s = s[:cursor] + '}' + s[cursor+1:]
+        if c == 'c':
+            if s[cursor-1] != '>':
+                s = s[:cursor] + '$' + s[cursor+1:]
+        cursor += 1
+    s = s.encode('shift-jis')
+    return s
 
 CONTROL_CODES = {
   b'[LN]': b'/',

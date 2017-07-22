@@ -5,7 +5,7 @@
 import os
 import re
 from math import floor
-from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, shadoff_compress
+from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, replace_control_codes, shadoff_compress
 from rominfo import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
@@ -32,9 +32,7 @@ TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE']
 
-#FILES_TO_REINSERT += ['SCN%s.MSG' % str(t).zfill(5) for t in range(2400, 2405)]
-
-HIGHEST_SCN = 2800
+HIGHEST_SCN = 3600
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 print(msg_files)
 msgs_to_reinsert = [f for f in msg_files if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
@@ -48,8 +46,6 @@ for m in msgs_to_reinsert:
         continue
 
 FILES_TO_REINSERT += valid_msgs
-
-print(FILES_TO_REINSERT)
 
 total_reinserted_strings = 0
 
@@ -83,6 +79,7 @@ for filename in FILES_TO_REINSERT:
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.
 
+        """
         # Manually replace the ones that are mistakenly ignored by the regexes below.
         gamefile.filestring = gamefile.filestring.replace(b'\x83\x93n', b'\x83\x93/') # one thing not caught by katakan
 
@@ -97,11 +94,13 @@ for filename in FILES_TO_REINSERT:
         gamefile.filestring = re.sub(W_CAPTURE, rb'\1}', gamefile.filestring)
         gamefile.filestring = re.sub(C_CAPTURE, rb'\1$', gamefile.filestring)
 
+        """
+
+        gamefile.filestring = replace_control_codes(gamefile.filestring)
+
         #print(gamefile.filestring)
 
         for t in MsgDump.get_translations(filename):
-            #for cc in ORIGINAL_CONTROL_CODES:
-            #    t.japanese = t.japanese.replace(cc, ORIGINAL_CONTROL_CODES[cc])
 
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
