@@ -59,7 +59,10 @@ FILE_BLOCKS = {
                 (0x2a2ba, 0x2cc45),  # items and weapons
                 (0x2d022, 0x2d3c4),  # result msgs
                 (0x2da79, 0x2e690),  # skills/spells names/descriptions
-                (0x2e9b2, 0x2ef13)],  # result msgs"
+                (0x2e9b2, 0x2ea84),
+                (0x2eb4d, 0x2ebbd),
+                (0x2ec86, 0x2ecf6),
+                (0x2edbf, 0x2ef13),],  # result msgs"
     'ORMAIN.EXE': [(0x1580, 0x167b),   # null pointer msgs
                    (0x1706, 0x1735),   # ems driver msgs
                    (0x3ee4, 0x4547), ],   # names, menus, things"
@@ -123,6 +126,11 @@ POINTER_DISAMBIGUATION = {
   0x2e9e2: 0x22f68,
   0x2847d: 0x27f54,
   0x2853f: 0x27f70,
+  0x26b64: 0x15e3e,
+  0x290a1: 0x20d10,
+  0x2eb50: 0x2324d,
+  0x2e9b2: 0x22e57,
+  0x2eab3: 0x2346b,
 }
 
 def effective_length(s):
@@ -196,36 +204,28 @@ def shadoff_compress(s):
             continuous_spaces = 0
             compressed += c
 
-
-
-    """
-    words = s.split()
-    compressed = ''
-    for w in words:
-        if w[0].isupper():
-            w = '^' + w
-        else:
-            w = w[0].upper() + w[1:]
-        compressed += w
-    """
     return bytes(compressed, encoding='shift-jis')
 
 CONTROL_CODES = {
-  b'[LN]': bytes([0x2f]),
-  b'[WAIT1]': b'{01',
-  b'[WAIT2]': b'{02',
-  b'[WAIT3]': b'{03',
-  b'[WAIT4]': b'{04',
-  b'[WAIT5]': b'{05',
-  b'[WAIT6]': b'{06',
+  b'[LN]': b'/',
+  b'[WAIT1]': b'}01',
+  b'[WAIT2]': b'}02',
+  b'[WAIT3]': b'}03',
+  b'[WAIT4]': b'}04',
+  b'[WAIT5]': b'}05',
+  b'[WAIT6]': b'}06',
   b'[00]': bytes([0x00]),
+  b'[BLANK]': b'',
 }
 
-# TODO: Need a control code that escapes spaces. I need to pad out some
-# headers, and the space compression is preventing me from doing that...
+POSTPROCESSING_CONTROL_CODES = {
+    b'~': b' ',
+    b'[BLANK]': b'',
+}
 
+"""
 ORIGINAL_CONTROL_CODES = {
-    b'[LN]': b'n',
+    b'[LN]': b'/',
     b'[WAIT1]': b'w01',
     b'[WAIT2]': b'w02',
     b'[WAIT3]': b'w03',
@@ -233,6 +233,7 @@ ORIGINAL_CONTROL_CODES = {
     b'[WAIT5]': b'w05',
     b'[WAIT6]': b'w06',
 }
+"""
 
 SPACECODE_ASM = b'\x3c\x5f\x75\x0c\xac\x88\xc1\x47\xe2\xfd\xac'
 OVERLINE_ASM =  b'\x3c\x7e\x75\x01\x4f'

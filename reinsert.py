@@ -5,7 +5,7 @@
 import os
 import re
 from math import floor
-from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, ORIGINAL_CONTROL_CODES, shadoff_compress
+from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, shadoff_compress
 from rominfo import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
@@ -32,7 +32,24 @@ TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE']
 
-FILES_TO_REINSERT += ['SCN%s.MSG' % str(t).zfill(5) for t in range(2400, 2405)]
+#FILES_TO_REINSERT += ['SCN%s.MSG' % str(t).zfill(5) for t in range(2400, 2405)]
+
+HIGHEST_SCN = 2800
+msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
+print(msg_files)
+msgs_to_reinsert = [f for f in msg_files if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
+valid_msgs = []
+for m in msgs_to_reinsert:
+    print(m)
+    try:
+        sheet = MsgDump.get_translations(m)
+        valid_msgs.append(m)
+    except KeyError:
+        continue
+
+FILES_TO_REINSERT += valid_msgs
+
+print(FILES_TO_REINSERT)
 
 total_reinserted_strings = 0
 
@@ -66,48 +83,28 @@ for filename in FILES_TO_REINSERT:
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.
 
-        # How to replace the ones with no > in front of them?
-        #plain_control_code_regex = rb'/[^>]([cnw])'
-        #pattern = re.compile(plain_control_code_regex)
+        # Manually replace the ones that are mistakenly ignored by the regexes below.
+        gamefile.filestring = gamefile.filestring.replace(b'\x83\x93n', b'\x83\x93/') # one thing not caught by katakan
 
-        #print(pattern.match(gamefile.filestring))
-
-        #gamefile.filestring = gamefile.filestring.replace(b'\x83\x6e', b'QQ')
-        #gamefile.filestring = gamefile.filestring.replace(b'\x83\x63', b'RR')
-        #gamefile.filestring = gamefile.filestring.replace(b'\x81\x63', b'RW')
-        #gamefile.filestring = gamefile.filestring.replace(b'\x93\x6e', b'QR')
+        # 89, 8b, 97, e3, e7, ed removed from N_CAPTURE.
+        # 92 added to N_CAPTURE.
+        N_CAPTURE = rb'([^>\x81\x83\x85\x87\x8d\x8f\x91\x92\x93\x95\x99\x9b\x9d\x9f\xe1\xe5\xe9\xeb\xef])(n)'
+        W_CAPTURE = rb'([^\x81\x83\x85\x87\x89\x8b\x8d\x8f\x91\x93\x95\x97\x99\x9b\x9d\x9f\xe1\xe3\xe5\xe7\xe9\xeb\xed\xef])(w)'
+        C_CAPTURE = rb'([^>\x81\x83\x85\x87\x89\x8b\x8d\x8f\x91\x93\x95\x97\x99\x9b\x9d\x9f\xe1\xe3\xe5\xe7\xe9\xeb\xed\xef])(c)'
 
 
-        gamefile.filestring = gamefile.filestring.replace(b'>n', b'NN')
-        gamefile.filestring = gamefile.filestring.replace(b'>c', b'CC')
+        gamefile.filestring = re.sub(N_CAPTURE, rb'\1/', gamefile.filestring)
+        gamefile.filestring = re.sub(W_CAPTURE, rb'\1}', gamefile.filestring)
+        gamefile.filestring = re.sub(C_CAPTURE, rb'\1$', gamefile.filestring)
 
-
-        gamefile.filestring = gamefile.filestring.replace(b'w', b'}')
-        gamefile.filestring = gamefile.filestring.replace(b'n', b'/')
-        gamefile.filestring = gamefile.filestring.replace(b'c', b'$')
-
-        #gamefile.filestring = gamefile.filestring.replace(b'WW', b'>w')
-        gamefile.filestring = gamefile.filestring.replace(b'NN', b'>n')
-        gamefile.filestring = gamefile.filestring.replace(b'CC', b'>c')
-
-
-        #gamefile.filestring = gamefile.filestring.replace(b'QQ', b'\x83\x6e')
-        #gamefile.filestring = gamefile.filestring.replace(b'RR', b'\x83\x63')
-        #gamefile.filestring = gamefile.filestring.replace(b'RW', b'\x81\x63')
-        #gamefile.filestring = gamefile.filestring.replace(b'QR', b'\x93\x6e')
-
-        # TODO: The issue is that replacing w, n, c, etc. also replaces it as a part of 2-byte SJIS sequences.
-        # Manually doing this (QQ, RR, etc.) above isn't going to work out. Too many things to escape...
-        # My idea is to use a regex that finds n, w, and c where the preceding character isn't > or 8x or 9x.
-
-
+        #print(gamefile.filestring)
 
         for t in MsgDump.get_translations(filename):
-            for cc in ORIGINAL_CONTROL_CODES:
-                t.japanese = t.japanese.replace(cc, ORIGINAL_CONTROL_CODES[cc])
+            #for cc in ORIGINAL_CONTROL_CODES:
+            #    t.japanese = t.japanese.replace(cc, ORIGINAL_CONTROL_CODES[cc])
 
             for cc in CONTROL_CODES:
-                #t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
+                t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
             t.english = typeset(t.english)
@@ -123,7 +120,7 @@ for filename in FILES_TO_REINSERT:
                 i = gamefile.filestring.index(t.japanese)
                 gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
             except ValueError:
-                print ("Couldn't find this one:", t.english)
+                print ("Couldn't find this one:", t.japanese, t.english)
 
 
     if filename.endswith('.EXE'):
@@ -144,6 +141,8 @@ for filename in FILES_TO_REINSERT:
                     t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
                 t.english = shadoff_compress(t.english)
+                for cc in POSTPROCESSING_CONTROL_CODES:
+                    t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
 
                 loc_in_block = t.location - block.start + diff
 
