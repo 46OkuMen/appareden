@@ -168,10 +168,7 @@ for filename in FILES_TO_REINSERT:
                     #print('jp bytestring found at', index)
                     index += len(t.japanese) # +2 because len('ll') == 2
 
-                #if j > 1:
-                #    print("%s multiples of this string found" % j)
-                #print(t.english)
-                if loc_in_block == i:
+                if loc_in_block != i:
                     print("Warning: String not where expected")
 
                 #block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
@@ -183,6 +180,8 @@ for filename in FILES_TO_REINSERT:
                 previous_text_offset = t.location
 
                 diff += this_diff
+
+            #block.blockstring = block.blockstring.replace(b'\x81\x40', b'\x20\x20')
 
 
             block_diff = len(block.blockstring) - len(block.original_blockstring)
