@@ -24,7 +24,7 @@ MsgDump = DumpExcel(MSG_DUMP_XLSX_PATH)
 
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump)
 #files_to_search = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFIGHT.EXE']
-files_to_search = ['ORFIELD.EXE']
+files_to_search = ['ORFIELD.EXE', 'ORBTL.EXE']
 
 # NEKORUN.EXE might not have pointers. Edit it manually? Mostly error messages anyway.
 # ENDING.EXE is only error messages...?
