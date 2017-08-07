@@ -5,7 +5,7 @@
 import os
 import re
 from math import floor
-from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, replace_control_codes, shadoff_compress
+from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, replace_control_codes, shadoff_compress, POINTERS_TO_REASSIGN
 from rominfo import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
@@ -30,7 +30,7 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
-FILES_TO_REINSERT = ['ORFIELD.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE']
 
 HIGHEST_SCN = 3600
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
@@ -75,6 +75,18 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x8c0a, SPACECODE_ASM)
         gamefile.edit(0x8c0a+len(SPACECODE_ASM), OVERLINE_ASM)
         gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM), SHADOFF_ASM)
+
+    if filename in POINTERS_TO_REASSIGN:
+        reassignments = POINTERS_TO_REASSIGN[filename]
+        for src, dest in reassignments:
+            assert src in gamefile.pointers
+            assert dest in gamefile.pointers
+            diff = dest - src
+            assert dest == src + diff
+            for p in gamefile.pointers[src]:
+                p.edit(diff)
+            gamefile.pointers[dest] += gamefile.pointers[src]
+            gamefile.pointers.pop(src)
 
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.
@@ -131,6 +143,7 @@ for filename in FILES_TO_REINSERT:
             diff = 0
             not_translated = False
             for t in Dump.get_translations(block):
+                print(t.english)
                 if t.english == b'':
                     not_translated = True
                     t.english = t.japanese
@@ -139,7 +152,8 @@ for filename in FILES_TO_REINSERT:
                     t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                     t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-                t.english = shadoff_compress(t.english)
+                if filename in SHADOFF_COMPRESSED_EXES:
+                    t.english = shadoff_compress(t.english)
                 for cc in POSTPROCESSING_CONTROL_CODES:
                     t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
 
