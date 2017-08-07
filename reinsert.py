@@ -1,12 +1,15 @@
-"""Appareden reinserter.
-   Replaces text, adjusts pointers, and implements manual assembly hacks.
+"""
+    Text reinserter for Appareden.
+    Replaces text, adjusts pointers, and implements manual assembly hacks.
 """
 
 import os
-import re
 from math import floor
-from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, typeset, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, replace_control_codes, shadoff_compress, POINTERS_TO_REASSIGN
-from rominfo import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
+from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
+from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH
+from pointer_info import POINTERS_TO_REASSIGN
+from asm import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
+from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
@@ -16,13 +19,10 @@ STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
+                 'all_msgs': 13078,
                  }
 
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
-
-DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
-MSG_XLS_PATH = 'appareden_msg_dump.xlsx'
-POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 MsgDump = DumpExcel(MSG_XLS_PATH)
@@ -30,7 +30,7 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 HIGHEST_SCN = 3600
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
@@ -58,6 +58,7 @@ for filename in FILES_TO_REINSERT:
     reinserted_string_count = 0
 
     if filename == 'ORFIELD.EXE':
+        # TODO: Spin this off into asm.py.
         gamefile.edit(0x151b7, b'\x7d')      # w = "}"
         gamefile.edit(0x15519, b'\x2f')      # n = "/"
         gamefile.edit(0x15528, b'\x2f')      # n = "/"
@@ -90,27 +91,7 @@ for filename in FILES_TO_REINSERT:
 
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.
-
-        """
-        # Manually replace the ones that are mistakenly ignored by the regexes below.
-        gamefile.filestring = gamefile.filestring.replace(b'\x83\x93n', b'\x83\x93/') # one thing not caught by katakan
-
-        # 89, 8b, 97, e3, e7, ed removed from N_CAPTURE.
-        # 92 added to N_CAPTURE.
-        N_CAPTURE = rb'([^>\x81\x83\x85\x87\x8d\x8f\x91\x92\x93\x95\x99\x9b\x9d\x9f\xe1\xe5\xe9\xeb\xef])(n)'
-        W_CAPTURE = rb'([^\x81\x83\x85\x87\x89\x8b\x8d\x8f\x91\x93\x95\x97\x99\x9b\x9d\x9f\xe1\xe3\xe5\xe7\xe9\xeb\xed\xef])(w)'
-        C_CAPTURE = rb'([^>\x81\x83\x85\x87\x89\x8b\x8d\x8f\x91\x93\x95\x97\x99\x9b\x9d\x9f\xe1\xe3\xe5\xe7\xe9\xeb\xed\xef])(c)'
-
-
-        gamefile.filestring = re.sub(N_CAPTURE, rb'\1/', gamefile.filestring)
-        gamefile.filestring = re.sub(W_CAPTURE, rb'\1}', gamefile.filestring)
-        gamefile.filestring = re.sub(C_CAPTURE, rb'\1$', gamefile.filestring)
-
-        """
-
         gamefile.filestring = replace_control_codes(gamefile.filestring)
-
-        #print(gamefile.filestring)
 
         for t in MsgDump.get_translations(filename):
 
@@ -120,12 +101,6 @@ for filename in FILES_TO_REINSERT:
 
             t.english = typeset(t.english)
             t.english = shadoff_compress(t.english)
-
-            #j = gamefile.filestring.count(t.japanese)
-
-            #print(t.japanese.decode('shift_jis'))
-
-            #print(t)
 
             try:
                 i = gamefile.filestring.index(t.japanese)
@@ -202,6 +177,8 @@ for filename in FILES_TO_REINSERT:
 
             print(block_diff)
 
+
+            # TODO: Move stuff not to the SPARE_BLOCK, but to the spare space at end of previous blocks.
             #if block_diff > 0 and SPARE_BLOCK[filename]:
             #    overflow_string = block.blockstring[overflow_start:]
                 #print(overflow_string)
@@ -234,4 +211,4 @@ for filename in FILES_TO_REINSERT:
         #print ("(%s / %s)\n" % (self.translated_strings, self.total_strings))
 
 percentage = int(floor((total_reinserted_strings / TOTAL_STRING_COUNT * 100)))
-print("Appareden System", "%s" % str(percentage), "%", "complete (%s / %s)" % (total_reinserted_strings, TOTAL_STRING_COUNT))
+print("Appareden", "%s" % str(percentage), "%", "complete (%s / %s)" % (total_reinserted_strings, TOTAL_STRING_COUNT))

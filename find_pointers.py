@@ -1,6 +1,7 @@
 import os
 import re
-from rominfo import FILES, FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK, POINTER_DISAMBIGUATION, POINTER_TABLES
+from rominfo import FILES, FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK, POINTER_TABLES
+from pointer_info import POINTER_DISAMBIGUATION
 from romtools.dump import BorlandPointer, DumpExcel, PointerExcel
 from romtools.disk import Gamefile, Block, Disk
 
@@ -24,7 +25,7 @@ MsgDump = DumpExcel(MSG_DUMP_XLSX_PATH)
 
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump)
 #files_to_search = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFIGHT.EXE']
-files_to_search = ['ORFIELD.EXE', 'ORBTL.EXE']
+files_to_search = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE', 'ORMAIN.EXE']
 
 # NEKORUN.EXE might not have pointers. Edit it manually? Mostly error messages anyway.
 # ENDING.EXE is only error messages...?

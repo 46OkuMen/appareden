@@ -1,8 +1,16 @@
+"""
+    Info on Appareden rom structure and project directory layout.
+"""
+
+
 import os
-import re
 
 SRC_DISK = os.path.join('original', 'Appareden.HDI')
 DEST_DISK = os.path.join('patched', 'Appareden.HDI')
+
+DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
+MSG_XLS_PATH = 'appareden_msg_dump.xlsx'
+POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 
 FILES = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'NEKORUN.EXE', 'SFIGHT.EXE', 'ENDING.EXE',]
 
@@ -89,6 +97,7 @@ POINTER_CONSTANT = {
     'SFIGHT.EXE': 0xd080,
 }
 
+# TODO: These are probably not usable...
 SPARE_BLOCK = {
   'ORMAIN.EXE': (0x1765, 0x1f6b),
   'ORBTL.EXE': (0x26303, 0x26b54),
@@ -97,8 +106,14 @@ SPARE_BLOCK = {
 
 # Tables are (start, stop, stride) tuples.
 POINTER_TABLES = {
-    'ORMAIN.EXE': [],
-    'ORTITLE.EXE': [],
+    'ORMAIN.EXE': [
+        (0x15a6, 0x15ac, 2),
+        (0x20d4, 0x20e5, 2),
+        (0x2274, 0x3ebf, 0x28),
+    ],
+    'ORTITLE.EXE': [
+        (0x3ee4, 0x3f16, 2),
+    ],
     'ORBTL.EXE': [
         (0x25154, 0x25178, 2),
         (0x25f5c, 0x25f60, 2),
@@ -142,234 +157,6 @@ POINTER_TABLES = {
     ]
 }
 
-# Commenting out the ones that are above the pointer constant
-POINTER_DISAMBIGUATION = {
-    # ORFIELD
-  0x3fe8: 0x1ffc,
-  0x26858: 0x1313f,
-  0x2896c: 0x1d93d,
-  0x2ea5d: 0x23190,
-  0x2ea44: 0x2314b,
-  0x2ea2b: 0x230e6,
-  0x2ea20: 0x23064,
-  0x28f66: 0x1fc48,
-  0x263be: 0xbe10,
-  0x263cf: 0xbe2c,
-  0x26e9d: 0x167d6,
-  0x26ef9: 0x16e07,
-  0x2718d: 0x16abf,
-  0x271a2: 0x16bbc,
-  0x271aa: 0x16bf2,
-  0x271c1: 0x16e80,
-  0x2900e: 0x204af,
-  0x2e9e2: 0x22f68,
-  0x26b64: 0x15e3e,
-  0x290a1: 0x20d10,
-  0x2eb50: 0x2324d,
-  0x2e9b2: 0x22e57,
-  0x2eab3: 0x2346b,
-  0x28355: 0x1b14a,
-  0x28c78: 0x1f191,
-  0x28f90: 0x1fce4,
-  0x2d111: 0x21720,
-  0x2d24d: 0x21edc,
-  0x2d298: 0x220d7,
-
-
-  # ORBTL
-  0x27359: 0x13bfd,
-  0x25376: 0xd277,
-  0x2538f: 0xd422,
-  0x2539c: 0xd53d,
-  0x253a7: 0xd658,
-  0x25330: 0xcf33,
-}
-
-POINTERS_TO_REASSIGN = {
-    'ORFIELD.EXE': [
-            (0x2dc17, 0x2dbf4),   # Blaze2, Blaze3 descriptions
-            (0x2dc3a, 0x2dbf4),
-            (0x2dc80, 0x2dc5d),
-            (0x2dca3, 0x2dc5d),
-            (0x2dce9, 0x2dcc6),
-            (0x2dd2f, 0x2dd0c),
-            (0x2dd52, 0x2dd0c),
-            (0x2dd98, 0x2dd75),
-            (0x2ddbb, 0x2dd75),
-            (0x2de01, 0x2ddde),
-            (0x2de47, 0x2de24),
-            (0x2de6a, 0x2de24),
-            (0x2deb0, 0x2de8d),
-            (0x2df19, 0x2def6),
-            (0x2df3c, 0x2def6),
-            (0x2df82, 0x2df5f),
-            (0x2dfa5, 0x2df5f),
-            (0x2dfeb, 0x2dfc8),
-            (0x2e031, 0x2e00e),
-            (0x2e054, 0x2e00e),
-            (0x2e09a, 0x2e077),
-            (0x2e0bd, 0x2e077),
-            (0x2e103, 0x2e0e0),
-            (0x2826a, 0x28315),
-            (0x2826f, 0x2831b),
-            (0x28272, 0x28320),
-            (0x28277, 0x28326),
-            (0x28c66, 0x28315),
-            (0x28c6c, 0x2831b),
-            (0x28c72, 0x28320),
-            (0x28c78, 0x28326),
-            (0x28fcf, 0x28315),
-            (0x28fd5, 0x2831b),
-            (0x28fdb, 0x28320),
-            (0x28fe1, 0x28326),
-            (0x2908b, 0x28315),
-            (0x290a5, 0x28315),
-            (0x290ab, 0x2831b),
-            (0x290b1, 0x28320),
-            (0x290b7, 0x28326),
-            (0x2d056, 0x2e9b2),
-            (0x2d06f, 0x2e9cb),
-            (0x2d07a, 0x2e9d6),
-            (0x2d097, 0x2e9b2),
-            (0x2d0b0, 0x2e9cb),
-            (0x2d0bb, 0x2e9d6),
-            (0x2d0c7, 0x2d086),
-            (0x2d0d8, 0x2e9b2),
-
-            (0x2d100, 0x2d086),
-            (0x2d111, 0x2e9b2),
-            (0x2d12a, 0x2e9cb),
-            (0x2d135, 0x2e9d6),
-            (0x2d141, 0x2d086),
-            (0x2d152, 0x2e9b2),
-            (0x2d16b, 0x2e9cb),
-            (0x2d176, 0x2e9d6),
-            (0x2d182, 0x2d086),
-            (0x2d193, 0x2e9b2),
-            (0x2d1e9, 0x28315),
-            (0x2d219, 0x28315),
-            (0x2d247, 0x28315),
-            (0x2d27b, 0x28315),
-            (0x2d3b0, 0x2d396),
-
-            (0x2e9fb, 0x2e9b2),
-            (0x2ea14, 0x2e9cb),
-            (0x2ea20, 0x2e9d6),
-            (0x2ea2b, 0x2e9e2),
-            (0x2ea44, 0x2e9b2),
-            (0x2ea5d, 0x2d0f1),
-            (0x2ea6c, 0x2e9e2),
-            (0x2eb6e, 0x2e9cb),
-            (0x2eb7c, 0x2e9d6),
-            (0x2eba5, 0x2e9e2),
-            (0x2ec89, 0x2eb50),
-            (0x2eca7, 0x2e9cb),
-            (0x2ecb5, 0x2e9d6),
-            (0x2ecc3, 0x2eb8a),
-            (0x2ecde, 0x2e9e2),
-            (0x2edc2, 0x2eb50),
-            (0x2edf8, 0x2eb8a),
-            (0x2ee13, 0x2e9e2),
-            (0x2ee5c, 0x2e9e2),
-            (0x2ee7b, 0x2ee32),
-            (0x2ee8a, 0x2e9e2),
-            (0x2eea9, 0x2d264),
-            (0x2eec0, 0x2e9e2),
-            (0x2eed9, 0x2d396),
-
-    ],
-}
-
-def effective_length(s):
-    """The length of a string, ignoring the control codes."""
-
-    # TODO: Not working properly yet.
-    length = 0
-    chars = s.split()
-    while chars:
-        if chars[0] != b'[':
-            length += 1
-            chars.pop(0)
-        else:
-            while chars[0] != b']':
-                chars.pop(0)
-            chars.pop(0)
-
-    return length
-
-def typeset(s):
-    if len(s) <= 37:
-        return s
-
-    words = s.split(b' ')
-    lines = []
-
-    while words:
-        line = b''
-        while len(line) <= 37 and words:
-            if len(line + words[0] + b' ') > 37:
-                break
-            line += words.pop(0) + b' '
-
-        line = line.rstrip()
-        lines.append(line)
-    #for l in lines:
-    #    print(l)
-
-    return b'/'.join(lines)
-
-def shadoff_compress(s):
-    # Definitely don't compress filenames!
-    if b'.GEM' in s:
-        return s
-
-    s = s.decode('shift-jis')
-    compressed = ''
-
-    chars = list(s)
-
-    continuous_spaces = 0
-    while chars:
-        c = chars.pop(0)
-        if c == ' ':
-            continuous_spaces += 1
-        elif c.isupper():
-            if continuous_spaces > 2:
-                compressed += '_' + chr(continuous_spaces)
-            elif continuous_spaces > 0:
-                compressed += ' '*(continuous_spaces)
-            continuous_spaces = 0
-            compressed += '^'
-            compressed += c
-        else:
-            if continuous_spaces > 2:
-                compressed += '_' + chr(continuous_spaces)
-                c = c.upper()
-            elif continuous_spaces > 0:
-                compressed += ' '*(continuous_spaces-1)
-                c = c.upper()
-            continuous_spaces = 0
-            compressed += c
-
-    return bytes(compressed, encoding='shift-jis')
-
-def replace_control_codes(s):
-    s = s.decode('shift-jis')
-    cursor = 0
-    while cursor < len(s):
-        c = s[cursor]
-        if c == 'n':
-            if s[cursor-1] != '>':
-                s = s[:cursor] + '/' + s[cursor+1:]
-        if c == 'w':
-            s = s[:cursor] + '}' + s[cursor+1:]
-        if c == 'c':
-            if s[cursor-1] != '>':
-                s = s[:cursor] + '$' + s[cursor+1:]
-        cursor += 1
-    s = s.encode('shift-jis')
-    return s
-
 CONTROL_CODES = {
   b'[LN]': b'/',
   b'[WAIT1]': b'}01',
@@ -386,19 +173,3 @@ POSTPROCESSING_CONTROL_CODES = {
     b'~': b' ',
     b'[BLANK]': b'',
 }
-
-"""
-ORIGINAL_CONTROL_CODES = {
-    b'[LN]': b'/',
-    b'[WAIT1]': b'w01',
-    b'[WAIT2]': b'w02',
-    b'[WAIT3]': b'w03',
-    b'[WAIT4]': b'w04',
-    b'[WAIT5]': b'w05',
-    b'[WAIT6]': b'w06',
-}
-"""
-
-SPACECODE_ASM = b'\x3c\x5f\x75\x0c\xac\x88\xc1\x47\xe2\xfd\xac'
-OVERLINE_ASM =  b'\x3c\x7e\x75\x01\x4f'
-SHADOFF_ASM =   b'\x3c\x5e\x75\x05\xac\x0f\x84\x2a\x00\x3c\x5a\x0f\x8f\x24\x00\x3c\x40\x0f\x8c\x1e\x00\x47\x04\x20\xe9\x18\x00'
