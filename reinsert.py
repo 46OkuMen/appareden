@@ -15,7 +15,7 @@ from romtools.dump import DumpExcel, PointerExcel
 
 STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORMAIN.EXE': 202,
-                 'ORFIELD.EXE': 1050,
+                 'ORFIELD.EXE': 1096,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
@@ -110,6 +110,8 @@ for filename in FILES_TO_REINSERT:
 
 
     if filename.endswith('.EXE'):
+        spares = []
+
         for block in FILE_BLOCKS[filename]:
             block = Block(gamefile, block)
             previous_text_offset = block.start
@@ -170,6 +172,7 @@ for filename in FILES_TO_REINSERT:
 
                 diff += this_diff
 
+            # TODO: Figure out why this breaks stuff
             #block.blockstring = block.blockstring.replace(b'\x81\x40', b'\x20\x20')
 
 
@@ -195,11 +198,12 @@ for filename in FILES_TO_REINSERT:
             block_diff = len(block.blockstring) - len(block.original_blockstring)
 
             if block_diff < 0:
-                #print(block.blockstring)
                 block.blockstring += (-1)*block_diff*b'\x20'
+                spares.append((block.stop-block_diff, block.stop))
             block_diff = len(block.blockstring) - len(block.original_blockstring)
             assert block_diff == 0, block_diff
 
+            # TODO: I probably want to incorporate this stuff later, after dealing with spares and such
             block.incorporate()
 
     gamefile.write(path_in_disk='TGL\\OR')
