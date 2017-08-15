@@ -11,9 +11,9 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | Field        | 100% |(1050 / 1050)        |
 | Battle       | 100% | (708 / 708)         |
 | Cat Minigame |   0% |   (0 / 7)           |
-| Dialogue     |   1% | (154 / 13078)       |
+| Dialogue     |   1% | (186 / 13078)       |
 | Images       |   0% |   (0 / 44?)         |
-| Total        |  12% |(1848 / 15107)       |
+| Total        |  12% |(1880 / 15193)       |
 
 
 ### How do I use this?

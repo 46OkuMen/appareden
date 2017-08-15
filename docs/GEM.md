@@ -1,7 +1,208 @@
-ORTITLE.GEM
+Current understanding of the format:
+It's RGB tuples and some extra garbage I don't understand, separated by 00s. 
+Then at the location indicated in the pointer, it writes each pattern 
+
+## Header
 Header: first 0x12 bytes?
 0-2: Constant "Gem"
+03-05: 02 04 00
+06-07: background color?
+08-09: ??
+0a-0b: Height, in pixels
+0c-0d: Offset where the lookup table ends and the image proper begins
+0e-10: 00 00 00
 
+Deleting stuff seems to cause crashes; fill with zeros instead
+
+
+## BENIMARU.GEM
+Last few bytes are 00 09 00. Let's replace the 09
+00: Removes one pixel from the bottom-right of the "ru"
+01: Gold line fill
+02: Gold line fill
+03: Gold line fill
+04: Gold line fill
+05: Corner pixel shifted down 3 pixels
+06: Gold line fill
+07: Repeating gold pixel spaced out by 3, for several columns
+08: Garbage, scrambles the rest of the image
+(09): Normal
+0a: Places 7-8 pixels of various colors in that "ru" corner
+0b: Places two rows of 8 pixels of various colors in that corner, expanded upward
+0c: Garbage
+0d: Places (9+32+32+25) 98 (0x62) garbage rows, starting in that corner
+0e: same as 0d
+0f: same as 0d
+10: Gold line fill (128 pixels tall of gold lines, covering width of screen)
+11: Writes a gold pixel, spaced down by 3 black pixels
+12: Writes two gold pixels, spaced down by 3 black pixels
+13: " " 3
+14: " " 4
+15: " " 5
+16: " " 6
+17: " " 7
+18: Gold line fill
+19: Writes 256 (?) gold pixels
+1a: Writes 512 (?) gold pixels
+1b: Writes 768 (?) gold pixels
+1c: Writes 1024 (?) gold pixels
+1d: Writes 1280 (?) gold pixels
+1e: Writes 1572 (?) gold pixels
+1f: Writes some more gold pixels
+20: Gold line fill
+21: Writes a gold pixel, spaced down by 1 black pixel
+22: " " 2 gold pixels
+--
+2f: " " 15 gold pixels
+30: Gold line fill
+31: 256 (?) gold pixels, spaced down by 1 black pixel
+--
+3f: " ", but a lot of pixels
+40: Gold line fill
+41: One gold pixel (looks normal)
+42: Extra gold pixel below the normal one
+--
+4f: 15 gold pixels
+50: 16 gold pixels
+--
+5f: 31 gold pixels
+60: Gold line fill
+61: 256 (?) gold pixels, no spacing
+--
+6f: Lots of gold pixels, no spacing
+70: Gold line fill, or maybe still more gold pixels
+71: " "
+75: " "
+--
+7f: " "
+80: No corner pixel; same as 00
+81: Corner pixel; normal
+82: Corner pixel is shifted down one
+83: Corner pixel is shifted down two
+--
+8f: Corner pixel is shifted down 15
+90: Corner pixel is shifted down 16
+--
+9f: Corner pixel is shifted down 31
+a0: Corner pixel is shifted down 32
+--
+af: Corner pixel is shifted down 47
+--
+bf: Corner pixel is shifted down some more
+c0: No corner pixel
+c1: Corner pixel is shifted down larger amounts
+--
+ff: " "
+
+The previous row seems to be part of the phrase 0c 05 84.
+And the row is just gold pixel, yellow pixel, then blanks. 
+Replace the 84 and see what happens?
+00: Row is gone
+80: Row gets spaced out a lot
+88: Row is spaced down 4 from original
+
+Replace the 05 and see what happens?
+01: Black, black, then three previous rows are all black too
+02: Black, black, then two previous rows are all black too
+03: Black, black, then previous row is all black too
+04: Black, black
+05: Gold, yellow
+06: Gold, black
+07: Gold, yellow, then next row is various different colors
+08: Gold, yellow, then 2nd row down is various different colors
+
+Some kind of palette at the beginning?
+ff ff ff 00
+fe fe fe 00
+fc fd fc 01 f0 f3 f0 07 e7 ef e0 0f 8f 9f 80
+7f 7f 7f 00
+7c 7c 7e 00
+30 30 78 00 00
+80 80 80 00
+e0 e0 e0 00
+f1 f1 f1 00 80 9f 80 3f 00 7f 00
+7f 7f 7f 00
+1f df 1f c0 4f ef 0f f0 a7 f7 07 f8 f9 f9 01 3e 9e bf 80 1f cf df c0 03 f2 f7 f0 01 f9 fb f8 00
+fd fc fc 00
+e7 e7 e7 00
+c3 db c3 00
+41 5d 41 00
+20 ae 20 82 00 cf 00 44 00 e6 00 60 00 f0 00 20 00 60 00 00 00 00 00 00
+87 87 87 00
+cf cf cf 80 1f 9f 1f c0 cf ef 0f e0 a7 f7 07 f8 53 fb 03 fc a9 fd 01 78 00 7c 00 00 00 3c 00 00 84 98 80 00
+c0 c0 c0 00
+e1 e1 e1 00
+7e 7e 7e 07 c5 df c0 1f 80 bf 80 0e c0 df c0 00
+f0 f0 f0 00
+f8 f8 f8 02 c0 c7 c0 1f 00 3f 00 ff 00 ff 00
+7e 54 ff 00 10 00 38 00 00 fc fc fc 01 01 03 00
+7f 2a ff 00 f8 01 fe 00 00
+60 80 00 00 (or maybe 00 60 80 00)
+c7 c7 c7 00 03 3b 03 54 01 fd 01 aa 00 fe 00 c0 00 f0 
+
+Those triplets may be some sort of lookup table. Changing the cf cf cf at 0xd2 to aa aa aa, etc. changes an 8-pixel row pattern on the heads of the "ru" and below the "be" kana modifying quote.
+
+So what's with the much longer ones/the "interruptions" of the chart?
+	Replacing them with ff ff ff... seems to change some of the colors of the filled in stuff...?
+
+They appear to be RGB triplets. Changing ff ff ff -> ff 00 ff gives a blue background instead of teal.
+Now how are these pixel patterns called?
+	Something in 09 41 c1 37 9d seems to call the pattern at 0xd2.
+	09:
+		00: Pattern is replaced by black lines
+		0a: Pattern is replaced by black line, then gold-black-black-teal-teal-teal-teal-teal
+		0b: Pattern is replaced by two black lines, then yellow-yellow-gold-black-teal-teal-teal-teal
+	41: ...number of times the first instance is duplicated??
+		21: Moves both instances down 2 pixels, and the other instance is one pixel lower now
+		22: Moves both instances down 4 pixels, and the other instance is one pixel lower and duplicated 2 lower as well
+		23: That, but 6 and another duplication
+		42: Moves both instances down 2 pixels, also the other instance is doubled now
+		43: Moves both instances down 3 pixels? Also the other instance is tripled now
+		4f: That, but 15
+	c1: Offset of both instances, coarse offset
+		c0: Moves both instances left 64 pixels
+		c2: Moves both instances right 64 pixels
+	37: offset of first instance
+		38: Moves first (also second) instance of the pattern down one pixel
+		00: Moves first (also second) instance sof the pattern "up" 37 pixels
+	9d: offset of second instance
+		9e: Moves the second instance of the pattern down one pixel
+		9f: Same, down 2 pixels
+		81: pattern is right below the first instance of the pattern
+
+Replacing the first pattern (ff ff ff) with aa aa aa shows the background drawn on a lot of stuff.
+	First move is drawing the pattern 32 + 32 + 11 = 75 times.
+
+	60 = 
+		61 4a: draw pattern 331 times (320+11)
+		62 4a: draw pattern 587 times (18*32 + 11)
+	4a = draw pattern 75 times...?
+		4b = draw pattern 76 times  (0x4b = 75)
+		3f = draw pattern 64 times  (0x3f = 63)
+		03 = draw pattern 04 times
+
+	86 = drop down 5
+	47 = draw pattern 6 times
+
+Height is 32 pixels, width 192 pixels
+
+Changing the value 0e (offset x06) in the header seems to make the background teal for some reason?
+	That's more convenient, so I'll take it
+
+Changing the value fd (offset 0xc) in the header skews the teal background, but leaves the characters untouched
+
+
+0a 41: teal, black, gold, yellow - next line
+0a 8f: teal, black, gold, yellow - 15th line after
+0a 82: teal, black, gold, yellow - 2nd line after
+0a 81: " "
+0a 80: teal, black, orange, yellow, black - next line
+0b 82: black, gold, yellow, yellow - 2nd line after
+09 82: teal, black, yellow, gold, brown - 2nd line after
+05 82: teal, black, orange, yellow, brown - 2nd and 4th lines after
+
+With 0a, pixels seem to be manipulated in 4's and not 8's...
+0b appears to copy(?) an 8-pixel row.
 
 200 is x0f0
 640 is x280

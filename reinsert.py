@@ -32,7 +32,7 @@ TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
-HIGHEST_SCN = 3600
+HIGHEST_SCN = 3800
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 print(msg_files)
 msgs_to_reinsert = [f for f in msg_files if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
