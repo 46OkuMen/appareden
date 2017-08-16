@@ -10,9 +10,47 @@ Header: first 0x12 bytes?
 08-09: ??
 0a-0b: Height, in pixels
 0c-0d: Offset where the lookup table ends and the image proper begins
-0e-10: 00 00 00
+0e-??: Palette information, in BR Gx format
 
-Deleting stuff seems to cause crashes; fill with zeros instead
+00 03
+33 38
+40 F4
+4D 94
+FB AC
+B9 FD
+80 21
+57 D0
+66 87
+3A CF
+8B 80
+7F FF
+(00)
+Probably not RGB tuples...
+
+0x10: B value
+0x11: G value
+
+000000: black
+FF0000: black
+00FF00: bright pink
+FFFF00: bright pink
+0000FF: bright green
+FF00FF: bright green
+00FFFF: white
+FFFFFF: white
+
+Clearly the first byte is unrelated...?
+FF FF = white
+F0 FF = cyan
+0F FF = yellow
+FF 0F = magenta
+FF F0 = white
+
+F0 00 = blue
+0F 00 = red
+00 F0 = green
+
+Ok, so it's BR Gx. (Not sure what the final value does)
 
 
 ## BENIMARU.GEM
