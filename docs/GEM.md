@@ -52,6 +52,8 @@ F0 00 = blue
 
 Ok, so it's BR Gx. (Not sure what the final value does)
 
+That teal color is RGB 007788. In this world it'd be 80 7x. (yep, there's an 80 7f)
+
 
 ## BENIMARU.GEM
 Last few bytes are 00 09 00. Let's replace the 09
