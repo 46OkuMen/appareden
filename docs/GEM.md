@@ -110,12 +110,12 @@ Last few bytes are 00 09 00. Let's replace the 09
 61: 256 (?) gold pixels, no spacing
 --
 6f: Lots of gold pixels, no spacing
-70: Gold line fill, or maybe still more gold pixels  (yeah, still does this even with 41 right afterward)
+70: Gold line fill, or maybe still more gold pixels
 71: " "
 75: " "
 --
 7f: " "
-80: Moves cursor down 1,280 pixels AND DOESN'T WRITE
+80: No corner pixel; same as 00
 81: Corner pixel; normal
 82: Corner pixel is shifted down one
 83: Corner pixel is shifted down two
@@ -127,12 +127,10 @@ Last few bytes are 00 09 00. Let's replace the 09
 a0: Corner pixel is shifted down 32
 --
 af: Corner pixel is shifted down 47
-b0: Corner pixel is shifted down 48
 --
-bf: Corner pixel is shifted down 63
-c0: Moves cursor down 64 pixels AND DOESN'T WRITE
-c1: Corner pixel is shifted down 255
-c2: Corner pixel is shifted down 511
+bf: Corner pixel is shifted down some more
+c0: No corner pixel
+c1: Corner pixel is shifted down larger amounts
 --
 ff: " "
 
