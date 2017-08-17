@@ -7,6 +7,10 @@ from rominfo import DEST_DISK
 from PIL import Image
 from bitstring import BitArray
 
+d = Disk(DEST_DISK)
+d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
+
+
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 
 RGB_PALETTE = [(0x00, 0x00, 0x00),
@@ -58,8 +62,6 @@ def RGB_to_nybblebrg(color):
     return (b+r).to_bytes(1, byteorder='little') + g.to_bytes(1, byteorder='little')
     # TODO: The nybblebrgs are actually stored in 3 nybbles, so need to take an even-numbered list of RGB tuples instead of one...
 
-print(RGB_to_nybblebrg((221, 153, 68)))
-
 img = Image.open('test.png')
 width, height = img.size
 blocks = img.size[0]//8
@@ -87,6 +89,8 @@ for b in range(blocks):
 
         if pattern in unique_patterns:
             pattern_locations[pattern].append(row_cursor)
+        elif pattern == b'\x00\x00\x00\x00':
+            pass
         else:
             unique_patterns.append(pattern)
             pattern_locations[pattern] = [row_cursor,]
@@ -98,7 +102,6 @@ for p in pattern_locations:
     print(p)
 
 IMAGE_DATA_LOCATION = 0x29 + (len(unique_patterns)*4)    # where pattern data ends and image data begins.
-
 with open('ORTITLE.GEM', 'wb') as f:
     f.write(b'Gem')
     f.write(b'\x02\x04\x00\x0e\x00')
@@ -110,39 +113,48 @@ with open('ORTITLE.GEM', 'wb') as f:
     for p in unique_patterns:
         f.write(p)
 
+    row_cursor = 0
     for pattern in unique_patterns:
-        row_cursor = 0
         for loc in pattern_locations[pattern]:
+            if pattern == unique_patterns[0] and loc == 0:
+                row_cursor += 1
+                continue
+            elif pattern == b'\x00\x00\x00\x00':
+                row_cursor += 1
+                continue
+
             print(loc, row_cursor)
+
             if loc == row_cursor:
                 f.write(b'\x41')
-                row_cursor += 1
-            elif loc - row_cursor <= 47:
-                skip_and_write_code = 0x80 + (loc - row_cursor)
+            elif loc - row_cursor <= 63:
+                # To begin writing on row 2 (third row) and skip the first two rows, need to do 82.
+                # row_cursor = 0, loc = 2
+                # 
+                if row_cursor == 0:
+                    skip_and_write_code = 0x80 + (loc - row_cursor)
+                else:
+                    skip_and_write_code = 0x81 + (loc - row_cursor)
+                print(hex(skip_and_write_code))
                 f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
                 row_cursor = loc
             else:
                 raise Exception
+
+            row_cursor += 1
         
             print(pattern, loc)
         f.write(b'\x00')
-    """# PATTERN 0
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
-    f.write(b'\x41')  # draw pattern 1 time
 
-    f.write(b'\x00')
-    # PATTERN 1
-    f.write(b'\x88')  # skip 1 line
-    f.write(b'\x48')  # draw pattern 8 times
-    f.write(b'\x00')
-    f.write(b'\x00')
-    """
+
+    # Checkerboard first pattern: 41 83 41 83...
+    # Checkerboard second pattern: 82 41 83 41 83 41...
+
+# Why does the first instance of the first pattern (41) always want to write it twice, while 41 writes it just once the rest of the time??
+    # It seems to write one instances of the first pattern even if you put 00's...
+
+# Looks like the cursor does not reset itself between patterns...??
+    # I need to get this straight. Seems like it resets itself sometimes and not other times.
 
 
 d = Disk(DEST_DISK)
