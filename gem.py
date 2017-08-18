@@ -65,6 +65,7 @@ def RGB_to_nybblebrg(color):
 img = Image.open('test.png')
 width, height = img.size
 blocks = img.size[0]//8
+total_rows = blocks*height
 pix = img.load()
 
 unique_patterns = []
@@ -89,17 +90,19 @@ for b in range(blocks):
 
         if pattern in unique_patterns:
             pattern_locations[pattern].append(row_cursor)
-        elif pattern == b'\x00\x00\x00\x00':
-            pass
+        #elif pattern == b'\x00\x00\x00\x00':
+        #    pass
         else:
             unique_patterns.append(pattern)
             pattern_locations[pattern] = [row_cursor,]
 
         row_cursor += 1
 
-
+parsed_pattern_locations = {}
 for p in pattern_locations:
-    print(p)
+    # TODO: Detect stuff like: X in a row (0x41+), X in a row every other row (0x21+), X in a row every 4 rows (0x11+)
+    # Find some way to store them in parsed_pattern_locations...
+    pass
 
 IMAGE_DATA_LOCATION = 0x29 + (len(unique_patterns)*4)    # where pattern data ends and image data begins.
 with open('ORTITLE.GEM', 'wb') as f:
@@ -114,19 +117,16 @@ with open('ORTITLE.GEM', 'wb') as f:
         f.write(p)
 
     row_cursor = 0
-    stop_encoding = False
+    starting_row_cursor = 0
 
-    for pattern in unique_patterns:
-        if stop_encoding:
-            break
+    for i, pattern in enumerate(unique_patterns):
+        row_cursor = starting_row_cursor
+        print("Starting new pattern. row_cursor:", row_cursor)
         for loc in pattern_locations[pattern]:
-            if stop_encoding:
-                break
             if pattern == unique_patterns[0] and loc == 0:
                 row_cursor += 1
                 continue
             elif pattern == b'\x00\x00\x00\x00':
-                row_cursor += 1
                 continue
 
             print(loc, row_cursor)
@@ -134,36 +134,52 @@ with open('ORTITLE.GEM', 'wb') as f:
             if loc == row_cursor:
                 f.write(b'\x41')
             elif loc - row_cursor <= 63:
-                # To begin writing on row 2 (third row) and skip the first two rows, need to do 82.
-                # row_cursor = 0, loc = 2
-                # 
                 if row_cursor == 0:
-                    skip_and_write_code = 0x80 + (loc - row_cursor)
+                    skip_and_write_code = 0x80 + ((loc - row_cursor) % total_rows)
                 else:
-                    skip_and_write_code = 0x81 + (loc - row_cursor)
-                print(hex(skip_and_write_code))
+                    skip_and_write_code = 0x81 + ((loc - row_cursor) % total_rows)
+                if loc == pattern_locations[pattern][0]:
+                    starting_row_cursor += (loc - row_cursor)
+                print("Incrementing starting_row_cursor by", loc-row_cursor)
                 f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
                 row_cursor = loc
             else:
-                stop_encoding = True
-                print("Couldn't encode any more")
-                break
+                raise Exception
 
             row_cursor += 1
         
             print(pattern, loc)
         f.write(b'\x00')
+        starting_row_cursor += 1
+
+    f.write(b'\x00'*20)
 
 
-    # Checkerboard first pattern: 41 83 41 83...
-    # Checkerboard second pattern: 82 41 83 41 83 41...
+    # Checkerboard first pattern: 41 83 41 83...   (starting row_cursor: 0)
+    # Checkerboard second pattern: 82 41 83 41 83 41...  (starting row_cursor: 1)
 
 # Why does the first instance of the first pattern (41) always want to write it twice, while 41 writes it just once the rest of the time??
     # It seems to write one instances of the first pattern even if you put 00's...
 
 # Looks like the cursor does not reset itself between patterns...??
     # I need to get this straight. Seems like it resets itself sometimes and not other times.
+    # It seems to reset for the checkerboard pattern, but not the smiley face pattern?
+    # Maybe each one just starts with row_cursor = the index  in unique_patterns?
 
+# Stick figure test:
+    # 00: 00 (Correct...?)  (starting row_cursor: 0)
+    # 28: 41 41 (Correct)   (starting row_cursor: 1)
+    # 42: 83 41 (Correct)   (starting row_cursor: 2)  (81: write 1; 82: skip 1, write 1; 83: skip 2, write 1)
+    # 7e: 82 (Correct)      (starting row_currsor: 5 (prev + 1 + (83-81)))
+    # 08: 83 41 82 41 41 (Correct)  (starting row_cursor: 7 (prev + 1 + (82-81)))
+    # 7c: 41 (Incorrect, should be 82)  (starting row_cursor: 10? but calculation says 11... (prev + 1 + (83-81) + (82-81)))
+        # The 80 control codes only advance the starting_row_cursor when they're the first byte of the segment???
+    # 1c: 84
+    # 34:
+    # 24:
+
+# Maybe I just misunderstand how the 80 control codes work...
+    # It looks like 80s advance the cursor for all further patterns.
 
 d = Disk(DEST_DISK)
 d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
