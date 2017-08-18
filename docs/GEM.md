@@ -94,7 +94,7 @@ Last few bytes are 00 09 00. Let's replace the 09
 22: " " 2 gold pixels
 --
 2f: " " 15 gold pixels
-30: Gold line fill
+30: 48 (?) gold pixels, spaced by 1 black pixel
 31: 256 (?) gold pixels, spaced down by 1 black pixel
 --
 3f: " ", but a lot of pixels
@@ -107,15 +107,17 @@ Last few bytes are 00 09 00. Let's replace the 09
 --
 5f: 31 gold pixels
 60: Gold line fill
+	60 41: Repeats a write 64 times
+	60 46: Same thing
 61: 256 (?) gold pixels, no spacing
 --
 6f: Lots of gold pixels, no spacing
-70: Gold line fill, or maybe still more gold pixels
+70: Gold line fill, or maybe still more gold pixels  (yeah, still does this even with 41 right afterward)
 71: " "
 75: " "
 --
 7f: " "
-80: No corner pixel; same as 00
+80: Moves cursor down 1,280 pixels AND DOESN'T WRITE
 81: Corner pixel; normal
 82: Corner pixel is shifted down one
 83: Corner pixel is shifted down two
@@ -127,12 +129,24 @@ Last few bytes are 00 09 00. Let's replace the 09
 a0: Corner pixel is shifted down 32
 --
 af: Corner pixel is shifted down 47
+b0: Corner pixel is shifted down 48
 --
-bf: Corner pixel is shifted down some more
-c0: No corner pixel
-c1: Corner pixel is shifted down larger amounts
+bf: Corner pixel is shifted down 63
+c0: Skip 64 AND DOESN'T WRITE
+	c0 c0: Moves cursor down 191 pixels, writes once
+	c0 c1: Same
+c1: Skip 255 and write
+c2: Skip 511 and write
+c3: Skip 767 and write
+(c4: 1,023, c5: 1,279, c6: 1,536, c7: 1,792, c8: 2,047, c9: 2,304, ca: 2,559, cb: 2,815, cc: 3,072, cd: 3,327, ce: 3,583, cf: 3,839)
 --
 ff: " "
+
+ff - c1 = 3e, or 63. How many different pixels can I access 
+c1: (256*1)-1 =     255
+ff: (256*64)-1 = 16,383
+
+768 different rows
 
 The previous row seems to be part of the phrase 0c 05 84.
 And the row is just gold pixel, yellow pixel, then blanks. 
