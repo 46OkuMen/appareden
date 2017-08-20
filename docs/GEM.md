@@ -133,9 +133,12 @@ b0: Corner pixel is shifted down 48
 --
 bf: Corner pixel is shifted down 63
 c0: Skip 64 AND DOESN'T WRITE
-	c0 c0: Moves cursor down 191 pixels, writes once
-	c0 c1: Same
+	c0 00: Does nothing
+	c0 01: Writes one row
+	c0 02: Skips 1, writes 1
+	c0 c0: SKips 191, writes 1
 c1: Skip 255 and write
+	c1 01: Skips 256, writes 1
 c2: Skip 511 and write
 c3: Skip 767 and write
 (c4: 1,023, c5: 1,279, c6: 1,536, c7: 1,792, c8: 2,047, c9: 2,304, ca: 2,559, cb: 2,815, cc: 3,072, cd: 3,327, ce: 3,583, cf: 3,839)

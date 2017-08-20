@@ -98,7 +98,7 @@ for b in range(blocks):
 
         row_cursor += 1
 
-"""
+
 parsed_pattern_locations = {}
 for p in pattern_locations:
     # TODO: Detect stuff like: X in a row (0x41+), X in a row every other row (0x21+), X in a row every 4 rows (0x11+)
@@ -132,24 +132,26 @@ with open('ORTITLE.GEM', 'wb') as f:
 
             print(loc, row_cursor)
 
-            while loc - row_cursor > 1279:
-                skip_code = 0x80
-                row_cursor += 1280
-                f.write(skip_code.to_bytes(1, byteorder='little'))
+            #while loc - row_cursor > 1279:
+            #    skip_code = 0x80
+            #    row_cursor += 1280
+            #    f.write(skip_code.to_bytes(1, byteorder='little'))
 
-            while loc - row_cursor > 63:
-                skip_code = 0xc0
-                row_cursor += 64
-                f.write(skip_code.to_bytes(1, byteorder='little'))
-
-            if loc == row_cursor:
-                f.write(b'\x41')
+            if loc - row_cursor > 63:
+                first_byte = 0xc0 + ((loc - row_cursor) // 256)
+                second_byte = ((loc - row_cursor) % 256) + 1
+                f.write(first_byte.to_bytes(1, byteorder='little'))
+                f.write(second_byte.to_bytes(1, byteorder='little'))
+                print("Far skip: %s %s" % (hex(first_byte), hex(second_byte)))
+                row_cursor += (loc - row_cursor)
             elif loc - row_cursor <= 63:
                 skip_and_write_code = 0x81 + ((loc - row_cursor) % total_rows)
                 if loc == pattern_locations[pattern][0]:
                     starting_row_cursor += (loc - row_cursor)
                 f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
                 row_cursor = loc
+            elif loc == row_cursor:
+                f.write(b'\x41')
             else:
                 raise Exception
 
@@ -190,6 +192,6 @@ with open('ORTITLE.GEM', 'wb') as f:
 
 d = Disk(DEST_DISK)
 d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
-"""
 
 # TODO: I think the key to breaking the 64-row barrier is in the blocks that start with 09, 0a, 0b, etc.
+# TODO: Also, is there any way to arrange unique_patterns not by first occurrence, but by last occurrence? Might be able to decrease skipping that way...
