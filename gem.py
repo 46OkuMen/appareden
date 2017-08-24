@@ -8,7 +8,7 @@ from PIL import Image
 from bitstring import BitArray
 
 d = Disk(DEST_DISK)
-d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
+d.insert('BENIMARU.GEM', path_in_disk='TGL/OR')
 
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
@@ -106,7 +106,7 @@ for p in pattern_locations:
     pass
 
 IMAGE_DATA_LOCATION = 0x29 + (len(unique_patterns)*4)    # where pattern data ends and image data begins.
-with open('ORTITLE.GEM', 'wb') as f:
+with open('BENIMARU.GEM', 'wb') as f:
     f.write(b'Gem')
     f.write(b'\x02\x04\x00\x0e\x00')
     f.write(b'\x18\x00') # not sure what these bytes do
@@ -122,13 +122,14 @@ with open('ORTITLE.GEM', 'wb') as f:
 
     for i, pattern in enumerate(unique_patterns):
         row_cursor = starting_row_cursor
-        print("Starting new pattern. row_cursor:", row_cursor)
+        print("Start pattern %s. row_cursor: %s" % (pattern, row_cursor))
         for loc in pattern_locations[pattern]:
             if pattern == unique_patterns[0] and loc == 0:
                 row_cursor += 1
                 continue
-            elif pattern == b'\x00\x00\x00\x00':
-                continue
+            #elif pattern == b'\x00\x00\x00\x00':
+            #    row_cursor += 1
+            #    continue
 
             print(loc, row_cursor)
 
@@ -137,7 +138,10 @@ with open('ORTITLE.GEM', 'wb') as f:
             #    row_cursor += 1280
             #    f.write(skip_code.to_bytes(1, byteorder='little'))
 
-            if loc - row_cursor > 63:
+            if loc == row_cursor:
+                f.write(b'\x41')
+                print("41")
+            elif loc - row_cursor > 63:
                 first_byte = 0xc0 + ((loc - row_cursor) // 256)
                 second_byte = ((loc - row_cursor) % 256) + 1
                 f.write(first_byte.to_bytes(1, byteorder='little'))
@@ -149,9 +153,8 @@ with open('ORTITLE.GEM', 'wb') as f:
                 if loc == pattern_locations[pattern][0]:
                     starting_row_cursor += (loc - row_cursor)
                 f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
+                print("Short skip:", hex(skip_and_write_code))
                 row_cursor = loc
-            elif loc == row_cursor:
-                f.write(b'\x41')
             else:
                 raise Exception
 
@@ -159,6 +162,7 @@ with open('ORTITLE.GEM', 'wb') as f:
         
             print(pattern, loc)
         f.write(b'\x00')
+        print("00")
         starting_row_cursor += 1
 
     f.write(b'\x00'*20)
@@ -190,8 +194,7 @@ with open('ORTITLE.GEM', 'wb') as f:
 # Maybe I just misunderstand how the 80 control codes work...
     # It looks like 80s advance the cursor for all further patterns.
 
-d = Disk(DEST_DISK)
-d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
+# TODO: The current issue arises when it's mostly a blank/transparency pattern
 
-# TODO: I think the key to breaking the 64-row barrier is in the blocks that start with 09, 0a, 0b, etc.
-# TODO: Also, is there any way to arrange unique_patterns not by first occurrence, but by last occurrence? Might be able to decrease skipping that way...
+d = Disk(DEST_DISK)
+d.insert('BENIMARU.GEM', path_in_disk='TGL/OR')
