@@ -154,12 +154,6 @@ for b in range(blocks):
         row_cursor += 1
 
 
-parsed_pattern_locations = {}
-for p in pattern_locations:
-    # TODO: Detect stuff like: X in a row (0x41+), X in a row every other row (0x21+), X in a row every 4 rows (0x11+)
-    # Find some way to store them in parsed_pattern_locations...
-    pass
-
 IMAGE_DATA_LOCATION = 0x29 + (len(unique_patterns)*4)    # where pattern data ends and image data begins.
 with open('ORTITLE.GEM', 'wb') as f:
     f.write(b'Gem')
@@ -185,11 +179,6 @@ with open('ORTITLE.GEM', 'wb') as f:
                 row_cursor %= total_rows
                 continue
 
-            #while loc - row_cursor > 1279:
-            #    skip_code = 0x80
-            #    row_cursor += 1280
-            #    f.write(skip_code.to_bytes(1, byteorder='little'))
-
             if loc == row_cursor:
                 chain_count += 1
                 #f.write(b'\x41')
@@ -203,8 +192,17 @@ with open('ORTITLE.GEM', 'wb') as f:
                     #print(hex(chain))
                     chain_count = 0
 
+                # TODO: Implement ultra skip
+                # first_byte = 0x80
+                # second_byte = ((loc - row_cursor) + 1) // 256
+                # third_byte = ((loc - row_cursor) + 1) % 256
+                # if loc == pattern_locations[pattern][0]:
+                    # starting_row_cursor = loc
+                # row_cursor = loc
+                #print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor)
+
                 if loc - row_cursor >= 63:
-                    first_byte = 0xc0 + (((loc - row_cursor)) + 1) // 256
+                    first_byte = 0xc0 + ((loc - row_cursor) + 1) // 256
                     second_byte = ((loc - row_cursor) + 1) % 256
                     print(hex(first_byte))
                     f.write(first_byte.to_bytes(1, byteorder='little'))
@@ -300,3 +298,13 @@ d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
         # Skip a line, then write a line at (80, 86). Cursor is now 4086
         # Far skip: c5 00, which is 1,279? 4086 + 1279 = 5365.
             # This should be c6 00. That produces the correct results...
+
+
+# Looking for an ultra-skip control code:
+# Original location: 16,010
+    # 80 01: 16,265
+    # 80 ff: 81,290? max total_rows = 32,000, so 81,290 % 32,000 = 17,290, which would be in a quarter down the 43rd block (344th column). Which is correct.
+
+    # TODO: Make sure - is it 255 or 256x?
+
+    # And it's actually 80 xx yy, where xx is coarse (255x) and yy is fine (1x). Great, that is perfect control.
