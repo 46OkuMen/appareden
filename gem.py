@@ -12,8 +12,9 @@ d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
 
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
+TITLE_PALETTE =   b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x9e\xc1\x57\x5c\x96\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 
-RGB_PALETTE = [(0x00, 0x00, 0x00),
+NAMETAG_RGB_PALETTE = [(0x00, 0x00, 0x00),
                (0x33, 0x33, 0x33),
                (0x88, 0x44, 0x33),
                (0xff, 0x44, 0x00),
@@ -29,6 +30,28 @@ RGB_PALETTE = [(0x00, 0x00, 0x00),
                (0x88, 0xbb, 0xff),
                (0x00, 0x77, 0x88),
                (0xff, 0xff, 0xff),]
+
+TITLE_RGB_PALETTE = [(0x00, 0x00, 0x00),
+               (0x33, 0x33, 0x33),
+               (0x88, 0x44, 0x33),
+               (0xdd, 0x44, 0x00),
+               (0xdd, 0x99, 0x44),
+               (0x11, 0x11, 0x11),
+               (0x00, 0x00, 0x00),
+               (0x00, 0x00, 0x00),
+               (0xee, 0xcc, 0x99),
+               (0xff, 0xcc, 0x44),
+               (0xcc, 0x99, 0x55),
+               (0x88, 0x77, 0x66),
+               (0x00, 0x00, 0x00),
+               (0x00, 0x22, 0x88),
+               (0xff, 0xff, 0xff),
+               (0x00, 0x00, 0x00),]
+
+# Grey (33 33 33) should be maroon (88 44 33)
+# Goldenrod (ff bb 44) should be grey-brown (88 77 66)
+
+# Cornflower blue (00 66 dd) should be  gold (cc 99 55)
 
 # 00 0 = (0000) black
 # 3 33 = (1000) grey
@@ -64,10 +87,41 @@ def RGB_to_nybblebrg(color):
 
 img = Image.open('test.png')
 width, height = img.size
+pix = img.load()
+palette = []
+palette_bytes = b''
+
+for x in range(width):
+    for y in range(height):
+        if pix[x, y][0:3] not in palette:
+            palette.append(pix[x, y][0:3])
+
+for p in palette:
+    print(hex(p[0]), hex(p[1]), hex(p[2]))
+
+"""
+while len(palette) < 16:
+    palette.append((0, 0, 0))
+
+for i, color in enumerate(palette):
+    if i == 15:
+        continue
+    r0, g0, b0 = color
+    r1, g1, b1 = palette[i+1]
+    first = (b0 & 0xf0) + (r0 >> 4)
+    second = (g0 & 0xf0) + (b1 >> 4)
+    third = (r1 & 0xf0) + (g1 >> 4)
+    print(hex(first), hex(second), hex(third))
+    palette_bytes += first.to_bytes(1, byteorder='little')
+    palette_bytes += second.to_bytes(1, byteorder='little')
+    palette_bytes += third.to_bytes(1, byteorder='little')
+
+print(palette_bytes)
+"""
+
+
 blocks = img.size[0]//8
 total_rows = blocks*height
-pix = img.load()
-
 unique_patterns = []
 pattern_locations = {}
 
@@ -83,7 +137,8 @@ for b in range(blocks):
         for plane in range(4):
 
             for p in rowdata:
-                palette_index = RGB_PALETTE.index(p)
+                palette_index = NAMETAG_RGB_PALETTE.index(p)
+                #palette_index = palette.index(p)
                 pattern.append(palette_index in PLANE_COLORS[plane])
 
         pattern = BitArray(pattern).bytes
@@ -129,9 +184,6 @@ with open('ORTITLE.GEM', 'wb') as f:
                 row_cursor += 1
                 row_cursor %= total_rows
                 continue
-            #elif pattern == b'\x00\x00\x00\x00':
-            #    row_cursor += 1
-            #    continue
 
             #while loc - row_cursor > 1279:
             #    skip_code = 0x80
@@ -154,7 +206,7 @@ with open('ORTITLE.GEM', 'wb') as f:
                 if loc - row_cursor >= 63:
                     first_byte = 0xc0 + (((loc - row_cursor)) + 1) // 256
                     second_byte = ((loc - row_cursor) + 1) % 256
-                    #print(hex(first_byte))
+                    print(hex(first_byte))
                     f.write(first_byte.to_bytes(1, byteorder='little'))
                     f.write(second_byte.to_bytes(1, byteorder='little'))
                     if loc == pattern_locations[pattern][0]:

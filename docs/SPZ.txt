@@ -1,0 +1,38 @@
+2E 00 3A 00 49 00 58 00 67 00 73 00 82 00 03 14 13 13 44 00 13 48 0B 14 48 0C 04 14 13 13 44 01 14 44 02 13 48 0D 14 48 0E 04 14 13 13 44 03 14 44 04 13 48 0F 14 48 10 04 14 13 13 44 05 14 44 06 13 48 11 14 48 12 03 14 13 13 44 00 13 48 0B 14 48 0C 04 14 13 13 44 07 14 44 08 13 48 13 14 48 14 04 14 13 13 44 09 14 44 0A 13 48 15 14 48 16 
+
+First line is header, magic numbers and filename w/o ext
+
+Second line is all zeroes
+
+Third line is a list of pointers to various byte sequences.
+
+2e:
+03 14 13 13 44 00 13 48 0b 14 48 0c
+3a:
+04 14 13 13 44 01 14 44 02 13 48 0d 14 48 0e
+49:
+04 14 13 13 44 03 14 44 04 13 48 0F 14 48 10
+58:
+04 14 13 13 44 05 14 44 06 13 48 11 14 48 12 
+67:
+03 14 13 13 44 00 13 48 0B 14 48 0C 
+73:
+04 14 13 13 44 07 14 44 08 13 48 13 14 48 14 
+82:
+04 14 13 13 44 09 14 44 0A 13 48 15 14 48 16 
+
+The 2e and 67 sequences are identical! The "shi" graphic is re-used in those two slots ingame.
+
+Changing the 00 in the first pattern to 01:
+	Replaces top of "shi" with top of "tsu".
+	Top of "shi" appears to be 19 (0x13) pix wide.
+Replace with with 02:
+	Replaces it with the right side of the tsu
+	01: columns 19?-32
+	02: columns 32 -39?
+	04: columns 64-78?
+	It appears to shift right by 16-pixel blocks.
+
+Shi's lower half would be at blocks 0b and 0c, which both appear in there.
+44 = upper half, 48 = lower half?
+So what's with the initial numbers, 14s, and 13s?
