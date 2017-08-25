@@ -152,17 +152,17 @@ with open('ORTITLE.GEM', 'wb') as f:
                     chain_count = 0
 
                 if loc - row_cursor >= 63:
-                    first_byte = 0xc0 + ((loc - row_cursor) // 256)
-                    second_byte = (((loc - row_cursor) + 1) % 256)
+                    first_byte = 0xc0 + (((loc - row_cursor)) + 1) // 256
+                    second_byte = ((loc - row_cursor) + 1) % 256
                     #print(hex(first_byte))
                     f.write(first_byte.to_bytes(1, byteorder='little'))
                     f.write(second_byte.to_bytes(1, byteorder='little'))
-                    print("Far skip: %s %s" % (hex(first_byte), hex(second_byte)))
                     if loc == pattern_locations[pattern][0]:
                         starting_row_cursor += (loc - row_cursor)
                         starting_row_cursor %= total_rows
                     row_cursor += (loc - row_cursor)
                     row_cursor %= total_rows
+                    print("Far skip: %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), row_cursor))
                     #print(loc, row_cursor)
                     assert row_cursor == loc
                 elif loc - row_cursor < 63:
@@ -171,7 +171,7 @@ with open('ORTITLE.GEM', 'wb') as f:
                         starting_row_cursor += (loc - row_cursor)
                         starting_row_cursor %= total_rows
                     f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
-                    print("Short skip:", hex(skip_and_write_code))
+                    print("Short skip: %s, row_cursor after: %s" % (hex(skip_and_write_code), row_cursor))
                     row_cursor = loc
                     row_cursor %= total_rows
                 else:
@@ -224,7 +224,27 @@ with open('ORTITLE.GEM', 'wb') as f:
 # Maybe I just misunderstand how the 80 control codes work...
     # It looks like 80s advance the cursor for all further patterns.
 
-# TODO: The current issue arises when it's one pattern for 64 rows, then another pattern after that
-
 d = Disk(DEST_DISK)
 d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
+
+
+
+
+
+# A pattern is mistakenly placed at 5,366 or so when it should be at 5,622...
+    # That's a difference of 256...
+    # The pattern is: 1111 1011
+    #                 1111 1001
+    #                 1111 1011
+    #                 1111 1000
+    # The second-to-last R ff,  G: bb,  B: 44, so  bf 4 is the color (1010)
+    # ff dd 99, so 9fd (1110)
+    # Or, fb f9 fb f8
+        # Start pattern b'\xfb\xf9\xfb\xf8'. row_cursor: 4083
+        #Short skip: 0x82
+        #Far skip: 0xc5 0x0
+        # 41 82 c5 00
+        # Write a line at 4084 (80, 84)
+        # Skip a line, then write a line at (80, 86). Cursor is now 4086
+        # Far skip: c5 00, which is 1,279? 4086 + 1279 = 5365.
+            # This should be c6 00. That produces the correct results...
