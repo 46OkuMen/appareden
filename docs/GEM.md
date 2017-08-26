@@ -1,4 +1,7 @@
+A horribly organized set of notes produced during the reversing of the GEM format.
+
 Current understanding of the format:
+TODO update, I understand it now
 It's RGB tuples and some extra garbage I don't understand, separated by 00s. 
 Then at the location indicated in the pointer, it writes each pattern 
 
@@ -118,6 +121,7 @@ Last few bytes are 00 09 00. Let's replace the 09
 --
 7f: " "
 80: Moves cursor down 1,280 pixels AND DOESN'T WRITE
+	TODO: Try 80 80 and see what happens.
 81: Corner pixel; normal
 82: Corner pixel is shifted down one
 83: Corner pixel is shifted down two
@@ -263,6 +267,78 @@ With 0a, pixels seem to be manipulated in 4's and not 8's...
 
 200 is x0f0
 640 is x280
+
+# 00 0 = (0000) black
+# 3 33 = (1000) grey
+# 38 4 = (0100) darkish brown (136 68 51 = 88 44 33)
+# 0 f4 = (1100) burnt orange
+# 4d 9 = (0010) brown (221 153 68 = dd 99 44)
+# 4 fb = (1010) goldenrod
+# ac b = (0110) orangish grey
+# 9 fd = (1110) pale orange
+# 80 2 = (0001) dark blue
+# 1 57 = (1001) green
+# d0 6 = (0101) cornflower blue
+# 6 87 = (1101) mid grey    - when 00 ff ff ff / ff 00 aa ff, the first columns of the second one...
+# 3a c = (0011) light green
+# f 8b = (1011) periwinkle
+# f ff = (0111) white
+# 80 7 = (1111)?? teal    (color 0e? 0f?)
+
+
+        # Checkerboard first pattern: 41 83 41 83...   (starting row_cursor: 0)
+        # Checkerboard second pattern: 82 41 83 41 83 41...  (starting row_cursor: 1)
+
+    # Why does the first instance of the first pattern (41) always want to write it twice, while 41 writes it just once the rest of the time??
+        # It seems to write one instances of the first pattern even if you put 00's...
+
+    # Looks like the cursor does not reset itself between patterns...??
+        # I need to get this straight. Seems like it resets itself sometimes and not other times.
+        # It seems to reset for the checkerboard pattern, but not the smiley face pattern?
+        # Maybe each one just starts with row_cursor = the index  in unique_patterns?
+
+    # Stick figure test:
+        # 00: 00 (Correct...?)  (starting row_cursor: 0)
+        # 28: 41 41 (Correct)   (starting row_cursor: 1)
+        # 42: 83 41 (Correct)   (starting row_cursor: 2)  (81: write 1; 82: skip 1, write 1; 83: skip 2, write 1)
+        # 7e: 82 (Correct)      (starting row_currsor: 5 (prev + 1 + (83-81)))
+        # 08: 83 41 82 41 41 (Correct)  (starting row_cursor: 7 (prev + 1 + (82-81)))
+        # 7c: 41 (Incorrect, should be 82)  (starting row_cursor: 10? but calculation says 11... (prev + 1 + (83-81) + (82-81)))
+            # The 80 control codes only advance the starting_row_cursor when they're the first byte of the segment???
+        # 1c: 84
+        # 34:
+        # 24:
+
+    # Maybe I just misunderstand how the 80 control codes work...
+        # It looks like 80s advance the cursor for all further patterns.
+
+        # A pattern is mistakenly placed at 5,366 or so when it should be at 5,622...
+    # That's a difference of 256...
+    # The pattern is: 1111 1011
+    #                 1111 1001
+    #                 1111 1011
+    #                 1111 1000
+    # The second-to-last R ff,  G: bb,  B: 44, so  bf 4 is the color (1010)
+    # ff dd 99, so 9fd (1110)
+    # Or, fb f9 fb f8
+        # Start pattern b'\xfb\xf9\xfb\xf8'. row_cursor: 4083
+        #Short skip: 0x82
+        #Far skip: 0xc5 0x0
+        # 41 82 c5 00
+        # Write a line at 4084 (80, 84)
+        # Skip a line, then write a line at (80, 86). Cursor is now 4086
+        # Far skip: c5 00, which is 1,279? 4086 + 1279 = 5365.
+            # This should be c6 00. That produces the correct results...
+
+
+# Looking for an ultra-skip control code:
+# Original location: 16,010
+    # 80 01: 16,265
+    # 80 ff: 81,290? max total_rows = 32,000, so 81,290 % 32,000 = 17,290, which would be in a quarter down the 43rd block (344th column). Which is correct.
+
+    # TODO: Make sure - is it 255 or 256x?
+
+    # And it's actually 80 xx yy, where xx is coarse (255x) and yy is fine (1x). Great, that is perfect control.
 
 
 List of images that will require translations:
