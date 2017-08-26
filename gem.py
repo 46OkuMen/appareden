@@ -12,7 +12,7 @@ d.insert('ORTITLE.GEM', path_in_disk='TGL/OR')
 
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
-TITLE_PALETTE =   b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x9e\xc1\x57\x5c\x96\x87\x3a\xcf\x8b\xff\xff\xff\x00'
+TITLE_PALETTE =   b'\x00\x03\x33\x38\x40\xf4\x4d\x91\x11\xac\xb9\xfd\x9e\xc4\xfc\x5c\x96\x87\x3a\xc8\x02\xff\xff\xff\x00'
 
 NAMETAG_RGB_PALETTE = [(0x00, 0x00, 0x00),
                (0x33, 0x33, 0x33),
@@ -38,20 +38,26 @@ TITLE_RGB_PALETTE = [(0x00, 0x00, 0x00),
                (0xdd, 0x99, 0x44),
                (0x11, 0x11, 0x11),
                (0x00, 0x00, 0x00),
-               (0x00, 0x00, 0x00),
+               (0x0a, 0x00, 0x00),
                (0xee, 0xcc, 0x99),
                (0xff, 0xcc, 0x44),
                (0xcc, 0x99, 0x55),
                (0x88, 0x77, 0x66),
-               (0x00, 0x00, 0x00),
+               (0x0a, 0x00, 0x00),
                (0x00, 0x22, 0x88),
-               (0xff, 0xff, 0xff),
-               (0x00, 0x00, 0x00),]
+               (0xfa, 0xfa, 0xfa),
+               (0xff, 0xff, 0xff),]
 
 # Grey (33 33 33) should be maroon (88 44 33)
 # Goldenrod (ff bb 44) should be grey-brown (88 77 66)
 
 # Cornflower blue (00 66 dd) should be  gold (cc 99 55)
+
+# Green (55 77 11) should be goldish (ff cc 44).
+
+# Periwinkle (88 bb ff) should be dark blue (00 22 88)
+
+# Some other gold (ff bb 44)
 
 # 00 0 = (0000) black
 # 3 33 = (1000) grey
@@ -137,7 +143,7 @@ for b in range(blocks):
         for plane in range(4):
 
             for p in rowdata:
-                palette_index = NAMETAG_RGB_PALETTE.index(p)
+                palette_index = TITLE_RGB_PALETTE.index(p)
                 #palette_index = palette.index(p)
                 pattern.append(palette_index in PLANE_COLORS[plane])
 
@@ -162,7 +168,7 @@ with open('ORTITLE.GEM', 'wb') as f:
     f.write(height.to_bytes(2, byteorder='little'))
     f.write(IMAGE_DATA_LOCATION.to_bytes(2, byteorder='little'))
     f.write(b'\x00\x00') # not sure about these either
-    f.write(NAMETAG_PALETTE)   # for now
+    f.write(TITLE_PALETTE)   # for now
     for p in unique_patterns:
         f.write(p)
 
@@ -193,20 +199,28 @@ with open('ORTITLE.GEM', 'wb') as f:
                     chain_count = 0
 
                 # TODO: Implement ultra skip
-                # first_byte = 0x80
-                # second_byte = ((loc - row_cursor) + 1) // 256
-                # third_byte = ((loc - row_cursor) + 1) % 256
-                # if loc == pattern_locations[pattern][0]:
-                    # starting_row_cursor = loc
-                # row_cursor = loc
-                #print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor)
+                if loc - row_cursor > 16065: # above far skip "ff ff"
+                    first_byte = 0x80
+                    second_byte = ((loc - row_cursor) + 1) // 256
+                    third_byte = ((loc - row_cursor) + 1) % 256
+                    f.write(first_byte.to_bytes(1, byteorder='little'))
+                    f.write(second_byte.to_bytes(1, byteorder='little'))
+                    f.write(third_byte.to_bytes(1, byteorder='little'))
 
-                if loc - row_cursor >= 63:
+
+                    if loc == pattern_locations[pattern][0]:
+                        starting_row_cursor = loc
+                    row_cursor = loc
+                    print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor))
+
+
+                elif loc - row_cursor >= 63:
                     first_byte = 0xc0 + ((loc - row_cursor) + 1) // 256
                     second_byte = ((loc - row_cursor) + 1) % 256
                     print(hex(first_byte))
                     f.write(first_byte.to_bytes(1, byteorder='little'))
                     f.write(second_byte.to_bytes(1, byteorder='little'))
+
                     if loc == pattern_locations[pattern][0]:
                         starting_row_cursor += (loc - row_cursor)
                         starting_row_cursor %= total_rows

@@ -2,6 +2,12 @@
 
 First line is header, magic numbers and filename w/o ext
 
+0-3: "FSPR"
+4-5: 07 00 (number of sprites?)
+6-d: filename, minus .GEM
+e-1f: 00s
+
+
 Second line is all zeroes
 
 Third line is a list of pointers to various byte sequences.
