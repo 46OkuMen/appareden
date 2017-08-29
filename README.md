@@ -6,14 +6,14 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 ### Draft and Placeholder Reinsertion Progress
 | Segment      | %    |  Strings            | 
 | -------------|-----:|:-------------------:|
-| Title        | 100% |  (18 / 18)          |
-| Main         |   7% |  (16 / 202)         |
-| Field        | 100% |(1050 / 1050)        |
-| Battle       | 100% | (708 / 708)         |
-| Cat Minigame |   0% |   (0 / 7)           |
-| Dialogue     |   1% | (186 / 13078)       |
-| Images       |   0% |   (0 / 44?)         |
-| Total        |  12% |(1880 / 15193)       |
+| Title        | 100% |    (18 / 18)        |
+| Main         |   7% |    (16 / 202)       |
+| Field        | 100% |  (1050 / 1050)      |
+| Battle       | 100% |   (708 / 708)       |
+| Cat Minigame |   0% |     (0 / 7)         |
+| Dialogue     |  15% |  (1979 / 13078)     |
+| Images       |   0% |     (0 / 44?)       |
+| Total        |  25% |  (3859 / 15193)     |
 
 
 ### How do I use this?

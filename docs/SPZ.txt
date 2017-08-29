@@ -42,3 +42,12 @@ Replace with with 02:
 Shi's lower half would be at blocks 0b and 0c, which both appear in there.
 44 = upper half, 48 = lower half?
 So what's with the initial numbers, 14s, and 13s?
+
+03 = number of blocks to access? 4 in the others
+14 13 = ?? (places where the tiles will go??)
+
+13 44 00 = left top tile is block 00
+13 48 0b = left bottom tile is block 0b
+14 48 0c = right bottom tile is block 0c
+
+04 14 13 13 44 00 14 44 01 13 48 0c 14 48 0d

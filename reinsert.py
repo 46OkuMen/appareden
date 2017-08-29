@@ -105,6 +105,7 @@ for filename in FILES_TO_REINSERT:
             try:
                 i = gamefile.filestring.index(t.japanese)
                 gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
+                reinserted_string_count += 1
             except ValueError:
                 print ("Couldn't find this one:", t.japanese, t.english)
 
@@ -205,14 +206,13 @@ for filename in FILES_TO_REINSERT:
 
             # TODO: I probably want to incorporate this stuff later, after dealing with spares and such
             block.incorporate()
-
-    gamefile.write(path_in_disk='TGL\\OR')
-    if filename.endswith('.EXE'):
         percentage = int(floor((reinserted_string_count / STRING_COUNTS[filename] * 100)))
         print(filename, str(percentage), "% complete", "(%s / %s)" % (reinserted_string_count, STRING_COUNTS[filename]))
 
-        total_reinserted_strings += reinserted_string_count
+    total_reinserted_strings += reinserted_string_count
         #print ("(%s / %s)\n" % (self.translated_strings, self.total_strings))
+
+    gamefile.write(path_in_disk='TGL\\OR')
 
 percentage = int(floor((total_reinserted_strings / TOTAL_STRING_COUNT * 100)))
 print("Appareden", "%s" % str(percentage), "%", "complete (%s / %s)" % (total_reinserted_strings, TOTAL_STRING_COUNT))
