@@ -272,9 +272,69 @@ def write_spz(filename, n):
     d = Disk(DEST_DISK)
     d.insert(spz_filename, path_in_disk='TGL/OR')
 
+def get_tile(img, n):
+    # TODO: Not sure I have the right idea here. What about the larger images?
+    # There are more than 255 tiles in them, so clearly it can't just be one byte...
+    width, height = img.size
+    pix = img.load()
+
+    x = (n*16) % width
+    y = ((n*16) // width) * 16
+
+    assert x < width
+    assert y < height
+
+    print(n, x, y)
+
+
+def decode_spz(filename, image):
+    just_filename = filename.split('.')[0]
+
+    image_output_filename = image.replace('.png', '_sheet.png')
+
+    with open(filename, 'rb') as f:
+        file_contents = f.read()
+    n = file_contents[4]
+
+    img = Image.open(image)
+
+    sprite_offsets = []
+    cursor = 0x20
+    for x in range(n):
+        loc = int.from_bytes(file_contents[cursor:cursor+2], byteorder='little')
+        cursor += 2
+        print(loc)
+        sprite_offsets.append(loc)
+
+    sprite_offsets.append(len(file_contents))
+
+    for i, s in enumerate(sprite_offsets):
+        print('')
+        try:
+            next_s = sprite_offsets[i+1]
+        except IndexError:
+            break
+        print(s, next_s)
+        sprite_spec = file_contents[s:next_s]
+        tile_n = sprite_spec[0]
+        assert sprite_spec[1] == 0x14
+        assert sprite_spec[2] == 0x13
+        sprite_cursor = 3
+        for n in range(tile_n):
+            this_tile = sprite_spec[sprite_cursor:sprite_cursor+3]
+            sprite_cursor += 3
+
+            for t in this_tile:
+                print(hex(t) + ' ', end='')
+            print()
+
+            # TODO: Do stuff with the tile.
+            get_tile(img, this_tile[2])
 
 
 if __name__ == '__main__':
-    encode('TEFF_00A.png')
-    encode('ORTITLE.png')
-    write_spz('TEFF_00A.png', 6)
+    #encode('TEFF_00A.png')
+    #encode('ORTITLE.png')
+    #write_spz('TEFF_00A.png', 6)
+    decode_spz('SFCHR_99.SPZ', 'SFCHR_99.png')    # Much more complex
+    #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
