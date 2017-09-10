@@ -13,7 +13,7 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | Cat Minigame |   0% |     (0 / 7)         |
 | Dialogue     |  15% |  (1979 / 13078)     |
 | Images       |   0% |     (0 / 44?)       |
-| Total        |  25% |  (3859 / 15193)     |
+| Total        |  30% |  (3859 / 15193)     |
 
 
 ### How do I use this?
