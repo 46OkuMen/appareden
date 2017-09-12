@@ -15,6 +15,13 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | Images       |   0% |     (0 / 44?)       |
 | Total        |  30% |  (3859 / 15193)     |
 
+### Requirements
+* A working hard-disk dump of *Appareden*
+* [romtools](https://github.com/46OkuMen/romtools)
+* xlsxwriter
+* openpyxl
+* Bitstring
+
 ### Building
 Place your dump of `Appareden.hdi` in the subfolder `original`. Then run these scripts to dump the system text, dialogue, and pointers:
 
@@ -34,3 +41,6 @@ python gem.py
 ```
 
 Now, `patched/Appareden.hdi` should be playable in English as far as you've translated.
+
+### License
+This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.
