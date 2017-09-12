@@ -15,6 +15,22 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | Images       |   0% |     (0 / 44?)       |
 | Total        |  30% |  (3859 / 15193)     |
 
+### Building
+Place your dump of `Appareden.hdi` in the subfolder `original`. Then run these scripts to dump the system text, dialogue, and pointers:
 
-### How do I use this?
-* Wait for a release!
+```
+python sys_dump.py
+python msg_dump.py
+python find_pointers.py
+```
+
+Translate the script, which is dumped into `appareden_sys_dump.xlsx` and `appareden_msg_dump.xlsx`.
+
+Now create a subfolder `patched`, where another copy of `Appareden.hdi` should go. Now run these to reinsert text and images:
+
+```
+python reinsert.py
+python gem.py
+```
+
+Now, `patched/Appareden.hdi` should be playable in English as far as you've translated.
