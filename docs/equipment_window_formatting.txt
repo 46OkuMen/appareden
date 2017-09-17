@@ -1,0 +1,11 @@
+|__Wepn  Common Smith's Kat Armr -                 |
+|__Hat   -                  Hand Fingerless Gloves |
+|__Boot  -                   Acc -                 |
+
+Max length in equipment list: 21
+Max length in left column: 18
+Max length in right column: 17
+
+We can exchange the left/right col limits by just moving the right col labels left one.
+
+Might be worth ASM hacking the left labels to go 1 space to the left, though this would look different from the rest of the menus. Though not any of them that you'd see onscreen at the same time, so no one would notice

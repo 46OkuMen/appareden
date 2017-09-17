@@ -11,10 +11,21 @@
 ## ORFIELD
 * No pointers for "Whose equipment?" / equipment screen headers
 	* Currently points to the " charm" in Monja Bosatsu Charm, pointer value 5720...?
-		* Also crashes when scrollilng down to that item
+		* Also crashes when scrollilng down to the following item, Dainichi charm
+			* Workaround: Just put a [00] at the end of its description string
+
 * Shop menus are busted
-* Way too many strings showing when displaying which items are equipped
 * The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
+	* Workaround, changed to "OK"
+* Save menu is super wide
+* "No zen points" popup is glitched
+* Extra "ld" after Gold value in status screen
+	* Pointer issue, fixed now.
+* Need to expand the equipment name buffers on the status screen. Currently capped at 15 or 16, as on the equipment screen
+	* Now capped at 19, which is almost enough. Looking for ways to get more space now
+
+* Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
+	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
 
 ## ORBTL
 
