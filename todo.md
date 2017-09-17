@@ -15,6 +15,7 @@
 			* Workaround: Just put a [00] at the end of its description string
 
 * Shop menus are busted
+	* Appears to be the overflow issue from the equipment slots. Need to add more space strings to the dump
 * The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
 	* Workaround, changed to "OK"
 * Save menu is super wide
@@ -27,6 +28,22 @@
 * Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
 
+* "Gento's strength increased 7m is for use in battle"
+	* Pointer issue, fixed
+
+* Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
+* Airship crashes the game with its error message, like that charm's error
+	* Workaround, added an [00] at the end
+* "This Zen art is for use in battle" has an overflowing window
+	* Workaround, added an [00] at the end
+
+* Using a HealOne type Zen art brings up a very misaligned screen.
+	* Take a look at the spaces and stuff around 0x2ea85 and later.
+* Life1-2 crashes the game
+
+* Item description room in shops is very short, so try to hack in a string-truncation display thing.
+	* See docs/item_description_truncation.txt
+
 ## ORBTL
 
 ## Graphics
@@ -38,3 +55,4 @@
 ## Cheat saves
 * Some more equipment in the inventory than are valid equipments
 * Some more items than are valid items
+	*The items "Heals10-20", "Revive dead", and "Sandals?" have glitched status windows

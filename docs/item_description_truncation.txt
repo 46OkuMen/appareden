@@ -1,0 +1,17 @@
+Spider's silk stops an enemy from moving
+----------------------------- <- shop limit (29)
+----------------------------------------------- <- menu limit (47)
+
+Control code: #
+Like the Wordpress "truncate it here" marker.
+
+Spider's silk stops an# enemy from moving
+
+String parser: 
+cmp al, '#'
+jnz (something later)
+print '.'
+advance cursor
+when that's done, put 00 in al so the string ends
+
+Hm. I need to store the number of .'s printed in memory somewhere safe
