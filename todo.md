@@ -28,9 +28,6 @@
 * Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
 
-* "Gento's strength increased 7m is for use in battle"
-	* Pointer issue, fixed
-
 * Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
 * Airship crashes the game with its error message, like that charm's error
 	* Workaround, added an [00] at the end
@@ -39,6 +36,10 @@
 
 * Using a HealOne type Zen art brings up a very misaligned screen.
 	* Take a look at the spaces and stuff around 0x2ea85 and later.
+		* Actually not spaces - it just has to do with the varying character name lengths.
+			* Fixed.
+	* The HP, ZP, and Status column colud use a bit more alignment...
+
 * Life1-2 crashes the game
 
 * Item description room in shops is very short, so try to hack in a string-truncation display thing.
