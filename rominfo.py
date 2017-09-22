@@ -57,7 +57,6 @@ FILE_BLOCKS = {
                 (0x2760e, 0x27676),  # ship msg
                 (0x28044, 0x280bf),  # Pause menu
                 (0x281c9, 0x283c0),  # /, status names, status screen equipment slots
-               #(0x282e0, 0x283c0),  # Status screen
                 (0x283c0, 0x2847d),  # Settings
                 (0x2847d, 0x2853f),  # Equip screen header, "whose"
                 (0x2853f, 0x28568),
@@ -73,7 +72,8 @@ FILE_BLOCKS = {
                 (0x2a2ba, 0x2cc45),  # items and weapons
                 (0x2d022, 0x2d3c4),  # result msgs
                 (0x2da74, 0x2e690),  # skills/spells names/descriptions
-                (0x2e9b2, 0x2ef13),],  # result msgs"
+                (0x2e9b2, 0x2ea85),
+                (0x2eb4d, 0x2ef13),],  # result msgs"
     'ORMAIN.EXE': [(0x1580, 0x167b),   # null pointer msgs
                    (0x1706, 0x1735),   # ems driver msgs
                    (0x3ee4, 0x4547), ],   # names, menus, things"

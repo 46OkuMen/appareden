@@ -41,9 +41,12 @@
 	* The HP, ZP, and Status column colud use a bit more alignment...
 
 * Life1-2 crashes the game
+	* Fixed. A block was terminated in the wrong place, filling the EXE with garbage for some reason
 
 * Item description room in shops is very short, so try to hack in a string-truncation display thing.
 	* See docs/item_description_truncation.txt
+
+* ZP recovery items say they're healing HP.
 
 ## ORBTL
 
