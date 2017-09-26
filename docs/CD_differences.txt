@@ -1,0 +1,26 @@
+Strings in ORFIELD:
+
+$TGL
+0x25f3c in HDI
+0x2655c in CD
+
+Diff ix 0x620
+
+a:csrchip.gem
+
+0x264a5 in HDI
+0x26ac5 in CD
+
+Diff is 0x620
+
+gameover.gem
+0x27601 in HDI
+0x27c47 in CD
+
+Diff is 0x646
+
+srcdux
+0x2ef14 in HDI
+0x2f55a in CD
+
+Diff is 0x646

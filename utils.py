@@ -15,8 +15,8 @@ def effective_length(s):
 
     return length
 
-def typeset(s):
-    if len(s) <= 37:
+def typeset(s, width=37):
+    if len(s) <= width:
         return s
 
     words = s.split(b' ')
@@ -24,8 +24,8 @@ def typeset(s):
 
     while words:
         line = b''
-        while len(line) <= 37 and words:
-            if len(line + words[0] + b' ') > 37:
+        while len(line) <= width and words:
+            if len(line + words[0] + b' ') > width:
                 break
             line += words.pop(0) + b' '
 

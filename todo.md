@@ -1,11 +1,15 @@
 # Appareden Todo
 
 ## CD Version
-* Check to see if any of these changes will work for patching the CD version.
+* So, none of the executables will be the same. Uh oh.
+	* ORFIELD.EXE has text that is offset by some amount, but appears the same?
+		* It's not a constant amount, so there's probably some new block in the middle. Haven't looked for it specifically yet
+			* See docs/CD_differences.txt
 
 ## Reinserter
 * Add functionality to move overflowing strings between spare space.
 * Better typesetting accounting for control codes.
+* Need to typeset files with portraits and files without portraits differently.
 * Fix the two problem files in the last batch.
 
 ## ORFIELD
@@ -20,8 +24,6 @@
 	* Workaround, changed to "OK"
 * Save menu is super wide
 * "No zen points" popup is glitched
-* Extra "ld" after Gold value in status screen
-	* Pointer issue, fixed now.
 * Need to expand the equipment name buffers on the status screen. Currently capped at 15 or 16, as on the equipment screen
 	* Now capped at 19, which is almost enough. Looking for ways to get more space now
 
@@ -29,15 +31,9 @@
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
 
 * Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
-* Airship crashes the game with its error message, like that charm's error
-	* Workaround, added an [00] at the end
-* "This Zen art is for use in battle" has an overflowing window
-	* Workaround, added an [00] at the end
+	* It does so in the Japanese version too
 
 * Using a HealOne type Zen art brings up a very misaligned screen.
-	* Take a look at the spaces and stuff around 0x2ea85 and later.
-		* Actually not spaces - it just has to do with the varying character name lengths.
-			* Fixed.
 	* The HP, ZP, and Status column colud use a bit more alignment...
 
 * Life1-2 crashes the game

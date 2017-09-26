@@ -32,6 +32,8 @@ TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
+portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人',]
+
 HIGHEST_SCN = 5031
 # Ones with an issue: 4705, 5031
 
@@ -95,13 +97,23 @@ for filename in FILES_TO_REINSERT:
         # First, gotta replace all the control codes.
         gamefile.filestring = replace_control_codes(gamefile.filestring)
 
+        # If any portraited characters show up in the file, use a narrower window
+        portrait_window = False
+        for name in portrait_characters:
+            if name.encode('shift-jis') in gamefile.filestring:
+                portrait_window = True
+        print(portrait_window)
+
         for t in MsgDump.get_translations(filename):
 
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-            t.english = typeset(t.english)
+            if portrait_window:
+                t.english = typeset(t.english, 37)
+            else:
+                t.english = typeset(t.english, 57)
             t.english = shadoff_compress(t.english)
 
             try:
@@ -109,7 +121,7 @@ for filename in FILES_TO_REINSERT:
                 gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
                 reinserted_string_count += 1
             except ValueError:
-                print ("Couldn't find this one:", t.japanese, t.english)
+                print("Couldn't find this one:", t.japanese, t.english)
 
 
     if filename.endswith('.EXE'):
