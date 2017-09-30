@@ -32,10 +32,11 @@ TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
-portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人',]
+#                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
+portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',]
 
-HIGHEST_SCN = 5031
-# Ones with an issue: 4705, 5031
+HIGHEST_SCN = 6300
+# Problems in 5103, 6100 due to fullwidth text from Haley
 
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 print(msg_files)
@@ -97,12 +98,7 @@ for filename in FILES_TO_REINSERT:
         # First, gotta replace all the control codes.
         gamefile.filestring = replace_control_codes(gamefile.filestring)
 
-        # If any portraited characters show up in the file, use a narrower window
-        portrait_window = False
-        for name in portrait_characters:
-            if name.encode('shift-jis') in gamefile.filestring:
-                portrait_window = True
-        print(portrait_window)
+        portrait_window_counter = 0
 
         for t in MsgDump.get_translations(filename):
 
@@ -110,7 +106,14 @@ for filename in FILES_TO_REINSERT:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-            if portrait_window:
+            # If any portraited characters show up in this line, 
+            # this line and next line are narrower
+            for name in portrait_characters:
+                if name.encode('shift-jis') in t.japanese:
+                    portrait_window_counter = 2
+                    break
+
+            if portrait_window_counter > 0:
                 t.english = typeset(t.english, 37)
             else:
                 t.english = typeset(t.english, 57)
@@ -122,6 +125,9 @@ for filename in FILES_TO_REINSERT:
                 reinserted_string_count += 1
             except ValueError:
                 print("Couldn't find this one:", t.japanese, t.english)
+
+            if portrait_window_counter > 0:
+                portrait_window_counter -= 1
 
 
     if filename.endswith('.EXE'):

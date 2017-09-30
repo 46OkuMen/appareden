@@ -1,6 +1,5 @@
 """
-    Text reinserter for Appareden.
-    Replaces text, adjusts pointers, and implements manual assembly hacks.
+    Calculates differences of string locations in FD and CD versions of Appareden.
 """
 
 import os
