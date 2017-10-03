@@ -6,13 +6,16 @@
 import os
 from math import floor
 from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
-from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH
+from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
 from asm import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block
-from romtools.dump import DumpExcel, PointerExcel
+from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 
+update_google_sheets(DUMP_XLS_PATH, DUMP_GOOGLE_SHEET)
+
+# TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORMAIN.EXE': 202,
                  'ORFIELD.EXE': 1096,
@@ -29,6 +32,7 @@ MsgDump = DumpExcel(MSG_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
+
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 

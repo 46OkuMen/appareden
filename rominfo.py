@@ -12,6 +12,8 @@ DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 MSG_XLS_PATH = 'appareden_msg_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 
+DUMP_GOOGLE_SHEET = 'Appareden Sys Dump v3'
+
 FILES = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'NEKORUN.EXE', 'SFIGHT.EXE', 'ENDING.EXE',]
 
 SHADOFF_COMPRESSED_EXES = ['ORFIELD.EXE',]
