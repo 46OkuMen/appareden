@@ -6,14 +6,17 @@
 import os
 from math import floor
 from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
-from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, DUMP_GOOGLE_SHEET
+from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
 from asm import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 
-update_google_sheets(DUMP_XLS_PATH, DUMP_GOOGLE_SHEET)
+update_google_sheets(DUMP_XLS_PATH, SYS_DUMP_GOOGLE_SHEET)
+#update_google_sheets(MSG_XLS_PATH, MSG_DUMP_GOOGLE_SHEET)
+# The current method won't work for the MSG dump; too many requests.
+# Need to condense it into one sheet after draft is done.
 
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
