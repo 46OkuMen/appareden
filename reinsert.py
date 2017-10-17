@@ -13,7 +13,7 @@ from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 
-update_google_sheets(DUMP_XLS_PATH, SYS_DUMP_GOOGLE_SHEET)
+#update_google_sheets(DUMP_XLS_PATH, SYS_DUMP_GOOGLE_SHEET)
 #update_google_sheets(MSG_XLS_PATH, MSG_DUMP_GOOGLE_SHEET)
 # The current method won't work for the MSG dump; too many requests.
 # Need to condense it into one sheet after draft is done.
@@ -237,6 +237,7 @@ for filename in FILES_TO_REINSERT:
         print(filename, str(percentage), "% complete", "(%s / %s)" % (reinserted_string_count, STRING_COUNTS[filename]))
 
     total_reinserted_strings += reinserted_string_count
+    print("Total reinserted strings is", total_reinserted_strings)
         #print ("(%s / %s)\n" % (self.translated_strings, self.total_strings))
 
     gamefile.write(path_in_disk='TGL\\OR')

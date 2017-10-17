@@ -6,11 +6,14 @@
 		* It's not a constant amount, so there's probably some new block in the middle. Haven't looked for it specifically yet
 			* See docs/CD_differences.txt
 
+* In light of that, need to generate a new column for CD offsets. And probably re-do pointer stuff, ugh
+
 ## Reinserter
 * Add functionality to move overflowing strings between spare space.
 * Better typesetting accounting for control codes.
 * Need to typeset files with portraits and files without portraits differently.
 * Fix the two problem files in the last batch.
+* [WAIT] control codes don't seem to be inserting properly...
 
 ## ORFIELD
 * No pointers for "Whose equipment?" / equipment screen headers
@@ -36,15 +39,21 @@
 * Using a HealOne type Zen art brings up a very misaligned screen.
 	* The HP, ZP, and Status column colud use a bit more alignment...
 
-* Life1-2 crashes the game
-	* Fixed. A block was terminated in the wrong place, filling the EXE with garbage for some reason
-
 * Item description room in shops is very short, so try to hack in a string-truncation display thing.
 	* See docs/item_description_truncation.txt
 
 * ZP recovery items say they're healing HP.
 
+* "Not enough ZPBenimuaru not enough ZPdoesn't know any Zen arts"
+
+* Where do the town names appear ingame? No sign of them so far
+
 ## ORBTL
+* Benmiaru "Transform" overflows from the action window
+
+* "Enemy snuck up on you" text is blanked
+
+* "Defenseraised by 16points!" for every stat, also "Harrygained a level!"
 
 ## Graphics
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
@@ -56,3 +65,4 @@
 * Some more equipment in the inventory than are valid equipments
 * Some more items than are valid items
 	*The items "Heals10-20", "Revive dead", and "Sandals?" have glitched status windows
+* Can't finish a battle, Harry just levels up forever
