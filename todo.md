@@ -15,6 +15,10 @@
 * Fix the two problem files in the last batch.
 * [WAIT] control codes don't seem to be inserting properly...
 
+## MSGs
+* Vagrant "Come on(overline) The place is empty."
+* Move all MSGs to one sheet in the sys dump.
+
 ## ORFIELD
 * No pointers for "Whose equipment?" / equipment screen headers
 	* Currently points to the " charm" in Monja Bosatsu Charm, pointer value 5720...?
