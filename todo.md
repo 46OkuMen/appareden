@@ -1,13 +1,5 @@
 # Appareden Todo
 
-## CD Version
-* So, none of the executables will be the same. Uh oh.
-	* ORFIELD.EXE has text that is offset by some amount, but appears the same?
-		* It's not a constant amount, so there's probably some new block in the middle. Haven't looked for it specifically yet
-			* See docs/CD_differences.txt
-
-* In light of that, need to generate a new column for CD offsets. And probably re-do pointer stuff, ugh
-
 ## Reinserter
 * Add functionality to move overflowing strings between spare space.
 * Better typesetting accounting for control codes.
@@ -17,23 +9,19 @@
 
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
-* Move all MSGs to one sheet in the sys dump.
 * Issues with the ">f01040 tags when meeting GOemon/Master
+* Move all MSGs to one sheet in the sys dump.
 
 ## ORFIELD
 * Shop menus are busted
 	* Appears to be the overflow issue from the equipment slots. Need to add more space strings to the dump
-* The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
-	* Workaround, changed to "OK"
 * "No zen points" popup is glitched
 * Need to expand the equipment name buffers on the status screen. Currently capped at 15 or 16, as on the equipment screen
 	* Now capped at 19, which is almost enough. Looking for ways to get more space now
 
 * Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
+	* Item names too; alignment of the shop menus depends on it
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
-
-* Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
-	* It does so in the Japanese version too
 
 * Using a HealOne type Zen art brings up a very misaligned screen.
 	* The HP, ZP, and Status column colud use a bit more alignment...
@@ -42,20 +30,22 @@
 	* See docs/item_description_truncation.txt
 
 * ZP recovery items say they're healing HP.
-
-* "Not enough ZPBenimuaru not enough ZPdoesn't know any Zen arts"
+	* Do the JP strings just say "points restored" generically?
 
 * "s  Gento 's resurreciton requires 70gold."
 
 * Where do the town names appear ingame? No sign of them so far
 
 * "Ded"
+	* Might have been "Dea". "Poi" is showing up for poison, and in memory it's "^Poi"
+	* Need more than 4 chars of space for that slot
+		* Slot is after "Settings" at 0x28085
+		* Whoops, now it is broken more. Just 3 chars now... why?
+
+* " Whose?" (equipment) screen is really skinny
 
 ## ORBTL
 * Benmiaru "Transform" overflows from the action window
-
-* raised byby  2 points
-	* Fixed maybe? Added a pointer
 
 * Zen art "spirit" shows up as "Snow text"
 
@@ -70,8 +60,24 @@
 * Still haven't given them over to SkyeWelse.
 * How should we handle the shop signs?
 
+## CD Version
+* So, none of the executables will be the same. Uh oh.
+	* ORFIELD.EXE has text that is offset by some amount, but appears the same?
+		* It's not a constant amount, so there's probably some new block in the middle. Haven't looked for it specifically yet
+			* See docs/CD_differences.txt
+
+* In light of that, need to generate a new column for CD offsets. And probably re-do pointer stuff, ugh
+
 ## Cheat saves
 * Some more equipment in the inventory than are valid equipments
 * Some more items than are valid items
 	*The items "Heals10-20", "Revive dead", and "Sandals?" have glitched status windows
 * Can't finish a battle, Harry just levels up forever
+	* Whoops, it's not forever, just a lot of times (up to lv72)
+	* Lv72 Harry file now in Journal Go
+
+## Determined to be non-issues
+* Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
+	* It does so in the Japanese version too
+* The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
+	* Workaround, changed to "OK"
