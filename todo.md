@@ -18,18 +18,13 @@
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
 * Move all MSGs to one sheet in the sys dump.
+* Issues with the ">f01040 tags when meeting GOemon/Master
 
 ## ORFIELD
-* No pointers for "Whose equipment?" / equipment screen headers
-	* Currently points to the " charm" in Monja Bosatsu Charm, pointer value 5720...?
-		* Also crashes when scrollilng down to the following item, Dainichi charm
-			* Workaround: Just put a [00] at the end of its description string
-
 * Shop menus are busted
 	* Appears to be the overflow issue from the equipment slots. Need to add more space strings to the dump
 * The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
 	* Workaround, changed to "OK"
-* Save menu is super wide
 * "No zen points" popup is glitched
 * Need to expand the equipment name buffers on the status screen. Currently capped at 15 or 16, as on the equipment screen
 	* Now capped at 19, which is almost enough. Looking for ways to get more space now
@@ -50,20 +45,30 @@
 
 * "Not enough ZPBenimuaru not enough ZPdoesn't know any Zen arts"
 
+* "s  Gento 's resurreciton requires 70gold."
+
 * Where do the town names appear ingame? No sign of them so far
+
+* "Ded"
 
 ## ORBTL
 * Benmiaru "Transform" overflows from the action window
 
-* "Enemy snuck up on you" text is blanked
+* raised byby  2 points
+	* Fixed maybe? Added a pointer
 
-* "Defenseraised by 16points!" for every stat, also "Harrygained a level!"
+* Zen art "spirit" shows up as "Snow text"
+
+* Zen art types are too long, use shorter ones from ORFIELD
+	* Might still be too long
 
 ## Graphics
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
 	* Or just do those problem files manually.
 * Need to progress in the game far enough to get to the minigames and test their graphics.
+* That one cat tank monster near Koro-pok-guru village has an animation we should translate too.
 * Still haven't given them over to SkyeWelse.
+* How should we handle the shop signs?
 
 ## Cheat saves
 * Some more equipment in the inventory than are valid equipments
