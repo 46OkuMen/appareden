@@ -31,7 +31,7 @@ NAMETAG_PALETTE_RGB = [(0x00, 0x00, 0x00),
 
 TITLE_PALETTE_RGB = [(0x00, 0x00, 0x00),
                (0x11, 0x11, 0x11),
-               (0x88, 0x44, 0x33),
+               (0x88, 0x44, 0x33),     # also 88 44 33,  84 46 38
                (0xdd, 0x44, 0x00),
                (0xcc, 0x99, 0x55),
                (0xff, 0xcc, 0x44),
@@ -62,6 +62,17 @@ TEFF_PALETTE_RGB = [(0x00, 0x00, 0x00),
                (0x88, 0xbb, 0xff),
                (0x66, 0xaa, 0xaa),
                (0xff, 0xff, 0xff),]
+
+def get_closest_color_index(palette, rgb):
+    hammings = [255]*16
+    for i, color in enumerate(palette):
+        hamming = 0
+        for val in range(3):
+            hamming += abs(color[val] - rgb[val])
+        hammings[i] = hamming
+    return hammings.index(min(hammings))
+
+
 
 NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE', 'MEIRIN', 'OUGI', 'TAMAMO']
 TITLE_PALETTE_IMAGES = ['ORTITLE',]
@@ -120,7 +131,10 @@ def encode(filename):
             for plane in range(4):
 
                 for p in rowdata:
-                    palette_index = palette_rgb.index(p)
+                    try:
+                        palette_index = palette_rgb.index(p)
+                    except ValueError:
+                        palette_index = get_closest_color_index(palette_rgb, p)
                     pattern.append(palette_index in PLANE_COLORS[plane])
 
             pattern = BitArray(pattern).bytes
@@ -334,7 +348,7 @@ def decode_spz(filename, image):
 
 if __name__ == '__main__':
     #encode('TEFF_00A.png')
-    #encode('ORTITLE.png')
+    encode('ORTITLE.png')
     #write_spz('TEFF_00A.png', 6)
-    decode_spz('SFCHR_99.SPZ', 'SFCHR_99.png')    # Much more complex
+    #decode_spz('SFCHR_99.SPZ', 'SFCHR_99.png')    # Much more complex
     #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
