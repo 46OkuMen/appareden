@@ -91,6 +91,10 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x8c0a+len(SPACECODE_ASM), OVERLINE_ASM)
         gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM), SHADOFF_ASM)
 
+        # Expand space for status ailments in menu
+        # ac = limit of 6, and we want 12 for Petrified
+        gamefile.edit(0x1ab14, b'\xb2')
+
     if filename in POINTERS_TO_REASSIGN:
         reassignments = POINTERS_TO_REASSIGN[filename]
         for src, dest in reassignments:

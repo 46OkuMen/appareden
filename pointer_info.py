@@ -135,7 +135,6 @@ POINTERS_TO_REASSIGN = {
             (0x2edf8, 0x2eb8a),
             (0x2ee13, 0x2e9e2),
             (0x2ee5c, 0x2e9e2),
-            (0x2ee7b, 0x2ee32),
             (0x2ee8a, 0x2e9e2),
             (0x2eea9, 0x2d264),
             (0x2eec0, 0x2e9e2),
@@ -154,6 +153,15 @@ POINTERS_TO_REASSIGN = {
             #(0x2d30c, 0x2d2a8),
             #(0x2d33d, 0x2d2a8),
             #(0x2d36e, 0x2d2a8),
+
+            (0x26883, 0x2ee32),     # &f came back to life
+            (0x2d1da, 0x2ee32),
+            (0x2ee7b, 0x2ee32),
+
+            (0x27549, 0x26eec),      # &f purchased
+
+            (0x2692c, 0x266a3),      # What will you do?
+            (0x28044, 0x266a3), 
 
     ],
 

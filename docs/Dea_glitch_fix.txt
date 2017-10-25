@@ -1,0 +1,13 @@
+Status ailments are limited to 6 chars currently as far as showing up in the menu.
+
+The full string &c^Dead gets written to a memory location es:di, but the last d gets overwritten with 00 by some horrible instruction. What happens if we just change it?
+
+3b3d:0772 c686acfe00  mov [bp+feac], 00
+3b3d:0777 8d86a6fe    lea ax, [bp+fea6]  (wrong instruction)
+
+
+change it to c686adfe00. Now you get one more character?
+This kind of thing seems like it'd be fraught with horrible side effects
+
+Longest string I need there would be &c^Petrified, 12 characters. Though that could be changed to &c^Stone, 8 characters
+Also &c^Poison, 9 characters.

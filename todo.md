@@ -29,10 +29,14 @@
 * Item description room in shops is very short, so try to hack in a string-truncation display thing.
 	* See docs/item_description_truncation.txt
 
+* I'm not sure how to deal with the window bleeding.
+	* Does it have to do with the compressed chars taking up different amounts of room onscreen and ondisk?
+		* No; changing all the options to all-lowercase leaves the same issue
+	* Ah. Looks like all the headers need to be even-numbered lengths...?
+		* And you generally want ~~ at the end of a section header to avoid text overflow.
+
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
-
-* "s  Gento 's resurreciton requires 70gold."
 
 * Where do the town names appear ingame? No sign of them so far
 
@@ -41,6 +45,9 @@
 	* Need more than 4 chars of space for that slot
 		* Slot is after "Settings" at 0x28085
 		* Whoops, now it is broken more. Just 3 chars now... why?
+		* It has 6 chars of space for that slot. &c^Dea
+			* Something happens in memory that loads a 00 into that location plus 6...
+			* See docs/Dea_glitch_fix.txt
 
 * " Whose?" (equipment) screen is really skinny
 
