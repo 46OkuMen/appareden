@@ -6,6 +6,7 @@
 * Need to typeset files with portraits and files without portraits differently.
 * Fix the two problem files in the last batch.
 * [WAIT] control codes don't seem to be inserting properly...
+	* They insert as expected, they just aren't interpreted correctly by the game. Why is this?
 
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
@@ -13,9 +14,21 @@
 * Move all MSGs to one sheet in the sys dump.
 
 ## ORFIELD
-* Shop menus are busted
-	* Appears to be the overflow issue from the equipment slots. Need to add more space strings to the dump
-* "No zen points" popup is glitched
+* State of the menus:
+	* Item Shop
+		* Max description length: 33
+			* Window expands in both directions when you lengthen the header. There must be some value of a center location, it'd be nice to adjust that
+		* Glitched text when something is purchased
+	* Weapon Shop
+		* Pretty bad overflow from too-long weapon names.
+		* Window is not at its maximum width yet
+		* Glitch on "purchased"
+	* Armor Shop
+		* (Uses same strings as weapon shop)
+	* Sell Items
+		* Glitched header, glitched contents
+	* Sell Equipment
+
 * Need to expand the equipment name buffers on the status screen. Currently capped at 15 or 16, as on the equipment screen
 	* Now capped at 19, which is almost enough. Looking for ways to get more space now
 
@@ -25,9 +38,7 @@
 
 * Using a HealOne type Zen art brings up a very misaligned screen.
 	* The HP, ZP, and Status column colud use a bit more alignment...
-
-* Item description room in shops is very short, so try to hack in a string-truncation display thing.
-	* See docs/item_description_truncation.txt
+		* Not sure what's happening here
 
 * I'm not sure how to deal with the window bleeding.
 	* Does it have to do with the compressed chars taking up different amounts of room onscreen and ondisk?
@@ -40,20 +51,10 @@
 
 * Where do the town names appear ingame? No sign of them so far
 
-* "Ded"
-	* Might have been "Dea". "Poi" is showing up for poison, and in memory it's "^Poi"
-	* Need more than 4 chars of space for that slot
-		* Slot is after "Settings" at 0x28085
-		* Whoops, now it is broken more. Just 3 chars now... why?
-		* It has 6 chars of space for that slot. &c^Dea
-			* Something happens in memory that loads a 00 into that location plus 6...
-			* See docs/Dea_glitch_fix.txt
-
 * " Whose?" (equipment) screen is really skinny
+	* Just need to add ~~ to it. Wait for better string rearrangement in the reinserter
 
 ## ORBTL
-* Benmiaru "Transform" overflows from the action window
-
 * Zen art "spirit" shows up as "Snow text"
 
 * Zen art types are too long, use shorter ones from ORFIELD
@@ -88,3 +89,11 @@
 	* It does so in the Japanese version too
 * The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
 	* Workaround, changed to "OK"
+
+## How to fix things
+* Window bleeding
+	* Pad it with one ~ at the end.
+* Window too narrow
+	* Pad it with lots of ~ at the end.
+* Window too large
+	* Put [00] at the end.

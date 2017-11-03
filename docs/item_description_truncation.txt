@@ -1,5 +1,6 @@
 Spider's silk stops an enemy from moving
------------------------------ <- shop limit (29)
+-----------------------------                   <- shop limit (29)
+---------------------------------               <- new shop limit, with longer header (33)
 ----------------------------------------------- <- menu limit (47)
 
 Control code: #
@@ -15,3 +16,7 @@ advance cursor
 when that's done, put 00 in al so the string ends
 
 Hm. I need to store the number of .'s printed in memory somewhere safe
+
+Item descrip increased to 31. Let's see if I can keep going
+Max item description is 33 chars
+	If I can move the window over to the right, I can make it even longer

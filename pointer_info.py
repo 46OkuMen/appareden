@@ -37,6 +37,7 @@ POINTER_DISAMBIGUATION = {
   0x2d298: 0x220d7,
   0x2d30c: 0x2239a,
   0x2d3a9: 0x2d396,   # Ocean Dragon Pill -> Unable to use that here
+  0x27546: 0x177d9,
 
 
   # ORBTL
