@@ -21,7 +21,7 @@ from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORMAIN.EXE': 202,
-                 'ORFIELD.EXE': 1096,
+                 'ORFIELD.EXE': 1169,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
@@ -159,7 +159,10 @@ for filename in FILES_TO_REINSERT:
             last_i = -1
             last_len = 1
             for t in Dump.get_translations(block):
-                #print(t.english)
+
+                if overflowing:
+                    break
+
                 if t.english == b'':
                     not_translated = True
                     t.english = t.japanese
@@ -177,16 +180,12 @@ for filename in FILES_TO_REINSERT:
 
                 this_diff = len(t.english) - len(t.japanese)
 
-                #print(hex(this_string_end), hex(block.stop))
-
                 i = block.blockstring.index(t.japanese)
-                #j = block.blockstring.count(t.japanese)
 
                 print(hex(t.location), t.english)
 
                 if i <= last_i:
                     after_slice = block.blockstring[last_i+last_len:]
-                    print(after_slice)
                     print("Looking for", t.japanese)
                     i = after_slice.index(t.japanese)
                     assert i != -1
@@ -196,17 +195,17 @@ for filename in FILES_TO_REINSERT:
                 this_string_end = t.location + diff + len(t.english) + this_diff
 
                 if this_string_end > block.stop and not overflowing:
-                    print(t)
-                    print(diff)
                     overflowing = True
                     # Need to get the location of where it began to overflow
                     #overflow_start = t.location - block.start + diff + this_diff
-                    overflow_start = i
+                    # overflow_start = i         # was too conservative, sometimes left a block too long
+                    overflow_start = last_i
+                    overflow_original_location = t.location
                     print("It's overflowing at %s" % hex(block.start + loc_in_block))
+                    break
 
-                # TODO: For the second string after an overflow, it won't be there anymore... the replacement will break things.
-                # How should I do the translations then?
 
+                # Can't do translations if it's overflowing, Those will come later
                 if not not_translated:
                     block.blockstring = block.blockstring[:i] + t.english + block.blockstring[i+len(t.japanese):]
                     reinserted_string_count += 1
@@ -228,11 +227,12 @@ for filename in FILES_TO_REINSERT:
                 print(overflow_string)
                 print("Overflow begins at:", hex(block.start + overflow_start))
                 absolute_overflow_start = overflow_start + block.start
-                overflow_strings.append((absolute_overflow_start, overflow_string))
+                overflow_strings.append((absolute_overflow_start, overflow_string, block, overflow_original_location))
 
                 # Remove the overflow string from the block entirely
-                print(block.blockstring)
                 block.blockstring = block.blockstring[:overflow_start]
+                block_diff = len(block.blockstring) - len(block.original_blockstring)
+                assert block_diff <= 0, (block, block_diff)
 
             block_diff = len(block.blockstring) - len(block.original_blockstring)
 
@@ -243,44 +243,112 @@ for filename in FILES_TO_REINSERT:
         spares.sort(key=lambda x: x[1] - x[0])  # sort by size
         spares = spares[::-1]  # largest first
 
+        for s in spares:
+            print("spare:", s, s[1] - s[0])
+
         for o in overflow_strings:
-            # o[0] is location, o[1] is the string
+            # o[0] is location, o[1] is the string, o[2] is the parent block, o[3] is the first string's original location
             print("overflows:", hex(o[0]), o[1], "size:", len(o[1]))
             spare_to_use = spares[0]
 
             # s[0] is the start, s[1] is the end, s[2] is the parent block
+
+            #print(hex(o[0]), hex(o[0]+len(o[1])))
+            translations = [t for t in Dump.get_translations(o[2]) if o[3] <= t.location]
+            #print(translations)
+            overflow_len_diff = sum([len(t.english) - len(t.japanese) for t in translations])
+            #print(overflow_len_diff)
+            final_overflow_len = len(o[1]) + overflow_len_diff
             for s in spares:
                 spare_len = s[1] - s[0]
-                if spare_len >= len(o[1]):
+                if spare_len >= final_overflow_len:
                     spare_to_use = s
             print(spare_to_use, " is the snuggest fit, with size", spare_to_use[1]-spare_to_use[0])
 
             receiving_block = spare_to_use[2]
             receiving_block.blockstring += o[1]
 
-            diff = spare_to_use[0] - o[0]
-            gamefile.edit_pointers_in_range((o[0], o[0]+len(o[1])), diff)
+            # TODO: Move each translation into a spare individually, so large overflows can be distributed
+
+            # Need to translate all the stuff in the overflow now.
+            # Time to repeat tons of code, oops
+
+            #previous_text_offset = spare_to_use[0]-1
+            print("o3:", hex(o[3]))
+            print("s0:", hex(spare_to_use[0]))
+            #diff = spare_to_use[0] - o[3]
+            not_translated = False
+            last_i = receiving_block.start - spare_to_use[0] - 1
+            last_len = 1
+            previous_text_offset = o[3] - 1
+            for t in translations:
+                if t.english == b'':
+                    not_translated = True
+                    t.english = t.japanese
+
+                for cc in CONTROL_CODES:
+                    t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
+                    t.english = t.english.replace(cc, CONTROL_CODES[cc])
+
+                if filename in SHADOFF_COMPRESSED_EXES:
+                    t.english = shadoff_compress(t.english)
+                for cc in POSTPROCESSING_CONTROL_CODES:
+                    t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+
+                this_diff = len(t.english) - len(t.japanese)
+
+                i = receiving_block.blockstring.index(t.japanese)
+
+                print(hex(t.location), t.english)
+
+                if i <= last_i:
+                    after_slice = receiving_block.blockstring[last_i+last_len:]
+                    i = after_slice.index(t.japanese)
+                    assert i != -1
+                    i += last_i + last_len
+
+                if not not_translated:
+                    receiving_block.blockstring = receiving_block.blockstring[:i] + t.english + receiving_block.blockstring[i+len(t.japanese):]
+                    reinserted_string_count += 1
+
+                # Edit the pointers of where the string originally was!
+                # Need to edit the pointers even if the length hasn't changed, too. diff should be initialized to the inter-block jump
+                #for p in gamefile.pointers:
+                #    print(hex(p.text_location))
+                if t == translations[0]:
+                    print(gamefile.pointers[o[3]])
+                    #gamefile.pointers[o[3]][0].edit(diff)
+                    diff = (receiving_block.start + i) - o[3]
+                    print("Here's the diff:", diff)
+                    gamefile.edit_pointers_in_range((o[3]-1, o[3]), diff)
+                else:
+                    gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
+                previous_text_offset = t.location
+                last_i = i                   # offset in the receiving block
+                last_len = len(t.english)
+
+                diff += this_diff
 
             # Update that spare to reflect the new string
-            print(spares.index(spare_to_use))
-            spares[spares.index(spare_to_use)] = (spare_to_use[0]+len(o[1]), spare_to_use[1], receiving_block)
+            spares[spares.index(spare_to_use)] = (spare_to_use[0]+final_overflow_len, spare_to_use[1], receiving_block)
 
             # Re-sort the spares
             spares.sort(key=lambda x: x[1] - x[0])  # sort by size
             spares = spares[::-1]  # largest first
 
+            print(o[2], "overflowed", s[2], "is the receiving block")
 
-            
         for s in spares:
             print("spare:", s, s[1] - s[0])
 
 
-        # Incorporate after handling spares            
+        # Incorporate after handling spares
         for block in block_objects:
             block_diff = len(block.blockstring) - len(block.original_blockstring)
-            assert block_diff <= 0, block_diff
+            assert block_diff <= 0, (block, block_diff)
             block.blockstring += (-1)*block_diff*b'\x20'
             block.incorporate()
+
         percentage = int(floor((reinserted_string_count / STRING_COUNTS[filename] * 100)))
         print(filename, str(percentage), "% complete", "(%s / %s)" % (reinserted_string_count, STRING_COUNTS[filename]))
 
