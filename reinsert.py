@@ -37,14 +37,16 @@ OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', ]
+
+#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 #                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
                       # Master,
                        'マスター',]
 
-HIGHEST_SCN = 6300
+HIGHEST_SCN = 2400
 # Problems in 5103, 6100 due to fullwidth text from Haley
 
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
@@ -144,17 +146,20 @@ for filename in FILES_TO_REINSERT:
 
 
     if filename.endswith('.EXE'):
+        block_objects = [Block(gamefile, block) for block in FILE_BLOCKS[filename]]
+        overflow_strings = []
         spares = []
 
-        for block in FILE_BLOCKS[filename]:
-            block = Block(gamefile, block)
+        for block in block_objects:
             previous_text_offset = block.start
             overflowing = False
             overflow_start = 0
             diff = 0
             not_translated = False
+            last_i = 0
+            last_len = 1
             for t in Dump.get_translations(block):
-                print(t.english)
+                #print(t.english)
                 if t.english == b'':
                     not_translated = True
                     t.english = t.japanese
@@ -175,47 +180,63 @@ for filename in FILES_TO_REINSERT:
                 this_string_end = t.location + diff + len(t.english) + this_diff
                 #print(hex(this_string_end), hex(block.stop))
                 if this_string_end > block.stop and not overflowing:
+                    print(t)
+                    print(diff)
                     overflowing = True
-                    overflow_start = loc_in_block
-                    inter_block_diff = SPARE_BLOCK[filename][0] - (block.start + overflow_start)
-                    diff += inter_block_diff
+                    # Need to get the location of where it began to overflow
+                    overflow_start = t.location - block.start + diff + this_diff
+                    #inter_block_diff = SPARE_BLOCK[filename][0] - (block.start + overflow_start)
+                    #diff += inter_block_diff
                     print("It's overflowing at %s" % hex(block.start + loc_in_block))
 
-                #print(hex(t.location), t.jp_bytestring)
                 i = block.blockstring.index(t.japanese)
-                j = block.blockstring.count(t.japanese)
+                #j = block.blockstring.count(t.japanese)
 
-                index = 0
-                while index < len(block.blockstring):
-                    index = block.blockstring.find(t.japanese, index)
-                    if index == -1:
-                        break
-                    #print('jp bytestring found at', index)
-                    index += len(t.japanese) # +2 because len('ll') == 2
+                print(hex(t.location), t.english)
 
-                if loc_in_block != i:
-                    print("Warning: String not where expected")
+                if i < last_i:
+                    after_slice = block.blockstring[last_i+last_len:]
+                    i = after_slice.index(t.japanese)
+                    assert i != -1
+                    i += last_i + last_len
+                print("text at", i)
 
-                #block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
+                #if loc_in_block != i:
+                #    if j != 1:
+                #        print("There are %s strings like this" % j)
+                #    print(i)
+                #    print("Warning: String not where expected")
+
                 if not not_translated:
-                    block.blockstring = block.blockstring.replace(t.japanese, t.english, 1)
+                    #block.blockstring = block.blockstring[:loc_in_block] + t.english + block.blockstring[loc_in_block + len(t.japanese):]
+                    #block.blockstring = block.blockstring.replace(t.japanese, t.english, 1)
+                    block.blockstring = block.blockstring[:i] + t.english + block.blockstring[i+len(t.japanese):]
+                    #print(block.blockstring)
                     reinserted_string_count += 1
 
                 gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
                 previous_text_offset = t.location
+                last_i = i
+                last_len = len(t.english)
 
                 diff += this_diff
-
-            # TODO: Figure out why this breaks stuff
-            #block.blockstring = block.blockstring.replace(b'\x81\x40', b'\x20\x20')
 
 
             block_diff = len(block.blockstring) - len(block.original_blockstring)
 
             print(block_diff)
 
+            if overflowing:
+                overflow_string = block.blockstring[overflow_start:]
+                print(overflow_string)
+                print("Overflow begins at:", hex(block.start + overflow_start))
+                absolute_overflow_start = overflow_start + block.start
+                overflow_strings.append((absolute_overflow_start, overflow_string))
 
-            # TODO: Move stuff not to the SPARE_BLOCK, but to the spare space at end of previous blocks.
+                # Remove the overflow string from the block entirely
+                print(block.blockstring)
+                block.blockstring = block.blockstring[:overflow_start]
+
             #if block_diff > 0 and SPARE_BLOCK[filename]:
             #    overflow_string = block.blockstring[overflow_start:]
                 #print(overflow_string)
@@ -233,11 +254,29 @@ for filename in FILES_TO_REINSERT:
 
             if block_diff < 0:
                 block.blockstring += (-1)*block_diff*b'\x20'
-                spares.append((block.stop-block_diff, block.stop))
+                spares.append((block.stop, block.stop-block_diff))
             block_diff = len(block.blockstring) - len(block.original_blockstring)
             assert block_diff == 0, block_diff
 
-            # TODO: I probably want to incorporate this stuff later, after dealing with spares and such
+        spares.sort(key=lambda x: x[1] - x[0])  # sort by size
+        spares = spares[::-1]  # largest first
+
+        for o in overflow_strings:
+            # o[0] is location, o[1] is the string
+            print("overflows:", o)
+            spare_to_use = spares[0]
+            for s in spares:
+                spare_len = s[1] - s[0]
+                if spare_len >= len(o[1]):
+                    spare_to_use = s
+            print(spare_to_use, " is the snuggest fit, with size", spare_to_use[1]-spare_to_use[0])
+            
+        for s in spares:
+            print("spare:", s, s[1] - s[0])
+
+
+        # Incorporate after handling spares            
+        for block in block_objects:
             block.incorporate()
         percentage = int(floor((reinserted_string_count / STRING_COUNTS[filename] * 100)))
         print(filename, str(percentage), "% complete", "(%s / %s)" % (reinserted_string_count, STRING_COUNTS[filename]))
