@@ -10,7 +10,7 @@ from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOG
 from pointer_info import POINTERS_TO_REASSIGN
 from asm import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
 from utils import typeset, shadoff_compress, replace_control_codes
-from romtools.disk import Disk, Gamefile, Block
+from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 
 #update_google_sheets(DUMP_XLS_PATH, SYS_DUMP_GOOGLE_SHEET)
@@ -37,9 +37,9 @@ OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', ]
+#FILES_TO_REINSERT = ['ORFIELD.EXE', ]
 
-#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 #                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
@@ -75,17 +75,17 @@ for filename in FILES_TO_REINSERT:
 
     if filename == 'ORFIELD.EXE':
         # TODO: Spin this off into asm.py.
-        gamefile.edit(0x151b7, b'\x7d')      # w = "}"
+        gamefile.edit(0x151b7, b'}')         # w = "}"
         gamefile.edit(0x15519, b'\x2f')      # n = "/"
         gamefile.edit(0x15528, b'\x2f')      # n = "/"
         gamefile.edit(0x155df, b'\x2f')      # n = "/"
         gamefile.edit(0x155ee, b'\x2f')      # n = "/"
-        gamefile.edit(0x15b0f, b'\x7d')      # w = "}"
+        gamefile.edit(0x15b0f, b'}')         # w = "}"
         gamefile.edit(0x15b16, b'\x24')      # c = "$"
         gamefile.edit(0x15b1d, b'\x2f')      # n = "/"
         gamefile.edit(0x15b5f, b'\x2f')      # n = "/"
         gamefile.edit(0x15b6c, b'\x24')      # c = "$"
-        gamefile.edit(0x15b99, b'\x7d')      # w = "}"
+        gamefile.edit(0x15b99, b'}')         # w = "}"
         gamefile.edit(0x2551b, b'\x24')      # c = "$"
 
         # ORFIELD.EXE text handling ASM
@@ -253,11 +253,10 @@ for filename in FILES_TO_REINSERT:
 
             # s[0] is the start, s[1] is the end, s[2] is the parent block
 
-            #print(hex(o[0]), hex(o[0]+len(o[1])))
+
             translations = [t for t in Dump.get_translations(o[2]) if o[3] <= t.location]
-            #print(translations)
+
             overflow_len_diff = sum([len(t.english) - len(t.japanese) for t in translations])
-            #print(overflow_len_diff)
             final_overflow_len = len(o[1]) + overflow_len_diff
             for s in spares:
                 spare_len = s[1] - s[0]
@@ -340,6 +339,7 @@ for filename in FILES_TO_REINSERT:
 
         for s in spares:
             print("spare:", s, s[1] - s[0])
+            assert s[1] - s[0] >= 0
 
 
         # Incorporate after handling spares

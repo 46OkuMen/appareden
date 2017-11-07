@@ -29,9 +29,6 @@
 		* Glitched header, glitched contents
 	* Sell Equipment
 
-* Need to expand the equipment name buffers on the status screen. Currently capped at 15 or 16, as on the equipment screen
-	* Now capped at 19, which is almost enough. Looking for ways to get more space now
-
 * Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
 	* Item names too; alignment of the shop menus depends on it
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
@@ -40,19 +37,14 @@
 	* The HP, ZP, and Status column colud use a bit more alignment...
 		* Not sure what's happening here
 
-* I'm not sure how to deal with the window bleeding.
-	* Does it have to do with the compressed chars taking up different amounts of room onscreen and ondisk?
-		* No; changing all the options to all-lowercase leaves the same issue
-	* Ah. Looks like all the headers need to be even-numbered lengths...?
-		* And you generally want ~~ at the end of a section header to avoid text overflow.
-
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
 
 * Where do the town names appear ingame? No sign of them so far
 
-* " Whose?" (equipment) screen is really skinny
-	* Just need to add ~~ to it. Wait for better string rearrangement in the reinserter
+* True Spirit crashes the game again
+
+* "Can't use that zen art" text is bugged, reads "tectionH"
 
 ## ORBTL
 * Zen art "spirit" shows up as "Snow text"
