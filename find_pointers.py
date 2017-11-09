@@ -43,6 +43,7 @@ for f in files_to_search:
     found_text_locations = []
     print(f)
     GF = Gamefile(os.path.join('original', f), disk=OriginalAp)
+    previous_pointer_locations = []
     try:
         worksheet = PtrXl.add_worksheet(GF.filename)
     except AttributeError:
@@ -70,26 +71,31 @@ for f in files_to_search:
 
             text_location = possible_value + POINTER_CONSTANT[f]
             found_text_locations.append(text_location)
-            print(hex(text_location))
+            #print(hex(text_location))
 
-            obj = BorlandPointer(GF, pointer_location, text_location)
-            worksheet.write(row, 0, hex(text_location))
-            worksheet.write(row, 1, hex(pointer_location))
-            worksheet.write(row, 2, obj.text())
+            if pointer_location in previous_pointer_locations:
+                print("%s was skipped since it's a duplicate" % hex(pointer_location))
+            else:
 
+                obj = BorlandPointer(GF, pointer_location, text_location)
+                worksheet.write(row, 0, hex(text_location))
+                worksheet.write(row, 1, hex(pointer_location))
+                worksheet.write(row, 2, obj.text())
+
+                previous_pointer_locations.append(pointer_location)
+                row += 1 
 
             # Prepare the next iteration of the loop
             table_bytes = table_bytes[stride:]
             pointer_location += stride
-            row += 1 
 
     # Now look in the code blocks.
     for block in FILE_BLOCKS[f]:
         blk = Block(GF, block)
         for t in Dump.get_translations(blk, include_blank=True):
-            print(t)
+            #print(t)
             if t.location in found_text_locations:
-                print("skipping that one")
+                #print("skipping that one")
                 continue
 
             all_locs = []
@@ -119,6 +125,14 @@ for f in files_to_search:
                         else:
                             pointer_location = a
 
+            # Need to test its pointer_location against all other previous pointer_locations to avoid duplicates
+            #print([hex(t) for t in previous_pointer_locations])
+            #print(0x26ad8 in previous_pointer_locations)
+            #print(hex(pointer_location))
+            if pointer_location in previous_pointer_locations:
+                print("Duplicate detected at %s, skipping" % hex(pointer_location))
+                continue 
+
             obj = BorlandPointer(GF, pointer_location, text_location)
             worksheet.write(row, 0, hex(text_location))
             try:
@@ -138,6 +152,8 @@ for f in files_to_search:
 
             worksheet.write(row, 2, obj.text())
             row += 1
+
+            previous_pointer_locations.append(pointer_location)
 
 
 PtrXl.workbook.close()

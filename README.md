@@ -21,6 +21,10 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 * xlsxwriter
 * openpyxl
 * Bitstring
+* nosetests
+
+### Running Tests
+`nosetests`
 
 ### Building
 Place your dump of `Appareden.hdi` in the subfolder `original`. Then run these scripts to dump the system text, dialogue, and pointers:

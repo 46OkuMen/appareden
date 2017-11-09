@@ -6,7 +6,7 @@ from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel
 
-FILES_TRANSLATED = ['ORFIELD.EXE',]
+FILES_TRANSLATED = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORMAIN.EXE']
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 #MsgDump = DumpExcel(MSG_XLS_PATH)
@@ -15,7 +15,23 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 # Make sure all the pointers point to the right text.
 # This would be responsible for identifying 90% of errors.
 
-for f in FILES_TRANSLATED:
+def test_no_duplicate_pointers():
+    for f in FILES_TRANSLATED:
+        gf = Gamefile(os.path.join('original', f))
+
+        pointers = PtrDump.get_pointers(gf)
+
+        for pointer_list in pointers.values():
+            #print(pointer_list)
+            if len(pointer_list) > 1:
+                print(pointer_list)
+                for p in pointer_list[1:]:
+                    assert pointer_list[0].location != p.location
+
+# TODO: Test all files' pointers
+
+def test_orfield_pointers():
+    f = 'ORFIELD.EXE'
     successes = 0
     constant = POINTER_CONSTANT[f]
     gf = Gamefile(os.path.join('patched', f))
@@ -79,20 +95,18 @@ for f in FILES_TRANSLATED:
             else:
                 successes += 1
 
-            #if b'WhatWillYouDo?' in target_english:
-            #    sys.exit()
-
     print(successes, " / ", total)
-    # TODO: total is less than the successes currently. Still 12 left in ORFIELD
+    assert successes == total
 
 # Make sure all the blocks contain mutually exclusive, monotonically increasing intervals
-for f in FILE_BLOCKS:
-    last_block = (0, 0)
-    for block in FILE_BLOCKS[f]:
-        #print(block)
-        # Block is from a lower to a higher number
-        assert block[0] < block[1]
+def test_block_integrity():
+    for f in FILE_BLOCKS:
+        last_block = (0, 0)
+        for block in FILE_BLOCKS[f]:
+            #print(block)
+            # Block is from a lower to a higher number
+            assert block[0] < block[1]
 
-        # Block is above the last one
-        assert block[0] >= last_block[1]
-        last_block = block
+            # Block is above the last one
+            assert block[0] >= last_block[1]
+            last_block = block
