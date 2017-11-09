@@ -164,6 +164,11 @@ POINTERS_TO_REASSIGN = {
             (0x2692c, 0x266a3),      # What will you do?
             (0x28044, 0x266a3), 
 
+            (0x2e5f1, 0x2e506),      # Holy Light
+            (0x2e600, 0x2e515),      # Santa Lucia
+            (0x2e60d, 0x2e522),      # Hallelujah
+
+
     ],
 
     'ORBTL.EXE': [

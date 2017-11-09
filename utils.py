@@ -40,6 +40,9 @@ def shadoff_compress(s):
     # Definitely don't compress filenames!
     if b'.GEM' in s:
         return s
+    # If it's all spaces, keep it the same
+    if s.count(b' ') == len(s):
+        return s
 
     s = s.decode('shift-jis')
     compressed = ''
@@ -47,10 +50,13 @@ def shadoff_compress(s):
     chars = list(s)
 
     continuous_spaces = 0
+    #print(chars)
     while chars:
         c = chars.pop(0)
         if c == ' ':
             continuous_spaces += 1
+            if not chars:
+                compressed += c
         elif c.isupper():
             if continuous_spaces > 2:
                 compressed += '_' + chr(continuous_spaces)
@@ -68,6 +74,9 @@ def shadoff_compress(s):
                 c = c.upper()
             continuous_spaces = 0
             compressed += c
+        #print(bytes(compressed, encoding='shift-jis'))
+
+    #print(bytes(compressed, encoding='shift-jis'))
 
     return bytes(compressed, encoding='shift-jis')
 

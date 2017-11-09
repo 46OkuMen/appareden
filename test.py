@@ -1,4 +1,4 @@
-import os
+import os, sys
 from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
 from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET, POINTER_CONSTANT
 from pointer_info import POINTERS_TO_REASSIGN
@@ -6,7 +6,7 @@ from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel
 
-FILES_TRANSLATED = ['ORFIELD.EXE', 'ORBTL.EXE']
+FILES_TRANSLATED = ['ORFIELD.EXE',]
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 #MsgDump = DumpExcel(MSG_XLS_PATH)
@@ -60,6 +60,9 @@ for f in FILES_TRANSLATED:
             else:
                 target_english = t
 
+            for cc in POSTPROCESSING_CONTROL_CODES:
+                target_english = target_english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+
             # Finally, look at the new pointer location in the patched file
             new_bytes = gf.filestring[p.location:p.location+2]
             new_value = int.from_bytes(new_bytes, byteorder='little')
@@ -69,11 +72,27 @@ for f in FILES_TRANSLATED:
             result_english = gf.filestring[new_loc:new_loc+80].split(b'\x00')[0]
 
             if target_english != result_english:
-                print(target_english)
-                print(result_english)
+                print(hex(trans[0].location), target_english)
+                print(hex(new_loc), result_english)
                 print()
                 pass
             else:
                 successes += 1
 
+            #if b'WhatWillYouDo?' in target_english:
+            #    sys.exit()
+
     print(successes, " / ", total)
+    # TODO: total is less than the successes currently. Still 12 left in ORFIELD
+
+# Make sure all the blocks contain mutually exclusive, monotonically increasing intervals
+for f in FILE_BLOCKS:
+    last_block = (0, 0)
+    for block in FILE_BLOCKS[f]:
+        #print(block)
+        # Block is from a lower to a higher number
+        assert block[0] < block[1]
+
+        # Block is above the last one
+        assert block[0] >= last_block[1]
+        last_block = block

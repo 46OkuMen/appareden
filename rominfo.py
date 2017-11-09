@@ -47,11 +47,13 @@ FILE_BLOCKS = {
                 (0x26120, 0x26195),  # names and memory error text
                 (0x26368, 0x26444),  # memory and disk switches
                 (0x26641, 0x26776),  # save and ui texts
-                (0x267ef, 0x2694e),  # ui texts
+                (0x267ef, 0x267ff),
+                (0x26855, 0x2694e),  # ui texts
                 (0x26a0b, 0x26a8f),  # places
                 (0x26b28, 0x26bbd),
                 (0x26e16, 0x26e8a),
-                (0x26e94, 0x26f1c),
+                (0x26e94, 0x26ef9),
+                (0x26ef9, 0x26f1c),
                 (0x2718d, 0x271ac),
                 (0x271c1, 0x271e6),
                 (0x271f8, 0x27557),
