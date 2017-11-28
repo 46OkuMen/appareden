@@ -1,5 +1,9 @@
 # Appareden Todo
 
+## Important
+* All the dialogue is breaking the game suddenly!?
+	* Breaks differently with or without ASM.
+
 ## Reinserter
 * Add functionality to move overflowing strings between spare space.
 * Better typesetting accounting for control codes.
@@ -14,6 +18,10 @@
 * Move all MSGs to one sheet in the sys dump.
 
 ## ORFIELD
+* Fullwidth text support ASM in progress.
+	* See text_compression.txt.
+	* On hold due to all the dialogue breaking
+
 * State of the menus:
 	* Item Shop
 		* Max description length: 33

@@ -48,6 +48,25 @@ jmp x584d      ; (Don't want kanji stuff happening)
 |---spacecode -------------| |-overline-| |--------------------------shadoff-----------------------------|
 3c5f 750c ac 88c1 47 e2fd ac 3c7e 7501 4f 3c5e 7505 ac 0f842a00 3c5a 0f8f2400 3c40 0f8c1e00 47 0420 e91800
 
+
+New additions: Want to do normal things when it's a SJIS fullwidth Latin char (prefix 0x82)
+When it begins with 82, it does this:
+
+cmp al, 81
+jb 5847
+cmp al, a0
+jb 5814
+->
+	mov ah, al
+	lodsb
+	call 56ed
+
+Seems simple enough. I guess I'd have a single "cmp al, 82; je 5814" kind of call
+
+Does 56ed get called normally?
+
+
+
 It is correctly ignoring the lowercase letters, but doing a weird kanji or blank space thing with uppercase.
 
 Probably need to jump at the end.
