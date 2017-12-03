@@ -1,9 +1,5 @@
 # Appareden Todo
 
-## Important
-* All the dialogue is breaking the game suddenly!?
-	* Breaks differently with or without ASM.
-
 ## Reinserter
 * Add functionality to move overflowing strings between spare space.
 * Better typesetting accounting for control codes.
@@ -21,6 +17,7 @@
 * Fullwidth text support ASM in progress.
 	* See text_compression.txt.
 	* On hold due to all the dialogue breaking
+		* That's fixed now. Try it again
 
 * State of the menus:
 	* Item Shop

@@ -10,6 +10,14 @@ jne 271c9
 (taking code from: 2443:580a 3c81 cmp al, 81)
 Taking away code to handle 2-byte SJIS
 
+Fullwidth letter support:
+cmp al, 82
+jne (space control code)
+mov ah, al
+lodsb
+call 56ed
+jmp (584d, end of text handling code)
+
 _x space control code:
 cmp al 5f   ; _
 jnz 5813 ; jump to overline handling code
@@ -64,6 +72,9 @@ jb 5814
 Seems simple enough. I guess I'd have a single "cmp al, 82; je 5814" kind of call
 
 Does 56ed get called normally?
+
+The rewritten code goes from 0x8c0a-0x8c35 in the file.
+In the code, that is from 2443:5804-582f
 
 
 

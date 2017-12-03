@@ -46,7 +46,7 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                       # Master,
                        'マスター',]
 
-HIGHEST_SCN = 24
+HIGHEST_SCN = 3000
 # Problems in 5103, 6100 due to fullwidth text from Haley
 
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
