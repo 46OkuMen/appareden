@@ -8,7 +8,7 @@ from math import floor
 from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
 from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
-from asm import SPACECODE_ASM, OVERLINE_ASM, SHADOFF_ASM
+from asm import SPACECODE_ASM, OVERLINE_ASM, FULLWIDTH_ASM, SKIPCODE_ASM, ASCII_ASM
 from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
@@ -91,7 +91,9 @@ for filename in FILES_TO_REINSERT:
         # ORFIELD.EXE text handling ASM
         gamefile.edit(0x8c0a, SPACECODE_ASM)
         gamefile.edit(0x8c0a+len(SPACECODE_ASM), OVERLINE_ASM)
-        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM), SHADOFF_ASM)
+        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM), FULLWIDTH_ASM)
+        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM)+len(FULLWIDTH_ASM), SKIPCODE_ASM)
+        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM)+len(FULLWIDTH_ASM)+len(SKIPCODE_ASM), ASCII_ASM)
 
         # Expand space for status ailments in menu
         # ac = limit of 6, and we want 12 for Petrified

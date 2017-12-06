@@ -10,48 +10,50 @@ jne 271c9
 (taking code from: 2443:580a 3c81 cmp al, 81)
 Taking away code to handle 2-byte SJIS
 
-Fullwidth letter support:
-cmp al, 82
-jne (space control code)
-mov ah, al
-lodsb
-call 56ed
-jmp (584d, end of text handling code)
-
-_x space control code:
-cmp al 5f   ; _
-jnz 5813 ; jump to overline handling code
-ac lodsb    ; load the number of spaces to repeat
-88c1 mov cl, al
-inc di
-loop 5811 ; repeat "inc di"
-lodsb       ; load the next actual character
 
 
+spaceCtrlCode:
+	cmp al 5f   ; _
+	jnz overlineCtrlCode ; jump to overline handling code
+	lodsb    ; load the number of spaces to repeat
+	mov cl, al
+	inc di
+	loop 5811 ; repeat "inc di"
+	lodsb       ; load the next actual character
 
+overlineCtrlCode:
+	cmp al, 7e   ; overline
+	jnz checkFullwidth
+	dec edi  (x04f)
 
-Overline handling code:
-cmp al, 7e   ; overline
-jnz $+2
-dec edi  (x04f)
-	
+checkFullwidth:
+	cmp al, 82
+	jne skipCompressionCtrlCode
+	mov ah, al
+	lodsb
+	call 56ed  ; what is this function??
+	jmp resumeOriginalProgramming
 
-cmp al, 5e       ; ^ = "skip the compression" code
-jnz $+4   ; if not 5e, go to the above-Z check
-lodsb     ; if 5e, load the next character
-jz $+the end of this  ; skip the compression checks
+skipCompressionCtrlCode:
+	cmp al, 5e       ; ^ = "skip the compression" code
+	jnz ascii   ; if not 5e, go to the next check
+	lodsb     ; if 5e, load the next character
+	jz resumeOriginalProgramming  ; skip the compression checks
 
-First round: Just this code
-cmp al, 5a       ; Check if above Z
-jg x584d         ; jump to end if yes
+ascii:
+	cmp al, 5a       ; Check if above Z
+	jg resumeOriginalProgramming         ; jump to end if yes
 
-cmp al, 40       ; Check if below A
-jl x584d         ; jump to end if yes
+	cmp al, 40       ; Check if below A
+	jl resumeOriginalProgramming         ; jump to end if yes
 
-inc edi (0x47)   ; increase cursor
-add al, 20       ; lower the letter
+	inc edi (0x47)   ; increase cursor
+	add al, 20       ; lower the letter
 
-jmp x584d      ; (Don't want kanji stuff happening)
+	jmp resumeOriginalProgramming      ; (Don't want kanji stuff happening)
+
+resumeOriginalProgramming:
+	(...) ; Stuff at 0x584d
 
 |---spacecode -------------| |-overline-| |--------------------------shadoff-----------------------------|
 3c5f 750c ac 88c1 47 e2fd ac 3c7e 7501 4f 3c5e 7505 ac 0f842a00 3c5a 0f8f2400 3c40 0f8c1e00 47 0420 e91800
@@ -86,6 +88,33 @@ Now it works; still need to use a ^ control code for real uppercase letters.
 
 Now it's working. Need to figure out a better way to encode space separated capitalized words...
 
+
+So what is at 2443:56ed that the game wants to call when it gets kanji?
+cmp ah, 9f
+jbe 56f5
+etc
+
+But in the translated version, it's:
+dec si
+loop 56df
+etc...
+What's changing here?
+
+Any way I can just spoof what happens to it? How does EAX change?
+82c7 -> 2604
+8260 -> 4203
+8261 -> 4303
+
+Maybe I can just subtract... hm
+8260 - 7f1e = 342
+8261 - 7f1e = 343
+
+sub ax, 0x7f1e
+xchg al, ah
+0:  66 2d 1e 7f             sub    ax,0x7f1e
+4:  86 e0                   xchg   al,ah
+
+**Replace the call to 56ed with these.**
 
 SPACECODE ISSUES
 The game seems to calculate the width of windows and cursor highlights based on the length in bytes, not the cursor position.

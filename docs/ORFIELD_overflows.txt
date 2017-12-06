@@ -1,0 +1,59 @@
+(191109, 191226, ORFIELD.EXE (0x2e9b2, 0x2ea85))  is the snuggest fit, with size 117
+0x2850c b'                        '
+0x2851d b'                        '
+0x2852e b'                        '
+ORFIELD.EXE (0x2847d, 0x2853f) overflowed ORFIELD.EXE (0x2e9b2, 0x2ea85) is the receiving block
+(192275, 192559, ORFIELD.EXE (0x2eb4d, 0x2ef13))  is the snuggest fit, with size 284
+0x2882e b'                        '
+0x2883f b'     '
+0x28845 b'     '
+0x2884b b'     '
+ORFIELD.EXE (0x286b1, 0x28851) overflowed ORFIELD.EXE (0x2eb4d, 0x2ef13) is the receiving block
+(185284, 185665, ORFIELD.EXE (0x2d022, 0x2d3c4))  is the snuggest fit, with size 381
+0x2caea b'^ProtectUpToShoulder'
+0x2cb07 b'^MetalBracersFromThe ^West'
+0x2cb24 b'^GauntletsOf ^Heavenly ^Generals'
+0x2cb41 b'^ExtremelyAdmirableGauntlets'
+0x2cb5e b'^DefendsFromZen'
+0x2cb7b b'^ReceiveBlessing'
+0x2cb98 b'^ProtectsFromZen'
+0x2cbb5 b'^ProtectsFromZen'
+0x2cbd2 b'^ProtectsFromZen'
+0x2cbef b'^ProtectsFromZen'
+0x2cc0c b'^ProtectsFromZen'
+0x2cc29 b'^ReceiveTheProtectionOf ^Mahavairocana\x00'
+ORFIELD.EXE (0x2a2ba, 0x2cc45) overflowed ORFIELD.EXE (0x2d022, 0x2d3c4) is the receiving block
+(192343, 192559, ORFIELD.EXE (0x2eb4d, 0x2ef13))  is the snuggest fit, with size 216
+0x2e616 b'^Poison ^Fog'
+0x2e61b b'^Sleep'
+0x2e620 b'^Silence'
+0x2e627 b'^Possess'
+0x2e62c b'^Petrify'
+0x2e635 b'^Release ^Spirit'
+0x2e63e b'^Fireshield'
+0x2e643 b'^Watershield'
+0x2e648 b'^Lightning'
+0x2e64d b'^Blitzbomb'
+0x2e658 b'^Winddrill'
+0x2e663 b'^Firedrake'
+0x2e66e b'^Attack'
+0x2e673 b'^Recovery'
+0x2e678 b'^Special'
+0x2e67d b'^Support'
+0x2e682 b'^Single'
+0x2e687 b'^Group'
+0x2e68c b'^All'
+ORFIELD.EXE (0x2da74, 0x2e690) overflowed ORFIELD.EXE (0x2eb4d, 0x2ef13) is the receiving block
+
+
+0x2cacd b'^CoverBackhand'
+0x2d227 b'^UnableToUseThatHere'
+
+0x2d254 (should point to this)
+diff is 0x2d
+
+0x2caea b'^ProtectUpToShoulder'
+0x2d3d3 b''
+
+0x2d263 (should point to this)
+diff is 0x170
