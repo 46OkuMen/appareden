@@ -1,7 +1,6 @@
 # Appareden Todo
 
 ## Reinserter
-* Add functionality to move overflowing strings between spare space.
 * Better typesetting accounting for control codes.
 * Need to typeset files with portraits and files without portraits differently.
 * Fix the two problem files in the last batch.
@@ -14,10 +13,6 @@
 * Move all MSGs to one sheet in the sys dump.
 
 ## ORFIELD
-* Fullwidth text support ASM in progress.
-	* See text_compression.txt.
-	* On hold due to all the dialogue breaking
-		* That's fixed now. Try it again
 
 * State of the menus:
 	* Item Shop

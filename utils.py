@@ -43,6 +43,9 @@ def shadoff_compress(s):
     # If it's all spaces, keep it the same
     if s.count(b' ') == len(s):
         return s
+    # If it's a fullwidth Latin char SJIS string, keep it the same
+    if s[0] == 0x82:
+        return s
 
     s = s.decode('shift-jis')
     compressed = ''

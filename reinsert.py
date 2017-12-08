@@ -8,7 +8,7 @@ from math import floor
 from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
 from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
-from asm import SPACECODE_ASM, OVERLINE_ASM, FULLWIDTH_ASM, SKIPCODE_ASM, ASCII_ASM
+import asm
 from utils import typeset, shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
@@ -88,14 +88,13 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x15b99, b'}')         # w = "}"
         gamefile.edit(0x2551b, b'\x24')      # c = "$"
 
-        # ORFIELD.EXE text handling ASM
-        gamefile.edit(0x8c0a, SPACECODE_ASM)
-        gamefile.edit(0x8c0a+len(SPACECODE_ASM), OVERLINE_ASM)
-        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM), FULLWIDTH_ASM)
-        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM)+len(FULLWIDTH_ASM), SKIPCODE_ASM)
-        gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM)+len(FULLWIDTH_ASM)+len(SKIPCODE_ASM), ASCII_ASM)
+        # Apply ORFIELD asm hacks
+        asm_cursor = 0
+        for code in asm.ORFIELD_CODE:
+            gamefile.edit(0x8c0b+asm_cursor, code)
+            asm_cursor += len(code)
 
-        gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
+        #gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
 
         # Expand space for status ailments in menu
         # ac = limit of 6, and we want 12 for Petrified
@@ -126,7 +125,7 @@ for filename in FILES_TO_REINSERT:
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
             # If any portraited characters show up in this line, 
-            # this line and next line are narrower
+            # this line (nametag) and next line (entire dialogue box) are narrower
             for name in portrait_characters:
                 if name.encode('shift-jis') in t.japanese:
                     portrait_window_counter = 2

@@ -21,6 +21,10 @@ spaceCtrlCode:
 	loop 5811 ; repeat "inc di"
 	lodsb       ; load the next actual character
 
+; Could I replace mov cl, al, inc di, loop 5811 with a simple add di, ax? ( 66 01 c7)
+; Depends on if ah is emptied or not. (I could also just empty it, 30 e4)
+; This would save 1-3 bytes here
+
 overlineCtrlCode:
 	cmp al, 7e   ; overline
 	jnz checkFullwidth
@@ -155,6 +159,7 @@ mov ax, [03d6]
 call 5711
 mov si, 03d8
 ]
+call 5727               ; Yes, it calls it twice
 pop si
 inc di
 inc di
@@ -168,7 +173,7 @@ add ax, 80
 xchg al, ah
 {
 mov dx, ax
-call 5754
+call 5754              ; Turns off the "print only s" switch
 push si
 }
 mov si, 03d8
@@ -179,14 +184,14 @@ inc si
 mov [si], 00
 inc si
 loop 585e ; (first inc si)
-call 5691
+call 5691             ; Allocate screen space for letters?
 [
-xor ax, ax
-call 5711
+xor ax, ax            ; This can get removed
+call 5711             ; Something important. Without it the text and outline are blended together as a solid clr
 mov si, 0414
-call 573d
+call 573d             ; Outline
 mov ax, [03d6]
-call 5711
+call 5711             ; Text color? Without it it's black
 mov si, 03d8
 ]
 call 573d
@@ -194,7 +199,48 @@ pop si
 inc di
 jmp 57d4
 
+There appears to be no issue if I remove the whole loop (mov si, 03d8 onward) in the halfwidth part...
 
+I have 34 spare bytes, can I fit the fullwidth code in there?
+I need 37 bytes to just jam it in. (from mov dx, ax to the final jmp 57d4) Anything else I can get rid of?
+
+From 2443:5842 - 2443:5866:
+
+8b d0 e8 2d ff 56 e8 66 fe 33 c0 e8 e1 fe be 14 04 e8 f1 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d
+
+Got 2 bytes from not xoring the eax, and 1 more from using a short jump right at the end of the code I wrote.
+Just enough room to stick in the original fullwidth code.
+
+resumeOriginalProgramming should now point to 5867
+
+Can't jump to the original place with that number of bytes, so let's just jmp to the other jmp in halfwidth area.
+
+Everything starting at 5820:
+
+Fullwidth code:
+ac 2d 1e 7f 86 e0 eb 1a 3c 5e 75 05 ac 0f 84 36 00 3c 5a 0f 8f 30 00 3c 40 0f 8c 2a 00 47 04 20 eb 25 8b d0 e8 0d ff 56 e8 46 fe 33 c0 e8 c1 fe be 14 04 e8 d1 fe a1 d6 0e e8 b5 fe be d8 03 e8 c5 fe 5e 47 47 eb 24
+
+Halfwidth code:
+b4 09 86 e0 8b d0 e8 ea fe 56 e8 23 fe e8 a0 fe be 14 04 e8 c6 fe a1 d6 03 e8 94 fe be d8 03 e8 ba fe 5e 47 e9 4c ff
+
+
+I appear to have 44 bytes to spare with fullwidth/halfwidth normal support, is that enough room for compression code?
+Looks like it takes roughly 43 bytes. Neat.
+
+Stuff that jumps to 5856 should now jump to 5869.
+584d should now jump to 5867.
+
+Can't reach 57da from 5865, so jump to 588b (which jumps to 57da)
+
+fullwidthOriginal:(581a) (582a) now 583e
+	mov ah, al
+	lodsb
+	call 56f3
+	...
+halfwidthOriginal: 5867
+	mov ah, 09
+	xchg al, ah
+	...
 
 SPACECODE ISSUES
 The game seems to calculate the width of windows and cursor highlights based on the length in bytes, not the cursor position.
