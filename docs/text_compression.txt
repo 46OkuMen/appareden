@@ -31,7 +31,8 @@ checkFullwidth:
 	jne skipCompressionCtrlCode
 	mov ah, al
 	lodsb
-	call 56ed  ; what is this function??
+	sub ax, 0x7f1e
+	xchg al, ah
 	jmp resumeOriginalProgramming
 
 skipCompressionCtrlCode:
@@ -101,7 +102,7 @@ etc...
 What's changing here?
 
 Any way I can just spoof what happens to it? How does EAX change?
-82c7 -> 2604
+82a4? -> 2604
 8260 -> 4203
 8261 -> 4303
 
@@ -111,10 +112,89 @@ Maybe I can just subtract... hm
 
 sub ax, 0x7f1e
 xchg al, ah
-0:  66 2d 1e 7f             sub    ax,0x7f1e
+0:  2d 1e 7f                sub    ax,0x7f1e
 4:  86 e0                   xchg   al,ah
 
 **Replace the call to 56ed with these.**
+
+More than just that though... After returning from that call,
+cmp al, 09 ; yes, all the values we want will be 03 I think
+jb 5822
+
+mov dx, ax
+call 5754
+(in here, ax gets set 2604 -> 100a)
+82a4 -> 2604 -> 
+
+push si
+call 5691
+
+Hm. If I reroute the post-fullwidth jump to skip the xchg ah, al and addition, it only wants to print the left half of each character... which function needs a better argument?
+Need to compare the series of fullwidth function calls and halfwidth function calls.
+
+fullwidth:
+mov ah, al
+lodsb
+call 56ed
+cmp al, 09
+jb 5822     (mov dx, ax below)
+cmp al, 0b
+jbe 5852    (mov dx, ax **in halfwidth handling code**)
+{
+mov dx, ax
+call 5754
+push si
+}
+call 5691
+[
+xor ax, ax
+call 5711
+mov si, 0414
+call 5727
+mov ax, [03d6]
+call 5711
+mov si, 03d8
+]
+pop si
+inc di
+inc di
+jmp 57d4
+
+halfwidth:
+mov ah, 09
+cmp al, a0
+jb 5850
+add ax, 80
+xchg al, ah
+{
+mov dx, ax
+call 5754
+push si
+}
+mov si, 03d8
+mov cx, 0014
+inc si
+and [si], 80
+inc si
+mov [si], 00
+inc si
+loop 585e ; (first inc si)
+call 5691
+[
+xor ax, ax
+call 5711
+mov si, 0414
+call 573d
+mov ax, [03d6]
+call 5711
+mov si, 03d8
+]
+call 573d
+pop si
+inc di
+jmp 57d4
+
+
 
 SPACECODE ISSUES
 The game seems to calculate the width of windows and cursor highlights based on the length in bytes, not the cursor position.

@@ -95,6 +95,8 @@ for filename in FILES_TO_REINSERT:
         gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM)+len(FULLWIDTH_ASM), SKIPCODE_ASM)
         gamefile.edit(0x8c0a+len(SPACECODE_ASM)+len(OVERLINE_ASM)+len(FULLWIDTH_ASM)+len(SKIPCODE_ASM), ASCII_ASM)
 
+        gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
+
         # Expand space for status ailments in menu
         # ac = limit of 6, and we want 12 for Petrified
         gamefile.edit(0x1ab14, b'\xb2')
