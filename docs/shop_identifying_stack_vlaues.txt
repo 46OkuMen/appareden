@@ -1,0 +1,159 @@
+To get item description truncation, we need a way of figuring out if a "Buy items" menu is open, so we can ignore or follow a "truncation" control code.
+
+Some stack in item shop, printing ^Heal10-20
+
+46f4
+0000
+0000
+e98a
+0b43
+36c9
+0cae
+48be
+0029
+0008
+6126
+525e
+6365
+766f
+0072
+3333
+9300
+0001
+93a0
+038c
+0002
+1a00
+
+printing ^HealPoison
+
+46f4
+0000
+0001
+e98a
+0b43
+36c9
+0cf9
+4904
+0029
+0008
+6126
+525e
+6365
+766f
+0072
+3333
+9300
+0001
+93a0
+038c
+038c
+0002
+1a00
+
+printing ^HypnotizeEnemies
+46f4
+0000
+0002
+e98a
+0b43
+36c9
+0d44
+49bf
+0029
+0008
+6326
+535e
+7075
+7270
+0074
+3333
+9300
+0001
+93a0
+038c
+0002
+1a00
+
+In the armor shop, printing ^CoverBackhand:
+
+46f4
+e996
+0000
+e98a
+1ab4
+36c9
+1311
+7344
+0029
+0008
+415e
+6d72
+0073
+
+In the weapon shop, printing ^WithoutGuard:
+46f4
+e996
+e920
+e98a
+1a96
+...
+
+In the item screen, printing ^Heal10-20:
+
+0000
+e5ce
+e620
+4996
+3b3d
+e5ce
+48be
+0101
+0000
+485e
+6165
+316c
+2d35
+3034
+0000
+0000
+0000
+0000
+e5fe
+0000
+46f4
+0080
+46f4
+0500
+0c3a
+0008
+269a
+0000
+46f4
+0000
+0001
+
+That's... quite different.
+
+Two good candidates mihgt be the e98a at the base, or 46f4 right at the top.
+The 46f4 remains at the top ([ebp+12]?) when it reaches the code I can edit, too
+
+cmp al, '{' ; truncation code
+jnz nextCheck
+pop cx
+cmp cx, 0x46f4
+push cx
+lodsb
+jnz nextCheck
+jmp somewhere where it thinks the string is done printing.
+
+This'd probably take 18 bytes at least. I have only 13, is there stuff I can get rid of?
+
+0:  3c 7b                   cmp    al,0x7b
+2:  75 02                   jne    6 <_main+0x6>
+4:  66 59                   pop    cx
+6:  67 81 f9 f4 46          cmp    cx,0x46f4          ** Note that it's 67, not 66 as the online one says **
+b:  66 51                   push   cx
+d:  ac                      lods   al,BYTE PTR ds:[esi]
+e:  75 0a                   jne    1a <_main+0x1a>
+10: eb 02                   jmp    14 <_main+0x14>

@@ -12,25 +12,26 @@ Taking away code to handle 2-byte SJIS
 
 
 
-spaceCtrlCode:
+spaceCompression:   ; 2443:580e
 	cmp al 5f   ; _
 	jnz overlineCtrlCode ; jump to overline handling code
 	lodsb    ; load the number of spaces to repeat
-	mov cl, al
-	inc di
-	loop 5811 ; repeat "inc di"
+	xor ah, ah
+	add di, ax
 	lodsb       ; load the next actual character
 
 ; Could I replace mov cl, al, inc di, loop 5811 with a simple add di, ax? ( 66 01 c7)
 ; Depends on if ah is emptied or not. (I could also just empty it, 30 e4)
 ; This would save 1-3 bytes here
+; Did it, saved 1 byte. Woo
 
-overlineCtrlCode:
+overlineCtrlCode:   ; 5819
 	cmp al, 7e   ; overline
-	jnz checkFullwidth
+	jnz skipCompressionCtrlCode
 	dec edi  (x04f)
 
-checkFullwidth:
+(
+checkFullwidth:     ; 581e, but no longer needed
 	cmp al, 82
 	jne skipCompressionCtrlCode
 	mov ah, al
@@ -38,27 +39,38 @@ checkFullwidth:
 	sub ax, 0x7f1e
 	xchg al, ah
 	jmp resumeOriginalProgramming
+)
 
-skipCompressionCtrlCode:
+skipCompressionCtrlCode:  ; 581e
 	cmp al, 5e       ; ^ = "skip the compression" code
-	jnz ascii   ; if not 5e, go to the next check
+	jnz shadoffCompression   ; if not 5e, go to the next check
 	lodsb     ; if 5e, load the next character
-	jz resumeOriginalProgramming  ; skip the compression checks
+	jz halfwidthOriginal  ; skip the compression checks
 
-ascii:
+shadoffCompression:                      ; 5825
 	cmp al, 5a       ; Check if above Z
-	jg resumeOriginalProgramming         ; jump to end if yes
+	jg halfwidthOriginal         ; jump to end if yes
 
 	cmp al, 40       ; Check if below A
-	jl resumeOriginalProgramming         ; jump to end if yes
+	jl halfwidthOriginal         ; jump to end if yes
 
 	inc edi (0x47)   ; increase cursor
 	add al, 20       ; lower the letter
 
-	jmp resumeOriginalProgramming      ; (Don't want kanji stuff happening)
+	jmp halfwidthOriginal      ; (Don't want kanji stuff happening)
 
 resumeOriginalProgramming:
 	(...) ; Stuff at 0x584d
+
+fullwidthOriginal:(581a) (582a) now 583e
+	mov ah, al
+	lodsb
+	call 56f3
+	...
+halfwidthOriginal: 5867
+	mov ah, 09
+	xchg al, ah
+	...
 
 |---spacecode -------------| |-overline-| |--------------------------shadoff-----------------------------|
 3c5f 750c ac 88c1 47 e2fd ac 3c7e 7501 4f 3c5e 7505 ac 0f842a00 3c5a 0f8f2400 3c40 0f8c1e00 47 0420 e91800
@@ -224,7 +236,7 @@ Halfwidth code:
 b4 09 86 e0 8b d0 e8 ea fe 56 e8 23 fe e8 a0 fe be 14 04 e8 c6 fe a1 d6 03 e8 94 fe be d8 03 e8 ba fe 5e 47 e9 4c ff
 
 
-I appear to have 44 bytes to spare with fullwidth/halfwidth normal support, is that enough room for compression code?
+I appear to have 46 bytes to spare with fullwidth/halfwidth normal support, is that enough room for compression code?
 Looks like it takes roughly 43 bytes. Neat.
 
 Stuff that jumps to 5856 should now jump to 5869.
