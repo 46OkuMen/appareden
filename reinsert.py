@@ -25,13 +25,13 @@ STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
-                 'all_msgs': 13078,
+                 'all_msgs': 13078,       # MSGs definitely needs a recount
                  }
 
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
 
 Dump = DumpExcel(DUMP_XLS_PATH)
-MsgDump = DumpExcel(MSG_XLS_PATH)
+#MsgDump = DumpExcel(MSG_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
@@ -46,17 +46,15 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                       # Master,
                        'マスター',]
 
-HIGHEST_SCN = 3000
+HIGHEST_SCN = 6000
 # Problems in 5103, 6100 due to fullwidth text from Haley
 
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
-print(msg_files)
 msgs_to_reinsert = [f for f in msg_files if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
 valid_msgs = []
 for m in msgs_to_reinsert:
-    print(m)
     try:
-        sheet = MsgDump.get_translations(m)
+        sheet = Dump.get_translations(m, sheet_name='MSG')
         valid_msgs.append(m)
     except KeyError:
         continue
@@ -118,7 +116,7 @@ for filename in FILES_TO_REINSERT:
 
         portrait_window_counter = 0
 
-        for t in MsgDump.get_translations(filename):
+        for t in Dump.get_translations(filename, sheet_name='MSG'):
 
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
