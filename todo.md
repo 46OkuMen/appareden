@@ -89,3 +89,5 @@
 	* Pad it with lots of ~ at the end.
 * Window too large
 	* Put [00] at the end.
+* Stuff not found while reinserting MSGs
+	* Some characters got garbled by the dumper. Compare the dump's characters to those in the original file byte by byte.
