@@ -5,7 +5,7 @@
 
 import os
 from math import floor
-from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
+from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, WAITS
 from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
 import asm
@@ -147,6 +147,10 @@ for filename in FILES_TO_REINSERT:
 
             if portrait_window_counter > 0:
                 portrait_window_counter -= 1
+
+        # temporarily replace all the waits with nothing
+        for w in WAITS:
+            gamefile.filestring = gamefile.filestring.replace(w, b'')
 
 
     if filename.endswith('.EXE'):

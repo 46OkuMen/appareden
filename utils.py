@@ -93,6 +93,8 @@ def replace_control_codes(s):
                 s = s[:cursor] + '/' + s[cursor+1:]
         if c == 'w':
             s = s[:cursor] + '}' + s[cursor+1:]
+        #if c == 'w':
+        #    s = s[:cursor] + s[cursor+2:]
         if c == 'c':
             if s[cursor-1] != '>':
                 s = s[:cursor] + '$' + s[cursor+1:]
