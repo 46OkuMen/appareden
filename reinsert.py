@@ -17,7 +17,6 @@ from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 #update_google_sheets(MSG_XLS_PATH, MSG_DUMP_GOOGLE_SHEET)
 # The current method won't work for the MSG dump; too many requests.
 # Need to condense it into one sheet after draft is done.
-# TODO: Does it work now?
 
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
@@ -26,7 +25,7 @@ STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
-                 'all_msgs': 5594,
+                 'all_msgs': 13078,       # MSGs definitely needs a recount
                  }
 
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
@@ -47,7 +46,7 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                       # Master,
                        'マスター',]
 
-HIGHEST_SCN = 11001
+HIGHEST_SCN = 6000
 # Problems in 5103, 6100 due to fullwidth text from Haley
 
 msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
@@ -56,9 +55,7 @@ valid_msgs = []
 for m in msgs_to_reinsert:
     try:
         sheet = Dump.get_translations(m, sheet_name='MSG')
-        if len(sheet) > 0:
-            valid_msgs.append(m)
-            print(m, "is a real msg")
+        valid_msgs.append(m)
     except KeyError:
         continue
 
