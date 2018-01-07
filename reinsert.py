@@ -17,7 +17,6 @@ from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 #update_google_sheets(MSG_XLS_PATH, MSG_DUMP_GOOGLE_SHEET)
 # The current method won't work for the MSG dump; too many requests.
 # Need to condense it into one sheet after draft is done.
-# TODO: Does it work now?
 
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
@@ -26,7 +25,7 @@ STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
-                 'all_msgs': 5594,
+                 'all_msgs': 13078,       # MSGs definitely needs a recount
                  }
 
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
@@ -57,9 +56,7 @@ valid_msgs = []
 for m in msgs_to_reinsert:
     try:
         sheet = Dump.get_translations(m, sheet_name='MSG')
-        if len(sheet) > 0:
-            valid_msgs.append(m)
-            print(m, "is a real msg")
+        valid_msgs.append(m)
     except KeyError:
         continue
 print(valid_msgs)
@@ -170,6 +167,10 @@ for filename in FILES_TO_REINSERT:
 
             if portrait_window_counter > 0:
                 portrait_window_counter -= 1
+
+        # temporarily replace all the waits with nothing
+        for w in WAITS:
+            gamefile.filestring = gamefile.filestring.replace(w, b'')
 
 
     if filename.endswith('.EXE'):

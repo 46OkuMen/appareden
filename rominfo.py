@@ -223,3 +223,5 @@ POSTPROCESSING_CONTROL_CODES = {
     b'~': b' ',
     b'[BLANK]': b'',
 }
+
+WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
