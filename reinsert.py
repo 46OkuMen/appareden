@@ -5,7 +5,7 @@
 
 import os
 from math import floor
-from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, WAITS
+from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, B_CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
 from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
 import asm
@@ -31,35 +31,38 @@ STRING_COUNTS = {'ORTITLE.EXE': 18,
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
 
 Dump = DumpExcel(DUMP_XLS_PATH)
-#MsgDump = DumpExcel(MSG_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', ]
+#FILES_TO_REINSERT = ['ORFIELD.EXE', ]
 
-#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 #                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
                       # Master,
                        'マスター',]
 
-HIGHEST_SCN = 6000
-# Problems in 5103, 6100 due to fullwidth text from Haley
+#HIGHEST_SCN = 2400
+HIGHEST_SCN = 11001
 
-msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
-msgs_to_reinsert = [f for f in msg_files if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
+#msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
+msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
+"""
 valid_msgs = []
+# TODO: Cache the list of real ones
 for m in msgs_to_reinsert:
     try:
         sheet = Dump.get_translations(m, sheet_name='MSG')
         valid_msgs.append(m)
     except KeyError:
         continue
+print(valid_msgs)
+"""
 
-FILES_TO_REINSERT += valid_msgs
+FILES_TO_REINSERT += msgs_to_reinsert
 
 total_reinserted_strings = 0
 
@@ -72,19 +75,37 @@ for filename in FILES_TO_REINSERT:
     reinserted_string_count = 0
 
     if filename == 'ORFIELD.EXE':
+
+        # code from n.py
+        #with open('original\\ORFIELD.EXE', 'rb') as f:
+        #    file_contents = f.read()
+        #ws = [i for i in range(len(file_contents)) if file_contents.find(b'w', i) == i] # 200
+
+        #for i, w in enumerate(ws):
+        #    print(i, hex(w))
+
+        #ws_to_replace = [63, 67, 68]   # Current understanding
+        #ws_to_replace = range(55, 173)
+        # Pointer constant is between 172 and 173
+
+        #for w in ws_to_replace:
+        #    gamefile.edit(ws[w], B_CONTROL_CODES[b'w'])
+
         # TODO: Spin this off into asm.py.
-        gamefile.edit(0x151b7, b'}')         # w = "}"
-        gamefile.edit(0x15519, b'\x2f')      # n = "/"
-        gamefile.edit(0x15528, b'\x2f')      # n = "/"
-        gamefile.edit(0x155df, b'\x2f')      # n = "/"
-        gamefile.edit(0x155ee, b'\x2f')      # n = "/"
-        gamefile.edit(0x15b0f, b'}')         # w = "}"
-        gamefile.edit(0x15b16, b'\x24')      # c = "$"
-        gamefile.edit(0x15b1d, b'\x2f')      # n = "/"
-        gamefile.edit(0x15b5f, b'\x2f')      # n = "/"
-        gamefile.edit(0x15b6c, b'\x24')      # c = "$"
-        gamefile.edit(0x15b99, b'}')         # w = "}"
-        gamefile.edit(0x2551b, b'\x24')      # c = "$"
+        gamefile.edit(0x151b7, B_CONTROL_CODES[b'w'])         # w = "{"
+        gamefile.edit(0x15b0f, B_CONTROL_CODES[b'w'])         # w = "{"
+        gamefile.edit(0x15b99, B_CONTROL_CODES[b'w'])         # w = "{"
+
+        gamefile.edit(0x15519, B_CONTROL_CODES[b'n'])         # n = "/"
+        gamefile.edit(0x15528, B_CONTROL_CODES[b'n'])         # n = "/"
+        gamefile.edit(0x155df, B_CONTROL_CODES[b'n'])         # n = "/"
+        gamefile.edit(0x155ee, B_CONTROL_CODES[b'n'])         # n = "/"
+        gamefile.edit(0x15b1d, B_CONTROL_CODES[b'n'])         # n = "/"
+        gamefile.edit(0x15b5f, B_CONTROL_CODES[b'n'])         # n = "/"
+
+        gamefile.edit(0x15b16, B_CONTROL_CODES[b'c'])         # c = "$"
+        gamefile.edit(0x15b6c, B_CONTROL_CODES[b'c'])         # c = "$"
+        gamefile.edit(0x2551b, B_CONTROL_CODES[b'c'])         # c = "$"
 
         # Apply ORFIELD asm hacks
         asm_cursor = 0
@@ -98,6 +119,7 @@ for filename in FILES_TO_REINSERT:
         # ac = limit of 6, and we want 12 for Petrified
         gamefile.edit(0x1ab14, b'\xb2')
 
+
     if filename in POINTERS_TO_REASSIGN:
         reassignments = POINTERS_TO_REASSIGN[filename]
         for src, dest in reassignments:
@@ -109,6 +131,7 @@ for filename in FILES_TO_REINSERT:
                 p.edit(diff)
             gamefile.pointers[dest] += gamefile.pointers[src]
             gamefile.pointers.pop(src)
+
 
     if filename.endswith('.MSG'):
         # First, gotta replace all the control codes.

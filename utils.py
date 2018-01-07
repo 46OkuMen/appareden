@@ -1,3 +1,5 @@
+from rominfo import S_CONTROL_CODES
+
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
 
@@ -90,14 +92,14 @@ def replace_control_codes(s):
         c = s[cursor]
         if c == 'n':
             if s[cursor-1] != '>':
-                s = s[:cursor] + '/' + s[cursor+1:]
+                s = s[:cursor] + S_CONTROL_CODES['n'] + s[cursor+1:]
         if c == 'w':
-            s = s[:cursor] + '}' + s[cursor+1:]
-        #if c == 'w':
-        #    s = s[:cursor] + s[cursor+2:]
+            # TODO: Why am I replacing the >w control codes here as well? Let's try not doin gthat
+            #if s[cursor-1] != '>':
+            s = s[:cursor] + S_CONTROL_CODES['w'] + s[cursor+1:]
         if c == 'c':
             if s[cursor-1] != '>':
-                s = s[:cursor] + '$' + s[cursor+1:]
+                s = s[:cursor] + S_CONTROL_CODES['c'] + s[cursor+1:]
         cursor += 1
     s = s.encode('shift-jis')
     return s

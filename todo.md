@@ -2,15 +2,12 @@
 
 ## Reinserter
 * Better typesetting accounting for control codes.
-* Need to typeset files with portraits and files without portraits differently.
 * Fix the two problem files in the last batch.
-* [WAIT] control codes don't seem to be inserting properly...
-	* They insert as expected, they just aren't interpreted correctly by the game. Why is this?
+* [WAIT] control codes need spaces after them.
 
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
 * Issues with the ">f01040 tags when meeting GOemon/Master
-* Move all MSGs to one sheet in the sys dump.
 
 ## ORFIELD
 
