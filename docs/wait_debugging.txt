@@ -1,0 +1,40 @@
+Text shows up at 556b0~
+Before that, at 557d0~
+Gets loaded from [bx], which is e8a9. Which segment? c000? 35f4? (Not sure)
+
+35f4:0bfd 80397d cmp [bx+di], 7d
+jz (yes, taken to 0c10)
+
+That cmp instruction shows up twice in patched ORFIELD, none in original
+
+The ascii wait ints are from x30 to x36ish? So that cmp [bx+di], 2f looks relevant (/)
+Also a cmp to 24 ($)
+Although they're equality compares, so they're mostly to skip things
+Oops. Forgot those were other control codes I replaced
+
+Calls some function with an argument e876?
+That puts 36 (the wait value) in EBX (but then that gets overwritten.... oops)
+
+The first cmp 7d is for calling that function, the second cmp 7d is for getting the wait value?
+
+Second function puts 30 (wait value 0) in ebx
+
+** Start rebuilding everything from scratch, one piece at a time, and see where it breaks **
+
+
+It's a pointer problem? Somewhere in ORFIELD from 962-end
+In 962-1153, or 1171-1194
+It's in 1139-1152
+
+Something to do with a reassigned pointer? Lots of those in that block
+Didn't reassign pointers this time, still broken
+
+Out of order pointer to 0x2ea14. Lots of choices:
+, '0x22e76', '0x22ff4', '0x2308a', '0x23226', '0x2326d', '0x23300', '0x23394', '0x23487', '0x234ce', '0x23561', '0x235f5', '0x236e5', '0x23753', '0x237a3', '0x238b1', '0x238f5', '0x239d6', '0x23aa3', '0x258ee', '0x2591f', '0x25e09', '0x25e2a', '0x25ea3', '0x25ec7', '0x25ef0']
+
+Previous one is 0x22fd5, others are spaced like 0x30 apart. so let's try 22ff4.
+
+Next one is also out of order.
+['0x3ed7', '0x4dd5', '0x74ba', '0x9f40', '0xa159', '0xd4cd', '0xd7b6', '0xfafd', '0x12a17', '0x12d2b', '0x15a77', '0x15acf', '0x15db5', '0x162e4', '0x162f4', '0x16835', '0x16ca7', '0x16ee8', '0x172a3', '0x19de1', '0x19f04', '0x1a380', '0x1b8da', '0x1b8eb', '0x1bbcc', '0x1d67c', '0x1f3ed', '0x20207', '0x21784', '0x21912', '0x21abf', '0x21ba2', '0x2262b', '0x2288d', '0x22993', '0x22b7d', '0x22c3f', '0x23099', '0x253bb']
+
+I think that fixes it.

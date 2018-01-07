@@ -38,6 +38,8 @@ POINTER_DISAMBIGUATION = {
   0x2d30c: 0x2239a,
   0x2d3a9: 0x2d396,   # Ocean Dragon Pill -> Unable to use that here
   0x27546: 0x177d9,
+  0x2ea1c: 0x23099,   # Fixes the wait bug
+  0x2ea20: 0x23064,
 
 
   # ORBTL
