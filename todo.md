@@ -3,7 +3,8 @@
 ## Reinserter
 * Better typesetting accounting for control codes.
 * Fix the two problem files in the last batch.
-* [WAIT] control codes need spaces after them.
+* [WAIT] control codes sometimes overwrite a few characters ago.
+	* What's the pattern? It's only some of them...
 
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
@@ -86,3 +87,6 @@
 	* Pad it with lots of ~ at the end.
 * Window too large
 	* Put [00] at the end.
+* JP strings in MSGs not being found
+	* There's some difference between the string in the dump and the string in the msg.
+	* Look for double-ascii-spaces, improperly dumped kanji, etc. Compare byte by byte.

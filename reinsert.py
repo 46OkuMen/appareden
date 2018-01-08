@@ -5,7 +5,7 @@
 
 import os
 from math import floor
-from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, B_CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
+from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
 from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
 from pointer_info import POINTERS_TO_REASSIGN
 import asm
@@ -19,13 +19,13 @@ from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 # Need to condense it into one sheet after draft is done.
 
 # TODO: Calculate these, don't hardcode them
-STRING_COUNTS = {'ORTITLE.EXE': 18,
-                 'ORMAIN.EXE': 202,
-                 'ORFIELD.EXE': 1169,
+STRING_COUNTS = {'ORTITLE.EXE': 25,
+                 'ORMAIN.EXE': 204,
+                 'ORFIELD.EXE': 1193,
                  'ORBTL.EXE': 780,
                  'NEKORUN.EXE': 4,
                  'SFIGHT.EXE': 15,
-                 'all_msgs': 13078,       # MSGs definitely needs a recount
+                 'all_msgs': 5592,
                  }
 
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
