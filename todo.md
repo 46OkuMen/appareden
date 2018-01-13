@@ -2,13 +2,15 @@
 
 ## Reinserter
 * Better typesetting accounting for control codes.
-* Fix the two problem files in the last batch.
 * [WAIT] control codes sometimes overwrite a few characters ago.
 	* What's the pattern? It's only some of them...
 
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
+	* Replaced the ~ with --, maybe that'll work?
+	* Also, the overline should come from an actual overlined character, not ~...
 * Issues with the ">f01040 tags when meeting GOemon/Master
+	* They're missing [LN]s at the end from the JP version. Adding that in
 
 ## ORFIELD
 
@@ -44,6 +46,10 @@
 
 * "Can't use that zen art" text is bugged, reads "tectionH"
 
+* 29-30 are repeats of 26-27
+
+* At the bottom of the first dungeon I got a Butter Ame, shouldn't it be the Golden Carp (1 item lower)?
+
 ## ORBTL
 * Zen art "spirit" shows up as "Snow text"
 
@@ -55,8 +61,10 @@
 	* Or just do those problem files manually.
 * Need to progress in the game far enough to get to the minigames and test their graphics.
 * That one cat tank monster near Koro-pok-guru village has an animation we should translate too.
+	* Wheelcat
 * Still haven't given them over to SkyeWelse.
 * How should we handle the shop signs?
+* CD version intro graphics need to be translated too.
 
 ## CD Version
 * So, none of the executables will be the same. Uh oh.
@@ -90,3 +98,7 @@
 * JP strings in MSGs not being found
 	* There's some difference between the string in the dump and the string in the msg.
 	* Look for double-ascii-spaces, improperly dumped kanji, etc. Compare byte by byte.
+* MSG dialogue includes >f00013 and the next window too
+	* Put an [LN] at the end of the line, if there's one at the end of the JP line
+* Game freezes, and resetting it makes it freeze at the sound select screen
+	* See if the joystick is stuck in Joy2Key

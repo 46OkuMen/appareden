@@ -110,3 +110,7 @@ def test_block_integrity():
             # Block is above the last one
             assert block[0] >= last_block[1]
             last_block = block
+
+def test_MSG_end_linebreaks():
+    # Make sure that if t.japanese ends in [LN], t.english should also end in [LN].
+    pass

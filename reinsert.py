@@ -22,8 +22,8 @@ from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 STRING_COUNTS = {'ORTITLE.EXE': 25,
                  'ORMAIN.EXE': 204,
                  'ORFIELD.EXE': 1193,
-                 'ORBTL.EXE': 780,
-                 'NEKORUN.EXE': 4,
+                 'ORBTL.EXE': 785,
+                 'NEKORUN.EXE': 3,
                  'SFIGHT.EXE': 15,
                  'all_msgs': 5592,
                  }
@@ -42,11 +42,12 @@ FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 #                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
-                      # Master,
-                       'マスター',]
+                      # Master, Koro Elder,
+                       'マスター', 'コロ長老', 
+                       ]
 
-#HIGHEST_SCN = 2400
-HIGHEST_SCN = 11001
+HIGHEST_SCN = 2503
+#HIGHEST_SCN = 11001
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
@@ -140,6 +141,9 @@ for filename in FILES_TO_REINSERT:
         portrait_window_counter = 0
 
         for t in Dump.get_translations(filename, sheet_name='MSG'):
+
+            if b'Hakodate' in t.english:
+                print(t.english)
 
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
