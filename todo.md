@@ -4,6 +4,8 @@
 * Better typesetting accounting for control codes.
 * [WAIT] control codes sometimes overwrite a few characters ago.
 	* What's the pattern? It's only some of them...
+		* Not related to the WAIT number. Is it an even/odd positioning thing?
+	* You can workaround it by adding spaces after it, but that's annnoying...
 
 ## MSGs
 * Vagrant "Come on(overline) The place is empty."
@@ -49,6 +51,7 @@
 * 29-30 are repeats of 26-27
 
 * At the bottom of the first dungeon I got a Butter Ame, shouldn't it be the Golden Carp (1 item lower)?
+	* No - you use th2e Buteter Ame to cross the bridge and get it there?8
 
 ## ORBTL
 * Zen art "spirit" shows up as "Snow text"
@@ -65,6 +68,7 @@
 * Still haven't given them over to SkyeWelse.
 * How should we handle the shop signs?
 * CD version intro graphics need to be translated too.
+* Spell names are the wrong color on the spell screen
 
 ## CD Version
 * So, none of the executables will be the same. Uh oh.

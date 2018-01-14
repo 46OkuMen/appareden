@@ -42,12 +42,12 @@ FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 #                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
-                      # Master, Koro Elder,
-                       'マスター', 'コロ長老', 
+                      # Master, Koro Elder, WeaponsGeezer, Elder, AntiquesShop, Shikai, Tamamo,
+                       'マスター', 'コロ長老',  '武器屋のオヤジ', '長老', '骨董品屋の主人', '四界王', 'タマモ',
                        ]
 
-HIGHEST_SCN = 2503
-#HIGHEST_SCN = 11001
+#HIGHEST_SCN = 2503
+HIGHEST_SCN = 11001
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
@@ -77,21 +77,6 @@ for filename in FILES_TO_REINSERT:
 
     if filename == 'ORFIELD.EXE':
 
-        # code from n.py
-        #with open('original\\ORFIELD.EXE', 'rb') as f:
-        #    file_contents = f.read()
-        #ws = [i for i in range(len(file_contents)) if file_contents.find(b'w', i) == i] # 200
-
-        #for i, w in enumerate(ws):
-        #    print(i, hex(w))
-
-        #ws_to_replace = [63, 67, 68]   # Current understanding
-        #ws_to_replace = range(55, 173)
-        # Pointer constant is between 172 and 173
-
-        #for w in ws_to_replace:
-        #    gamefile.edit(ws[w], B_CONTROL_CODES[b'w'])
-
         # TODO: Spin this off into asm.py.
         gamefile.edit(0x151b7, B_CONTROL_CODES[b'w'])         # w = "{"
         gamefile.edit(0x15b0f, B_CONTROL_CODES[b'w'])         # w = "{"
@@ -114,7 +99,8 @@ for filename in FILES_TO_REINSERT:
             gamefile.edit(0x8c0b+asm_cursor, code)
             asm_cursor += len(code)
 
-        #gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
+        # Wait, what is this again?
+        gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
 
         # Expand space for status ailments in menu
         # ac = limit of 6, and we want 12 for Petrified
@@ -142,8 +128,8 @@ for filename in FILES_TO_REINSERT:
 
         for t in Dump.get_translations(filename, sheet_name='MSG'):
 
-            if b'Hakodate' in t.english:
-                print(t.english)
+            #if b'Hakodate' in t.english:
+            #    print(t.english)
 
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
@@ -173,8 +159,8 @@ for filename in FILES_TO_REINSERT:
                 portrait_window_counter -= 1
 
         # temporarily replace all the waits with nothing
-        for w in WAITS:
-            gamefile.filestring = gamefile.filestring.replace(w, b'')
+        #for w in WAITS:
+        #    gamefile.filestring = gamefile.filestring.replace(w, b'')
 
 
     if filename.endswith('.EXE'):

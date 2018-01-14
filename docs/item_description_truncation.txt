@@ -3,6 +3,11 @@ Spider's silk stops an enemy from moving
 ---------------------------------               <- new shop limit, with longer header (33)
 ----------------------------------------------- <- menu limit (47)
 
+A cursed shank that enslaves the soul
+-----------------------------                   <- shop limit (29)
+------------------------------------            <- new shop limit (36)
+------------------------------------??????????? <- menu limit (47?)
+
 Control code: #
 Like the Wordpress "truncate it here" marker.
 

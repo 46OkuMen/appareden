@@ -76,7 +76,8 @@ FILE_BLOCKS = {
               (0x27282, 0x27345),  # hp/mp
               (0x27352, 0x2738e),  # skill sheets
               (0x2739b, 0x273fd),  # insufficient stuff text
-              (0x28178, 0x28c9c),  # skill/spell names/descriptions
+              (0x28178, 0x28c29),  # skill/spell names/descriptions
+              (0x28c67, 0x28c9c),  #  combat choices
               (0x28ca3, 0x28cc9),  # item menu
               (0x29d38, 0x2b066),  # item descriptions
               (0x2d2ce, 0x2d931),  # people, places, things
