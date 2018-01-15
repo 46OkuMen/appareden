@@ -1,9 +1,42 @@
-Starting town
-
+Sapporo (starting town)
 Ashabiri (Goemon's town)
-
 Town to the south (police state zone, Ezo?)
 
 
 Go to south town, talk to guy on pier who tells you to go to Ashabiri and look for Goemon.
 Go back to starting town and east to Ashabiri. In the bar, talk to Goemon and get a quest
+
+
+SECOND CONTINENT
+Port city
+Go east and south
+To the west of the road, Youma city
+Talk to elder to trigger battle
+
+BOSS #1: Anki
+
+Tamamo joins party
+Teleported to forest dungeon
+Path is to the northeast, then spiral around to the center
+
+BOSS #2: Anki & minions
+
+Need to heal Tamamo
+Teleported to frog cave
+Fight White Frog miniboss in basement, get White Frog Egg
+Teleported back to Youma city
+Go south to next checkpoint
+Go south to Mito
+Talk to old man in northwest
+Teleported to Edo Castle
+Exposition from Izunokami
+Shiranui O-Toki and Elec Gen'nai
+Go through the cave and get to Lower Edo
+Go to Gen'nai's house in lower right of almost-leftmost screen, for a dialogue
+Go to leftmost screen, enter the inn to meet O-Toki
+Crisis at the bridge, go to the rightmost screen and go up
+
+BOSS #3: Benkei
+
+Exposition, Gen'nai joins
+Teleported to the dungeon where you find the boat

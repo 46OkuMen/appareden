@@ -25,6 +25,7 @@ def typeset(s, width=37):
     lines = []
 
     while words:
+        print(words)
         line = b''
         while len(line) <= width and words:
             if len(line + words[0] + b' ') > width:
@@ -33,6 +34,7 @@ def typeset(s, width=37):
 
         line = line.rstrip()
         lines.append(line)
+        
     #for l in lines:
     #    print(l)
 
