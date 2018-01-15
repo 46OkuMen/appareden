@@ -11,29 +11,29 @@
 * Vagrant "Come on(overline) The place is empty."
 	* Replaced the ~ with --, maybe that'll work?
 	* Also, the overline should come from an actual overlined character, not ~...
-* Issues with the ">f01040 tags when meeting GOemon/Master
-	* They're missing [LN]s at the end from the JP version. Adding that in
+* Need to clear the window when there's a bunch of long text, then short text, in the same window
+	* Example: SCN3100.MSG, border crossing after getting Tamamo
+* When a message starts with ( instead of ", the ( glows red
 
 ## ORFIELD
 
 * State of the menus:
 	* Item Shop
+		* Max name length: ?
 		* Max description length: 33
 			* Window expands in both directions when you lengthen the header. There must be some value of a center location, it'd be nice to adjust that
-		* Glitched text when something is purchased
-	* Weapon Shop
-		* Pretty bad overflow from too-long weapon names.
-		* Window is not at its maximum width yet
-		* Glitch on "purchased"
-	* Armor Shop
-		* (Uses same strings as weapon shop)
+	* Equipment Shop
+		* Max name length: 17
+		* Max description length: 36?
+		* Window is at maximum width
 	* Sell Items
-		* Glitched header, glitched contents
+		* Weird spacing, and that ` thing too
 	* Sell Equipment
 
 * Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
 	* Item names too; alignment of the shop menus depends on it
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
+	* Does this need to account for ^s?
 
 * Using a HealOne type Zen art brings up a very misaligned screen.
 	* The HP, ZP, and Status column colud use a bit more alignment...
@@ -43,8 +43,11 @@
 	* Do the JP strings just say "points restored" generically?
 
 * Where do the town names appear ingame? No sign of them so far
+	* Also, that's probably not all the locations in the game. Which points to them not being used
 
 * True Spirit crashes the game again
+	* Not crashing anymore, but just a lot of space instead of the intended string: "              26                "
+	* Whoops, yes it does crash if it would max out the HP
 
 * "Can't use that zen art" text is bugged, reads "tectionH"
 
@@ -58,6 +61,9 @@
 
 * Zen art types are too long, use shorter ones from ORFIELD
 	* Might still be too long
+
+* Reinserting zen art types causes a crash upon entering the items command
+	* Doesn't have to do with those garbage pointers from that table. Removed those, problem remains
 
 ## Graphics
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.

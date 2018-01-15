@@ -1,0 +1,13 @@
+Four sets of spaces:
+
+0x29069 (4)
+0x2906e (3) - Name-Level
+0x29072 (3) - Level-HP
+...
+0x29083 (2) - HP-ZP
+
+Name-Level, Level-HP, HP-ZP, ZP-Status
+
+Nothing seems to affect ZP-Status? Status stays where it is, so stuff runs into it...
+
+I can move Ok by just adding some spaces in front of Ok. That'll be fine.
