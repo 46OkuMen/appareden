@@ -44,15 +44,17 @@ FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
                       # Master, Koro Elder, WeaponsGeezer, Elder, AntiquesShop, Shikai, Tamamo, Nobunaga, Old Man,
                        'マスター', 'コロ長老',  '武器屋のオヤジ', '長老', '骨董品屋の主人', '四界王', 'タマモ', 'ノブナガ', '老人',
-                       # Mitsukuni, Izunokami, O-Toki, Gennai, Benkei, Ginpei, Shirou, Meiling,
-                       'ミツクニ', 'イズノカミ',      'お時', '源内', 'ベンケイ' 'ギンペー', 'シロウ',  'メイリン',
+                       # Mitsukuni, Izunokami, O-Toki, Gennai, Benkei, Ginpei, Shirou, Meiling, ThDragon, Sougen,
+                       'ミツクニ', 'イズノカミ',      'お時', '源内', 'ベンケイ' 'ギンペー', 'シロウ',  'メイリン', '雷竜', 'ソウゲン',
                        ]
 
-#HIGHEST_SCN = 1
-HIGHEST_SCN = 11001
+HIGHEST_SCN = 1
+#HIGHEST_SCN = 11001
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
+
+gems_to_reinsert = ['ORTITLE.GEM']
 """
 valid_msgs = []
 # TODO: Cache the list of real ones
@@ -397,3 +399,6 @@ for filename in FILES_TO_REINSERT:
 
 percentage = int(floor((total_reinserted_strings / TOTAL_STRING_COUNT * 100)))
 print("Appareden", "%s" % str(percentage), "%", "complete (%s / %s)" % (total_reinserted_strings, TOTAL_STRING_COUNT))
+
+for g in gems_to_reinsert:
+    TargetAp.insert(os.path.join('patched', g), path_in_disk='TGL/OR')

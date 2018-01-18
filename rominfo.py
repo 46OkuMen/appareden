@@ -77,8 +77,7 @@ FILE_BLOCKS = {
               (0x27352, 0x2738e),  # skill sheets
               (0x2739b, 0x273fd),  # insufficient stuff text
               (0x28178, 0x28c29),  # skill/spell names/descriptions
-              (0x28c67, 0x28c9c),  #  combat choices
-              (0x28ca3, 0x28cc9),  # item menu
+              (0x28c67, 0x28cc0),  # item menu
               (0x29d38, 0x2b066),  # item descriptions
               (0x2d2ce, 0x2d931),  # people, places, things
               (0x2ea7a, 0x2eb0d)],  # stealing msgs"
@@ -228,3 +227,9 @@ POSTPROCESSING_CONTROL_CODES = {
 }
 
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
+
+FACES = {
+  b'[FACE04100]': b'>f04100'
+}
+
+CONTROL_CODES.update(FACES)

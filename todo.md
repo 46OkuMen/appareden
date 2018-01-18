@@ -14,6 +14,19 @@
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
 	* Example: SCN3100.MSG, border crossing after getting Tamamo
 * When a message starts with ( instead of ", the ( glows red
+* Numbers usually lack a space in front. Should I add another one?
+	* It's probably due to the Shadoff compression, any alterations I should make to that?
+* Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
+* Thunder Dragon displays Gen'nai's face
+	* It uses control code >f04100
+		* And indeed, FACE4100.GEM is Thunder Dragon...
+		* Code >f04100, 4200, 4700, etc. all show Gen'nai's face. Where is it going wrong?
+		* GEM in current use is at memory 0x4503. 0000 for Gento, 0100 for Benimaru. 0400 is Gen'nai, shows up when 
+	* First few control codes in scene: 01000, 00091, 01050, 00111
+		* Face image files are only 4 digits long
+		* 0100 = benimaru neutral
+		* 0410 = invalid filename, but starts with 4 so it's Gen'nai
+		* 4100 should be Thunder Dragon
 
 ## ORFIELD
 
