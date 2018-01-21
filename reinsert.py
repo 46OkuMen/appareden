@@ -6,7 +6,7 @@
 import os
 from math import floor
 from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
-from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET
+from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters
 from pointer_info import POINTERS_TO_REASSIGN
 import asm
 from utils import typeset, shadoff_compress, replace_control_codes
@@ -40,32 +40,15 @@ TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
-#                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
-portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
-                      # Master, Koro Elder, WeaponsGeezer, Elder, AntiquesShop, Shikai, Tamamo, Nobunaga, Old Man,
-                       'マスター', 'コロ長老',  '武器屋のオヤジ', '長老', '骨董品屋の主人', '四界王', 'タマモ', 'ノブナガ', '老人',
-                       # Mitsukuni, Izunokami, O-Toki, Gennai, Benkei, Ginpei, Shirou, Meiling, ThDragon, Sougen,
-                       'ミツクニ', 'イズノカミ',      'お時', '源内', 'ベンケイ' 'ギンペー', 'シロウ',  'メイリン', '雷竜', 'ソウゲン',
-                       ]
+gems_to_reinsert = ['ORTITLE.GEM']
 
-HIGHEST_SCN = 1
-#HIGHEST_SCN = 11001
+
+#HIGHEST_SCN = 1
+HIGHEST_SCN = 11001
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
 
-gems_to_reinsert = ['ORTITLE.GEM']
-"""
-valid_msgs = []
-# TODO: Cache the list of real ones
-for m in msgs_to_reinsert:
-    try:
-        sheet = Dump.get_translations(m, sheet_name='MSG')
-        valid_msgs.append(m)
-    except KeyError:
-        continue
-print(valid_msgs)
-"""
 
 FILES_TO_REINSERT += msgs_to_reinsert
 

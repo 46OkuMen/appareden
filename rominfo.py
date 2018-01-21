@@ -12,8 +12,7 @@ DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 MSG_XLS_PATH = 'appareden_msg_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 
-SYS_DUMP_GOOGLE_SHEET = 'Appareden Sys Dump v4'
-MSG_DUMP_GOOGLE_SHEET = 'Appareden Msg Dump v3'
+SYS_DUMP_GOOGLE_SHEET = 'Appareden Combined Dump'
 
 FILES = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'NEKORUN.EXE', 'SFIGHT.EXE', 'ENDING.EXE',]
 
@@ -61,6 +60,15 @@ SHADOFF_COMPRESSED_EXES = ['ORFIELD.EXE',]
 SJIS_FIRST_BYTES = [0x81, 0x82, 0x83, 0x84, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0xad, 0x8e, 0x8f, 0x90, 0x91, 0x92,
                     0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f, 0xe0, 0xe1,
                     0xe2, 0xe3, 0xe4, 0x35, 0xe6, 0xe7, 0xe8, 0xe9, 0xea]
+
+#                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
+portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
+                      # Master, Koro Elder, WeaponsGeezer, Elder, AntiquesShop, Shikai, Tamamo, Nobunaga, Old Man,
+                       'マスター', 'コロ長老',  '武器屋のオヤジ', '長老', '骨董品屋の主人', '四界王', 'タマモ', 'ノブナガ', '老人',
+                       # Mitsukuni, Izunokami, O-Toki, Gennai, Benkei, Ginpei, Shirou, Meiling, ThDragon, Sougen,
+                       'ミツクニ', 'イズノカミ',      'お時', '源内', 'ベンケイ' 'ギンペー', 'シロウ',  'メイリン', '雷竜', 'ソウゲン',
+
+                       ]
 
 FILE_BLOCKS = {
     'ENDING.EXE': [(0x64bb, 0x6512), ],  # memory error texts
@@ -229,7 +237,8 @@ POSTPROCESSING_CONTROL_CODES = {
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
 
 FACES = {
-  b'[FACE04100]': b'>f04100'
+  b'[FACE0410]': b'>f04100@',
+  b'[FACE4100]': b'>f41000@',
 }
 
 CONTROL_CODES.update(FACES)

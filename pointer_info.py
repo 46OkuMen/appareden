@@ -11,7 +11,6 @@ POINTER_DISAMBIGUATION = {
   0x2ea5d: 0x23190,
   0x2ea44: 0x2314b,
   0x2ea2b: 0x230e6,
-  0x2ea20: 0x23064,
   0x28f66: 0x1fc48,
   0x28385: 0x1b228,
   0x263be: 0xbe10,
@@ -40,7 +39,8 @@ POINTER_DISAMBIGUATION = {
   0x27546: 0x177d9,
   0x2ea1c: 0x23099,   # Fixes the wait bug
   0x2ea20: 0x23064,
-
+  0x2ea14: 0x2308a,   # Spirit2 HP pointer bug
+  0x2ea1f: 0x230c0,   # Spirit2 HP pointer bug, part 2
 
   # ORBTL
   0x27359: 0x13bfd,
@@ -121,7 +121,7 @@ POINTERS_TO_REASSIGN = {
 
             (0x2e9fb, 0x2e9b2),
             (0x2ea14, 0x2e9cb),
-            (0x2ea20, 0x2e9d6),
+            (0x2ea1f, 0x2e9d6),
             (0x2ea2b, 0x2e9e2),
             (0x2ea44, 0x2e9b2),
             (0x2ea5d, 0x2d0f1),
@@ -130,7 +130,6 @@ POINTERS_TO_REASSIGN = {
             (0x2eb7c, 0x2e9d6),
             (0x2eba5, 0x2e9e2),
             (0x2ec89, 0x2eb50),
-            #(0x2eca7, 0x2e9cb),
             (0x2ecb5, 0x2e9d6),
             (0x2ecc3, 0x2eb8a),
             (0x2ecde, 0x2e9e2),
@@ -169,6 +168,12 @@ POINTERS_TO_REASSIGN = {
             (0x2e5f1, 0x2e506),      # Holy Light
             (0x2e600, 0x2e515),      # Santa Lucia
             (0x2e60d, 0x2e522),      # Hallelujah
+
+            (0x26ec9, 0x26b64),      # &5Not enough gold.
+            (0x27531, 0x26b64),
+
+            (0x271c1, 0x26e9d),      # Are you sure?
+            (0x27507, 0x26e9d),
 
 
     ],
