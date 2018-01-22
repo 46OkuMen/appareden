@@ -46,11 +46,7 @@
 * Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
 	* Item names too; alignment of the shop menus depends on it
 	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
-	* Does this need to account for ^s?
-
-* Using a HealOne type Zen art brings up a very misaligned screen.
-	* The HP, ZP, and Status column colud use a bit more alignment...
-		* Not sure what's happening here
+	* This needs to account for ^s too
 
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
@@ -58,16 +54,7 @@
 * Where do the town names appear ingame? No sign of them so far
 	* Also, that's probably not all the locations in the game. Which points to them not being used
 
-* True Spirit crashes the game again
-	* Not crashing anymore, but just a lot of space instead of the intended string: "              26                "
-	* Whoops, yes it does crash if it would max out the HP
-
 * "Can't use that zen art" text is bugged, reads "tectionH"
-
-* 29-30 are repeats of 26-27
-
-* At the bottom of the first dungeon I got a Butter Ame, shouldn't it be the Golden Carp (1 item lower)?
-	* No - you use th2e Buteter Ame to cross the bridge and get it there?8
 
 ## ORBTL
 * Zen art "spirit" shows up as "Snow text"

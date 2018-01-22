@@ -97,6 +97,7 @@ for filename in FILES_TO_REINSERT:
     if filename in POINTERS_TO_REASSIGN:
         reassignments = POINTERS_TO_REASSIGN[filename]
         for src, dest in reassignments:
+            print(hex(src), hex(dest))
             assert src in gamefile.pointers
             assert dest in gamefile.pointers
             diff = dest - src
