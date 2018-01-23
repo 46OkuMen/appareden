@@ -70,11 +70,12 @@
 	* Or just do those problem files manually.
 * Need to progress in the game far enough to get to the minigames and test their graphics.
 * That one cat tank monster near Koro-pok-guru village has an animation we should translate too.
-	* Wheelcat
+	* Wheelcat - CHAR_43A.GEM
 * Still haven't given them over to SkyeWelse.
 * How should we handle the shop signs?
+	* All identified.
 * CD version intro graphics need to be translated too.
-* Spell names are the wrong color on the spell screen
+	* All identified.
 
 ## CD Version
 * So, none of the executables will be the same. Uh oh.
