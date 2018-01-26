@@ -1,3 +1,8 @@
+"""
+    Replaces the title screen with a GEM image provided as a CL argument.
+    Useful for quick viewing, and works better than MLD.
+"""
+
 import sys
 import os
 from shutil import copyfile
@@ -9,8 +14,13 @@ if __name__ == '__main__':
         print("Usage: python replace_title.py ImageToView.GEM")
     gem_filename = sys.argv[1]
 
+    # View an image from the FD game
     #gem_filename = os.path.join("original", "OR", gem_filename)
+
+    # View an image from the CD game
     #gem_filename = os.path.join("original", "CD", gem_filename)
+
+    # View an edited image
     gem_filename = os.path.join("patched", gem_filename)
 
     copyfile(gem_filename, "ORTITLE.GEM")

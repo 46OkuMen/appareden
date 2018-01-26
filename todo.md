@@ -57,13 +57,9 @@
 * "Can't use that zen art" text is bugged, reads "tectionH"
 
 ## ORBTL
-* Zen art "spirit" shows up as "Snow text"
 
 * Zen art types are too long, use shorter ones from ORFIELD
 	* Might still be too long
-
-* Reinserting zen art types causes a crash upon entering the items command
-	* Doesn't have to do with those garbage pointers from that table. Removed those, problem remains
 
 ## Graphics
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
