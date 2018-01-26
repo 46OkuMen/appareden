@@ -44,7 +44,8 @@ gems_to_reinsert = ['ORTITLE.GEM']
 
 
 #HIGHEST_SCN = 1
-HIGHEST_SCN = 11001
+#HIGHEST_SCN = 11001
+HIGHEST_SCN = 12803
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
