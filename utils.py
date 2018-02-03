@@ -56,6 +56,8 @@ def shadoff_compress(s):
 
     chars = list(s)
 
+    # TODO: Remove the continuous-spaces processing
+
     continuous_spaces = 0
     #print(chars)
     while chars:
@@ -82,8 +84,6 @@ def shadoff_compress(s):
             continuous_spaces = 0
             compressed += c
         #print(bytes(compressed, encoding='shift-jis'))
-
-    #print(bytes(compressed, encoding='shift-jis'))
 
     return bytes(compressed, encoding='shift-jis')
 
