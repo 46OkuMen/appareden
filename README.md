@@ -11,9 +11,9 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | Field        | 100% |  (1194 / 1194)      |
 | Battle       | 100% |   (786 / 786)       |
 | Cat Minigame |   0% |     (0 / 7)         |
-| Dialogue     |  77% |  (4312 / 5594)      |
+| Dialogue     |  78% |  (4353 / 5594)      |
 | Images       |   2% |     (1 / 44?)       |
-| Total        |  80% |  (6311 / 7845)      |
+| Total        |  81% |  (6362 / 7845)      |
 
 ### Requirements
 * A working hard-disk dump of *Appareden*

@@ -83,6 +83,7 @@ for filename in FILES_TO_REINSERT:
 
         # Apply ORFIELD asm hacks
         asm_cursor = 0
+        # TODO reenable
         for code in asm.ORFIELD_CODE:
             gamefile.edit(0x8c0b+asm_cursor, code)
             asm_cursor += len(code)

@@ -16,6 +16,41 @@
 # inserted at 2443:580b, or 0x8bf0 in ORFIELD.EXE
 
 
+# code I'm trying to move:
+#3c 7e 75 01 4f 3c 5e 75 03 ac 74 43 3c 5a 7f 3f 3c 40 7c 3b 47 04 20 eb 36
+# All the jumps should go to 5867 except hte first, which goes to the "cmp al, 5a" instruction
+
+
+"""
+checkIfDictOver:
+    cmp al, dictEndCode ; 0xFF?
+    jnz dictCompression
+    pop esi
+"""
+
+"""
+dictCompression:
+    cmp al, dictCode
+    jnz fullwidthCheck
+    push esi ; where it's reading the text from
+    lodsb
+    mov esi, dictBase + al  ; begin reading from dictionary location + dictionary offset
+    lodsb
+"""
+
+# lodsb loads the thing from DS:SI into AL
+
+# Let's store the dictionary at 0x4b2ea, which is at seg 46f4:43aa.
+# So, put 43aa in ESI
+# mov si, 43aa = be aa 43
+
+# Dict is going to be stuff like The[ff]as[ff]
+
+# At 2443:580a:
+# fullwidth      dictcompress                                                 overline
+# 3c82 741b      3cff 7501 5e 3cfe 7b0b 56 ac beaa43 30e4 6601c6 ac           3c7e 7501 4f
+
+
 FULLWIDTH_CHECK = b'\x82\x74\x30'
 """
 fullwidthCheck:
@@ -23,7 +58,37 @@ fullwidthCheck:
     jz 583e        ; fullwidthOriginal
 """
 
-SPACE_COMPRESSION = b'\x3c\x5f\x75\x06\xac\x30\xe4\x01\xc7\xac'
+"""
+dictEndCheck
+    cmp al, ff
+    jnz 5813       ; dictStartCheck
+    pop si
+"""
+# TODO: STill not sure: What else should be done after the dict ends?
+# 
+
+DICT_END_CHECK = b'\x3c\xff\x75\x01\x5e'
+
+"""
+dictStartCheck:
+    cmp al, fe
+    jnz 5825       ; overlineCode
+    push si
+    lodsb
+    mov si, 43aa
+    xor ah, ah
+    add esi, eax
+    lodsb
+    nop
+    nop
+    nop
+"""
+
+DICT_START_CHECK = b'\x3c\xfe\x75\x0e\x56\xac\xbe\xaa\x43\x30\xe4\x66\x01\xc6\xac\x90\x90\x90'
+
+
+
+#SPACE_COMPRESSION = b'\x3c\x5f\x75\x06\xac\x30\xe4\x01\xc7\xac'
 """
 spaceCompression:
     cmp al, 5f
@@ -43,7 +108,7 @@ overlineCode:
     dec di
 """
 
-SKIP_COMPRESSION = b'\x3c\x5e\x75\x03\xac\x74\x43'
+SKIP_COMPRESSION = b'\x3c\x5e\x75\x03\xac\x74\x36'
 """
 skipCompression:
     cmp al, 5e
@@ -52,7 +117,7 @@ skipCompression:
     jz 5867        ; halfwidthOriginal
 """
 
-SHADOFF_COMPRESSION = b'\x3c\x5a\x7f\x3f\x3c\x40\x7c\x3b\x47\x04\x20\xeb\x36'
+SHADOFF_COMPRESSION = b'\x3c\x5a\x7f\x32\x3c\x40\x7c\x2e\x47\x04\x20\xeb\x29'
 """
 shadoffCompression:
     cmp al, 5a
@@ -64,11 +129,12 @@ shadoffCompression:
     jmp 5867       ; halfwidthOriginal
 """
 
-NOPS = b'\x90'*13
+#NOPS = b'\x90'*13
 """
     just some nops.
 """
 
+# 8a e0 ac e8 af fe 8b d0 e8 11 ff 56 e8 4a fe e8 c7 fe be 14 04 e8 d7 fe a1 d6 03 e8 bb fe be d8 03 e8 cb fe 5e 47 47 eb 24
 FULLWIDTH_ORIGINAL = b'\x8a\xe0\xac\xe8\xaf\xfe\x8b\xd0\xe8\x11\xff\x56\xe8\x4a\xfe\xe8\xc7\xfe\xbe\x14\x04\xe8\xd7\xfe\xa1\xd6\x03\xe8\xbb\xfe\xbe\xd8\x03\xe8\xcb\xfe\x5e\x47\x47\xeb\x24'
 """
 fullwidthOriginal:
@@ -113,6 +179,10 @@ halfwidthOriginal:
     jmp 57da
 """
 
-ORFIELD_CODE = [FULLWIDTH_CHECK, SPACE_COMPRESSION, OVERLINE_CODE, 
-                SKIP_COMPRESSION, SHADOFF_COMPRESSION, NOPS, FULLWIDTH_ORIGINAL, 
+#ORFIELD_CODE = [FULLWIDTH_CHECK, SPACE_COMPRESSION, OVERLINE_CODE, 
+#                SKIP_COMPRESSION, SHADOFF_COMPRESSION, NOPS, FULLWIDTH_ORIGINAL, 
+#                HALFWIDTH_ORIGINAL]
+
+ORFIELD_CODE = [FULLWIDTH_CHECK, DICT_END_CHECK, DICT_START_CHECK, OVERLINE_CODE,
+                SKIP_COMPRESSION, SHADOFF_COMPRESSION, FULLWIDTH_ORIGINAL,
                 HALFWIDTH_ORIGINAL]

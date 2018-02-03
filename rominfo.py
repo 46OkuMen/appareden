@@ -80,7 +80,8 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                        'マスター', 'コロ長老',  '武器屋のオヤジ', '長老', '骨董品屋の主人', '四界王', 'タマモ', 'ノブナガ', '老人',
                        # Mitsukuni, Izunokami, O-Toki, Gennai, Benkei, Ginpei, Shirou, Meiling, ThDragon, Sougen,
                        'ミツクニ', 'イズノカミ',      'お時', '源内', 'ベンケイ' 'ギンペー', 'シロウ',  'メイリン', '雷竜', 'ソウゲン',
-
+                       # O-Kuni
+                       'お国',
                        ]
 
 FILE_BLOCKS = {
