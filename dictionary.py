@@ -50,6 +50,9 @@ for filename in FILES_TO_REINSERT:
 for i in sorted(words.items(), key=lambda x:x[1]):
     print(i)
 
+
+dictstring = b''
+
 # TODO: Find the 255 chars with the most repeats, then stick them in the dict
 #       and calculate their offsets, then replace text with [fe offset].
 # Also ignore [BLANK]s and ~s.

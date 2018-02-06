@@ -99,7 +99,7 @@ for filename in FILES_TO_REINSERT:
     if filename in POINTERS_TO_REASSIGN:
         reassignments = POINTERS_TO_REASSIGN[filename]
         for src, dest in reassignments:
-            print(hex(src), hex(dest))
+            #print(hex(src), hex(dest))
             assert src in gamefile.pointers
             assert dest in gamefile.pointers
             diff = dest - src
@@ -182,8 +182,13 @@ for filename in FILES_TO_REINSERT:
 
                 if filename in SHADOFF_COMPRESSED_EXES:
                     t.english = shadoff_compress(t.english)
-                for cc in POSTPROCESSING_CONTROL_CODES:
-                    t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+                if t.location !=  0x2a2ba:
+                    for cc in POSTPROCESSING_CONTROL_CODES:
+                        if b'^Zen' in t.english:
+                            print("Capital Zen found in string %s" % hex(t.location))
+                        t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+                        if b'Zen' in t.english:
+                            print('Normal zen found in string %s' % hex(t.location))
                 #print(t.english)
 
 
@@ -314,7 +319,7 @@ for filename in FILES_TO_REINSERT:
 
                 this_diff = len(t.english) - len(t.japanese)
 
-                print(hex(t.location), t.english)
+                #print(hex(t.location), t.english)
 
                 try:
                     i = receiving_block.blockstring.index(t.japanese)

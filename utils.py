@@ -25,7 +25,7 @@ def typeset(s, width=37):
     lines = []
 
     while words:
-        print(words)
+        #print(words)
         line = b''
         while len(line) <= width and words:
             if len(line + words[0] + b' ') > width:
@@ -41,6 +41,7 @@ def typeset(s, width=37):
     return b'/'.join(lines)
 
 def shadoff_compress(s):
+    #print(s)
     # Definitely don't compress filenames!
     if b'.GEM' in s:
         return s
@@ -49,6 +50,10 @@ def shadoff_compress(s):
         return s
     # If it's a fullwidth Latin char SJIS string, keep it the same
     if s[0] == 0x82:
+        return s
+
+    # Don't further compress the dictionary
+    if b'\xff' in s:
         return s
 
     s = s.decode('shift-jis')

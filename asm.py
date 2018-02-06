@@ -61,13 +61,20 @@ fullwidthCheck:
 """
 dictEndCheck
     cmp al, ff
-    jnz 5813       ; dictStartCheck
+    jnz 5816       ; dictStartCheck
     pop si
+    lodsb
+    jmp 57de      ; initial text handling code
 """
 # TODO: STill not sure: What else should be done after the dict ends?
+    # lodsb again? maybe increment si?
+    # Maybe I should jump to the initial lodsb that starts the text processing? It's at 57de, so jmp is ebc9
 # 
 
-DICT_END_CHECK = b'\x3c\xff\x75\x01\x5e'
+# Found the way to do 16-bit add si, ax. It's 01c6, so that and the xor ah, ah can be dropped
+    # Whoops, that's not right. Need to add sl, al (which can't be done, oops)
+
+DICT_END_CHECK = b'\x3c\xff\x75\x04\x5e\xac\xeb\xc8'
 
 """
 dictStartCheck:
@@ -77,14 +84,12 @@ dictStartCheck:
     lodsb
     mov si, 43aa
     xor ah, ah
-    add esi, eax
+    add si, ax
     lodsb
-    nop
-    nop
     nop
 """
 
-DICT_START_CHECK = b'\x3c\xfe\x75\x0e\x56\xac\xbe\xaa\x43\x30\xe4\x66\x01\xc6\xac\x90\x90\x90'
+DICT_START_CHECK = b'\x3c\xfe\x75\x0b\x56\xac\xbe\xaa\x43\x30\xe4\x01\xc6\xac\x90'
 
 
 

@@ -4,6 +4,7 @@
 
 
 import os
+from collections import OrderedDict
 
 SRC_DISK = os.path.join('original', 'Appareden.HDI')
 DEST_DISK = os.path.join('patched', 'Appareden.HDI')
@@ -241,12 +242,42 @@ CONTROL_CODES = {
   b'[WAIT6]': B_CONTROL_CODES[b'w'] + b'06',
   b'[00]': bytes([0x00]),
   b'[BLANK]': b'',
+  b'[ff]': bytes([0xff]),
+
 }
 
-POSTPROCESSING_CONTROL_CODES = {
-    b'~': b' ',
-    b'[BLANK]': b'',
-}
+POSTPROCESSING_CONTROL_CODES = OrderedDict([
+    (b'~', b' '),
+    (b'[BLANK]', b''),
+
+    (b'^The', b'\xfe\x01'),
+    (b'The', b'\xfe\x02'),
+    (b'With', b'\xfe\x06'),
+    (b'That', b'\xfe\x0b'),
+    (b'From', b'\xfe\x10'),
+    (b'Power', b'\xfe\x15'),
+    (b'Into', b'\xfe\x1b'),
+    (b'^Unable', b'\xfe\x20'),
+    (b'Unable', b'\xfe\x21'),
+    (b'Katana', b'\xfe\x28'),
+    (b'^Zen', b'\xfe\x2f'),
+    (b'Zen', b'\xfe\x30'),
+    (b'^For', b'\xfe\x34'),
+    (b'For', b'\xfe\x35'),
+    (b'Health', b'\xfe\x39'),
+    (b'^Use', b'\xfe\x40'),
+    (b'Use', b'\xfe\x41'),
+    (b'Enemies', b'\xfe\x46'),
+    (b'Any', b'\xfe\x4e'),
+    (b'^Dragon', b'\xfe\x51'),
+    (b'Dragon', b'\xfe\x52'),
+
+
+
+
+])
+
+# TODO: Caps are a little tricky here... ^ always breaks the compressed word since it adds 20 to ef.
 
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
 
