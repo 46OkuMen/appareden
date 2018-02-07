@@ -50,7 +50,7 @@ HIGHEST_SCN = 12803
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
 
-
+# TODO Re-enable
 FILES_TO_REINSERT += msgs_to_reinsert
 
 total_reinserted_strings = 0
@@ -148,10 +148,6 @@ for filename in FILES_TO_REINSERT:
             if portrait_window_counter > 0:
                 portrait_window_counter -= 1
 
-        # temporarily replace all the waits with nothing
-        #for w in WAITS:
-        #    gamefile.filestring = gamefile.filestring.replace(w, b'')
-
 
     if filename.endswith('.EXE'):
         block_objects = [Block(gamefile, block) for block in FILE_BLOCKS[filename]]
@@ -162,6 +158,8 @@ for filename in FILES_TO_REINSERT:
             previous_text_offset = block.start
             overflowing = False
             overflow_start = 0
+            overflowlets = []
+            overflowlet_original_locations = []
             diff = 0
             not_translated = False
             last_i = -1
@@ -170,7 +168,9 @@ for filename in FILES_TO_REINSERT:
             for t in Dump.get_translations(block):
 
                 if overflowing:
-                    break
+                    overflowlets.append(t.location - block.start + diff)
+                    overflowlet_original_locations.append(t.location)
+                    continue
 
                 if t.english == b'':
                     not_translated = True
@@ -182,13 +182,9 @@ for filename in FILES_TO_REINSERT:
 
                 if filename in SHADOFF_COMPRESSED_EXES:
                     t.english = shadoff_compress(t.english)
-                if t.location !=  0x2a2ba:
+                if t.location !=  0x2a2ba:      # Location of dicitonary, currently
                     for cc in POSTPROCESSING_CONTROL_CODES:
-                        if b'^Zen' in t.english:
-                            print("Capital Zen found in string %s" % hex(t.location))
                         t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
-                        if b'Zen' in t.english:
-                            print('Normal zen found in string %s' % hex(t.location))
                 #print(t.english)
 
 
@@ -218,7 +214,11 @@ for filename in FILES_TO_REINSERT:
                     print("It's overflowing starting with string %s" % t)
                     #print("Absolute location:", hex(block.start + i))
                     #print("Block is", block)
-                    break
+
+                    # Deactivating these, the first one always seems to be a 0-length string
+                    #overflowlets.append(t.location - block.start + diff)
+                    overflowlet_original_locations.append(t.location)
+                    continue
 
 
                 # Can't do translations if it's overflowing, Those will come later
@@ -240,10 +240,18 @@ for filename in FILES_TO_REINSERT:
 
             if overflowing:
                 overflow_string = block.blockstring[overflow_start:]
+                cursor = 0
+                for i, o in enumerate(overflowlets):
+                    #print("Start stop", hex(cursor), hex(o-overflow_start))
+                    overflowlet_string = overflow_string[cursor:o-overflow_start]
+                    cursor = o-overflow_start
+                    absolute_overflowlet_start = o + block.start
+                    overflow_strings.append((absolute_overflowlet_start, overflowlet_string, block, overflowlet_original_locations[i]))
+                    #print("Overflowlet: %s %s" % (hex(absolute_overflowlet_start), overflowlet_string))
                 #print(overflow_string)
                 #print("Overflow begins at:", hex(block.start + overflow_start))
-                absolute_overflow_start = overflow_start + block.start
-                overflow_strings.append((absolute_overflow_start, overflow_string, block, overflow_original_location))
+                #absolute_overflow_start = overflow_start + block.start
+                #overflow_strings.append((absolute_overflow_start, overflow_string, block, overflow_original_location))
 
                 # Remove the overflow string from the block entirely
                 block.blockstring = block.blockstring[:overflow_start]
@@ -259,45 +267,50 @@ for filename in FILES_TO_REINSERT:
         spares.sort(key=lambda x: x[1] - x[0])  # sort by size
         spares = spares[::-1]  # largest first
 
-        for s in spares:
-            print("spare:", hex(s[0]), hex(s[1]), s[1] - s[0], "belongs to", s[2])
-
-        print("Everything that's overflowing:")
         for o in overflow_strings:
-            translations = [t for t in Dump.get_translations(o[2]) if o[3] <= t.location]
-            for t in translations:
-                print(t)
-
-        for o in overflow_strings:
+            print()
+            assert len(o[1]) > 0
+            #print("Length is", len(o[1]))
+            print([s[1]-s[0] for s in spares])
             # o[0] is location, o[1] is the string, o[2] is the parent block, o[3] is the first string's original location
             #print("overflows:", hex(o[0]), o[1], "size:", len(o[1]))
             spare_to_use = spares[0]
 
             # s[0] is the start, s[1] is the end, s[2] is the parent block
 
+            #print("Looking at stuff between %s and %s" % (hex(o[3]), hex(o[3]+len(o[1]))))
+            #translations = [t for t in Dump.get_translations(o[2]) if t.location >= o[3] and t.location < o[3]+len(o[1])]
+            translations = [t for t in Dump.get_translations(o[2]) if t.location == o[3]]
+            #print(translations[0], "is the translation that begins at", hex(o[3]), "cuz it has location", hex(translations[0].location))
+            #print("o:", o)
+            #print("Trying to reinsert", translations[0])
+            #print("o[1]:", o[1])
+            assert translations[0].japanese in o[1]
+            assert o[3] == translations[0].location
 
-            translations = [t for t in Dump.get_translations(o[2]) if o[3] <= t.location]
-
-            overflow_len_diff = sum([len(t.english) - len(t.japanese) for t in translations])
-            final_overflow_len = len(o[1]) + overflow_len_diff
+            # TODO: For some reason this calculation is not accurate?
+            #overflow_len_diff = sum([len(t.english) - len(t.japanese) for t in translations])
+            #final_overflow_len = len(o[1]) + overflow_len_diff + 3   # Cuz, why not
+            #print(o)
+            #print("Translations here:", translations)
+            final_overflow_len = sum([len(t.english) for t in translations])    # THIS GETS USED LATER SO IT NEEDS ACCURACY
+            #print("Anticipated length:", final_overflow_len)
+            spare_to_use = None
             for s in spares:
                 spare_len = s[1] - s[0]
-                if spare_len >= final_overflow_len:
+                if spare_len > final_overflow_len:
                     spare_to_use = s
-            print(hex(spare_to_use[0]), hex(spare_to_use[1]), spare_to_use[2], " is the snuggest fit, with size", spare_to_use[1]-spare_to_use[0])
+            assert spare_to_use is not None
+            print(hex(spare_to_use[0]), hex(spare_to_use[1]), spare_to_use[2], " is the snuggest fit, with size", spare_to_use[1]-spare_to_use[0], "for overflow size", final_overflow_len)
 
             receiving_block = spare_to_use[2]
             receiving_block.blockstring += o[1]
+            assert o[1] in receiving_block.blockstring
 
-            # TODO: Move each translation into a spare individually, so large overflows can be distributed
 
             # Need to translate all the stuff in the overflow now.
             # Time to repeat tons of code, oops
 
-            #previous_text_offset = spare_to_use[0]-1
-            #print("o3:", hex(o[3]))
-            #print("s0:", hex(spare_to_use[0]))
-            #diff = spare_to_use[0] - o[3]
             not_translated = False
             last_i = receiving_block.start - spare_to_use[0] - 1
             last_len = 1
@@ -318,11 +331,13 @@ for filename in FILES_TO_REINSERT:
                     t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
 
                 this_diff = len(t.english) - len(t.japanese)
-
-                #print(hex(t.location), t.english)
+                final_overflow_len = len(o[1]) + this_diff
+                print(t.english)
 
                 try:
+                    #print(receiving_block.blockstring)
                     i = receiving_block.blockstring.index(t.japanese)
+                    #print(i)
                 except ValueError:
                     if t == translations[0]:
                         already_translated = True
@@ -348,6 +363,7 @@ for filename in FILES_TO_REINSERT:
                 if t == translations[0]:
                     diff = spare_to_use[0] - o[3]
                     gamefile.edit_pointers_in_range((o[3]-1, o[3]), diff)
+                    print(t.english, "should now be at", hex(spare_to_use[0]))
                 else:
                     gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
                 previous_text_offset = t.location

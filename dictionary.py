@@ -4,6 +4,7 @@
 """
 
 import os
+from collections import OrderedDict
 from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK
 from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH
 from romtools.disk import Disk, Gamefile, Block
@@ -40,6 +41,9 @@ for filename in FILES_TO_REINSERT:
         last_len = 1
         last_string_original_location = 0
         for t in Dump.get_translations(block):
+            # Ignore the dictionary slot itself
+            if t.location == 0x2a2ba:
+                continue 
             for w in t.english.split():
                 if len(w) > 2:
                     if w in words:
@@ -47,14 +51,47 @@ for filename in FILES_TO_REINSERT:
                     else:
                         words[w] = 1
 
-for i in sorted(words.items(), key=lambda x:x[1]):
-    print(i)
+dictstring = b'^Restore^Pill[00]'
+ctrl_codes = OrderedDict()
+
+# Tertiary sort to get consistent results: alphabetical sort
+words = list((sorted(words.items(), key=lambda x: x[0])))
+# Secondary sort, sort it by the length of the word
+words = list((sorted(words, key=lambda x: len(x[0]))))
+print(words)
+# Primary sort, sort by frequency
+candidates = list(reversed(sorted(words, key=lambda x: x[1])))
+print(candidates)
+cursor = 14
+for c in candidates[:100]:
+    upper_present, lower_present = False, False
+    if c[0].capitalize() in ctrl_codes:
+        continue
+    if c[0] != b'[BLANK]' and c[0].strip(b'~') != b'':
+        if len(dictstring.replace(b'[ff]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 255:
+            print("Couldn't fit %s next" % c[0])
+            break
+
+        # TODO: Also need to include if a capitalized version is in a substring somewhere.
+        # IE battle -> Auto-Battle, for -> Forged
+        if c[0].capitalize() in [w[0] for w in words]:
+            upper_present = True
+
+        if upper_present:
+            dictstring += b'^'
+            ctrl_codes[b'^' + c[0].capitalize()] = b'\xfe' + cursor.to_bytes(1, byteorder='little')
+            cursor += 1
+            
+        dictstring += c[0].capitalize()
+        dictstring += b'[ff]'
+
+        ctrl_codes[c[0].capitalize()] = b'\xfe' + cursor.to_bytes(1, byteorder='little')
+        cursor += len(c[0])
+        cursor += 1
 
 
-dictstring = b''
 
-# TODO: Find the 255 chars with the most repeats, then stick them in the dict
-#       and calculate their offsets, then replace text with [fe offset].
-# Also ignore [BLANK]s and ~s.
+print(dictstring)
+for c in ctrl_codes:
+    print("    (%s, %s)," % (c, ctrl_codes[c]))
 
-# Also, might want to do this with kuoushi translations and not mine.
