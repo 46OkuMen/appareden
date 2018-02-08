@@ -1,0 +1,3 @@
+SFCHR_00.GEM - Gento fighter sprites
+SFCHR_01.GEM - Meiling fighter sprites
+SFCHR_98.GEM - Life markers. Have JP text.

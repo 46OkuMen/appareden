@@ -36,9 +36,9 @@ OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
 
-#FILES_TO_REINSERT = ['ORFIELD.EXE', ]
+FILES_TO_REINSERT = ['ORFIELD.EXE', ]
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 gems_to_reinsert = ['ORTITLE.GEM']
 
@@ -51,7 +51,7 @@ HIGHEST_SCN = 12803
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
 
 # TODO Re-enable
-FILES_TO_REINSERT += msgs_to_reinsert
+#FILES_TO_REINSERT += msgs_to_reinsert
 
 total_reinserted_strings = 0
 

@@ -270,6 +270,11 @@ POINTERS_TO_REASSIGN = {
             (0x2eb79, 0x2d077),
             (0x2ecb2, 0x2d077),
 
+            (0x28f9f, 0x28c36), # Current Status
+            (0x28faa, 0x28c41), # HP      /
+            (0x28fb9, 0x28c50), # ZP      /
+            (0x28fc8, 0x28c5f), # Status
+
 
     ],
 

@@ -72,18 +72,18 @@ def shadoff_compress(s):
             if not chars:
                 compressed += c
         elif c.isupper():
-            if continuous_spaces > 2:
-                compressed += '_' + chr(continuous_spaces)
-            elif continuous_spaces > 0:
+            #if continuous_spaces > 2:
+            #    compressed += '_' + chr(continuous_spaces)
+            if continuous_spaces > 0:
                 compressed += ' '*(continuous_spaces)
             continuous_spaces = 0
             compressed += '^'
             compressed += c
         else:
-            if continuous_spaces > 2:
-                compressed += '_' + chr(continuous_spaces)
-                c = c.upper()
-            elif continuous_spaces > 0:
+            #if continuous_spaces > 2:
+            #    compressed += '_' + chr(continuous_spaces)
+            #    c = c.upper()
+            if continuous_spaces > 0:
                 compressed += ' '*(continuous_spaces-1)
                 c = c.upper()
             continuous_spaces = 0

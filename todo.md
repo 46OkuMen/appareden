@@ -31,6 +31,20 @@
 ## ORFIELD
 
 * State of the menus:
+	* Menu
+	* Character Status Select
+		* Buffer problems
+	* Status Screen
+	* Equipment Screen
+	* Item SCreen
+	* Zen Screen
+		* Header still not aligned quite right
+		* Current Status, HP, etc. are all blank/messed up after combining the blocks to get the header working
+			* Whoops, works now. Just hadn't saved pointer_info.py
+	* Settings
+		* Auto-Battle ON/OFF is super broken still
+			* Now it's really, really broken
+		* Order screen is having buffer problems
 	* Item Shop
 		* Max name length: ?
 		* Max description length: 33

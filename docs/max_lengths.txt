@@ -1,0 +1,15 @@
+Item names: 21 chars? (Need to check shop)
+Choice Onikoroshi Sake
+
+Item descriptions: (Shortest on shop page?)
+
+Left-side equipment names (hand, head, boot): 18 chars
+Tanegashima Type38
+
+Right-side equipment names (body, arms, acc): 17 chars
+Gold Thread Happi
+
+Equipment descriptions
+
+
+2852e
