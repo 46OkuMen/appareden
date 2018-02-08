@@ -5,8 +5,8 @@
 
 import os
 from math import floor
-from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
-from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters
+from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
+from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters, DICT_LOCATION
 from pointer_info import POINTERS_TO_REASSIGN
 import asm
 from utils import typeset, shadoff_compress, replace_control_codes
@@ -36,9 +36,9 @@ OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
 
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', ]
+#FILES_TO_REINSERT = ['ORFIELD.EXE', ]
 
-#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 gems_to_reinsert = ['ORTITLE.GEM']
 
@@ -94,6 +94,12 @@ for filename in FILES_TO_REINSERT:
         # Expand space for status ailments in menu
         # ac = limit of 6, and we want 12 for Petrified
         gamefile.edit(0x1ab14, b'\xb2')
+
+    elif filename == 'ORBTL.EXE':
+        asm_cursor = 0
+        for code in asm.ORBTL_CODE:
+            gamefile.edit(0x3647+asm_cursor, code)
+            asm_cursor += len(code)
 
 
     if filename in POINTERS_TO_REASSIGN:
@@ -182,9 +188,9 @@ for filename in FILES_TO_REINSERT:
 
                 if filename in SHADOFF_COMPRESSED_EXES:
                     t.english = shadoff_compress(t.english)
-                if t.location !=  0x2a2ba:      # Location of dicitonary, currently
-                    for cc in POSTPROCESSING_CONTROL_CODES:
-                        t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+                if t.location !=  DICT_LOCATION[filename]:
+                    for cc in POSTPROCESSING_CONTROL_CODES[filename]:
+                        t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
                 #print(t.english)
 
 
@@ -327,8 +333,8 @@ for filename in FILES_TO_REINSERT:
 
                 if filename in SHADOFF_COMPRESSED_EXES:
                     t.english = shadoff_compress(t.english)
-                for cc in POSTPROCESSING_CONTROL_CODES:
-                    t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+                for cc in POSTPROCESSING_CONTROL_CODES[filename]:
+                    t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
 
                 this_diff = len(t.english) - len(t.japanese)
                 final_overflow_len = len(o[1]) + this_diff

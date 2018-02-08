@@ -2,6 +2,8 @@
 	Per-file ASM edits for Appareden.
 """
 
+# TODO: This needs cleanup, it is mostly old comments and old raw bytes that are meaningless now
+
 #SPACECODE_ASM = b'\x3c\x5f\x75\x07\xac\x88\xc1\x47\xe2\xfd\xac'
 #OVERLINE_ASM =  b'\x3c\x7e\x75\x01\x4f'
 #FULLWIDTH_ASM = b'\x3c\x82\x75\x0a\x88\xc4\xac\x2d\x1e\x7f\x86\xe0\xeb\x30'
@@ -74,7 +76,8 @@ dictEndCheck
 # Found the way to do 16-bit add si, ax. It's 01c6, so that and the xor ah, ah can be dropped
     # Whoops, that's not right. Need to add sl, al (which can't be done, oops)
 
-DICT_END_CHECK = b'\x3c\xff\x75\x04\x5e\xac\xeb\xc8'
+DICT_END_CHECK =     b'\x3c\xff\x75\x04\x5e\xac\xeb\xc8'
+BTL_DICT_END_CHECK = b'\x3c\xff\x75\x04\x5e\xac\xeb\xcc'
 
 """
 dictStartCheck:
@@ -82,15 +85,15 @@ dictStartCheck:
     jnz 5825       ; overlineCode
     push si
     lodsb
-    mov si, 43aa
+    mov si, 43aa    ; 4c18 for ORBTL
     xor ah, ah
     add si, ax
     lodsb
     nop
 """
 
-DICT_START_CHECK = b'\x3c\xfe\x75\x0b\x56\xac\xbe\xaa\x43\x30\xe4\x01\xc6\xac\x90'
-
+DICT_START_CHECK =     b'\x3c\xfe\x75\x0b\x56\xac\xbe\xaa\x43\x30\xe4\x01\xc6\xac\x90'
+BTL_DICT_START_CHECK = b'\x3c\xfe\x75\x0a\x56\xac\xbe\x18\x4c\x30\xe4\x01\xc6\xac'
 
 
 #SPACE_COMPRESSION = b'\x3c\x5f\x75\x06\xac\x30\xe4\x01\xc7\xac'
@@ -105,7 +108,8 @@ spaceCompression:
 
 """
 
-OVERLINE_CODE = b'\x3c\x7e\x75\x01\x4f'
+OVERLINE_CODE =     b'\x3c\x7e\x75\x01\x4f'
+BTL_OVERLINE_CODE = b'\x3c\x7e\x75\x01\x4f'
 """
 overlineCode:
     cmp al, 7e
@@ -113,7 +117,8 @@ overlineCode:
     dec di
 """
 
-SKIP_COMPRESSION = b'\x3c\x5e\x75\x03\xac\x74\x36'
+SKIP_SHADOFF =     b'\x3c\x5e\x75\x03\xac\x74\x36'
+BTL_SKIP_SHADOFF = b'\x90\x90\x90\x90\x90\x90\x90'
 """
 skipCompression:
     cmp al, 5e
@@ -122,7 +127,8 @@ skipCompression:
     jz 5867        ; halfwidthOriginal
 """
 
-SHADOFF_COMPRESSION = b'\x3c\x5a\x7f\x32\x3c\x40\x7c\x2e\x47\x04\x20\xeb\x29'
+SHADOFF_COMPRESSION =     b'\x3c\x5a\x7f\x32\x3c\x40\x7c\x2e\x47\x04\x20\xeb\x29'
+BTL_SHADOFF_COMPRESSION = b'\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\xeb\x14'
 """
 shadoffCompression:
     cmp al, 5a
@@ -189,5 +195,12 @@ halfwidthOriginal:
 #                HALFWIDTH_ORIGINAL]
 
 ORFIELD_CODE = [FULLWIDTH_CHECK, DICT_END_CHECK, DICT_START_CHECK, OVERLINE_CODE,
-                SKIP_COMPRESSION, SHADOFF_COMPRESSION, FULLWIDTH_ORIGINAL,
+                SKIP_SHADOFF, SHADOFF_COMPRESSION, FULLWIDTH_ORIGINAL,
                 HALFWIDTH_ORIGINAL]
+
+ORBTL_CODE = [BTL_DICT_END_CHECK, BTL_DICT_START_CHECK, BTL_OVERLINE_CODE,
+              BTL_SKIP_SHADOFF, BTL_SHADOFF_COMPRESSION]
+
+# ORBTL dictionary should go at offset 0x29d38, which is at seg 2443:5908?
+    # Nope. Ingame it's at 4b568.
+    # Oh right, it loads from DS. It's at seg 4695:4c18.

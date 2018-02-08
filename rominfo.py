@@ -96,9 +96,7 @@ FILE_BLOCKS = {
               (0x25330, 0x253d2),  # after battle
               (0x262e8, 0x26302),  # memory error text
               (0x2715a, 0x271aa),  # ems driver version texts
-              (0x27282, 0x27345),  # hp/mp
-              (0x27352, 0x2738e),  # skill sheets
-              (0x2739b, 0x273fd),  # insufficient stuff text
+              (0x27282, 0x273fd),  # insufficient stuff text
               (0x28178, 0x28c29),  # skill/spell names/descriptions
               (0x28c67, 0x28cc0),  # item menu
               (0x29d38, 0x2b066),  # item descriptions
@@ -158,11 +156,10 @@ POINTER_CONSTANT = {
     'SFIGHT.EXE': 0xd080,
 }
 
-# TODO: These are probably not usable...
-SPARE_BLOCK = {
-  'ORMAIN.EXE': (0x1765, 0x1f6b),
-  'ORBTL.EXE': (0x26303, 0x26b54),
-  'ORFIELD.EXE': (0x2f570, 0x30570),
+DICT_LOCATION = {
+    'ORFIELD.EXE': 0x2a2ba,
+    'ORBTL.EXE':  0x29d38,
+    'ORTITLE.EXE': None,
 }
 
 # Tables are (start, stop, stride) tuples.
@@ -244,7 +241,9 @@ CONTROL_CODES = {
 
 }
 
-POSTPROCESSING_CONTROL_CODES = OrderedDict([
+POSTPROCESSING_CONTROL_CODES = {
+
+'ORFIELD.EXE': OrderedDict([
     (b'~', b' '),
     (b'[BLANK]', b''),
 
@@ -302,8 +301,53 @@ POSTPROCESSING_CONTROL_CODES = OrderedDict([
     (b'^Journal', b'\xfe\xec'),
     (b'Journal', b'\xfe\xed'),
     (b'Powers', b'\xfe\xf5'),
-])
+]),
 
+'ORBTL.EXE': OrderedDict([
+    (b'~', b' '),
+    (b'[BLANK]', b''),
+
+    (b'the', b'\xfe\r'),
+    (b'text', b'\xfe\x11'),
+    (b'Dragon', b'\xfe\x16'),
+    (b'with', b'\xfe\x1d'),
+    (b'that', b'\xfe"'),
+    (b'from', b"\xfe'"),
+    (b'Happi', b'\xfe,'),
+    (b'Tachi', b'\xfe2'),
+    (b'Charm', b'\xfe8'),
+    (b'Pill', b'\xfe>'),
+    (b'dragon', b'\xfeC'),
+    (b'Gold', b'\xfeJ'),
+    (b'Bell', b'\xfeO'),
+    (b'Increase', b'\xfeT'),
+    (b'Appare', b'\xfe]'),
+    (b'Staff', b'\xfed'),
+    (b'Claws', b'\xfej'),
+    (b'Tabi', b'\xfep'),
+    (b'ZP:', b'\xfeu'),
+    (b'HP:', b'\xfey'),
+    (b'Priest', b'\xfe}'),
+    (b'Pipe', b'\xfe\x84'),
+    (b'Holy', b'\xfe\x89'),
+    (b'Frog', b'\xfe\x8e'),
+    (b'supernatural', b'\xfe\x93'),
+    (b'Tanegashima', b'\xfe\xa0'),
+    (b'protection', b'\xfe\xac'),
+    (b'element', b'\xfe\xb7'),
+    (b'Missive', b'\xfe\xbf'),
+    (b'Hanging', b'\xfe\xc7'),
+    (b'Blesses', b'\xfe\xcf'),
+    (b'weapon', b'\xfe\xd7'),
+    (b'powers', b'\xfe\xde'),
+    (b'letter', b'\xfe\xe5'),
+    (b'Scroll', b'\xfe\xec'),
+    (b'Rosary', b'\xfe\xf3'),
+
+  ]),
+
+'ORTITLE.EXE': [],
+}
 # TODO: Caps are a little tricky here... ^ always breaks the compressed word since it adds 20 to ef.
 
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
@@ -314,3 +358,4 @@ FACES = {
 }
 
 CONTROL_CODES.update(FACES)
+

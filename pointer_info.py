@@ -308,6 +308,9 @@ POINTERS_TO_REASSIGN = {
             (0x2d8f6, 0x2d5d2),
             (0x2d905, 0x2d5d2),
             (0x2d914, 0x2d5d2),
-            (0x2d923, 0x2d5d2)
+            (0x2d923, 0x2d5d2),
+
+            (0x28c97, 0x27346),   # a:back1.gem
+            (0x2738f, 0x27346),
     ]
 }
