@@ -2,6 +2,7 @@
 
 ## Reinserter
 * Better typesetting accounting for control codes.
+* Better typesetting for Haley's lines.
 * [WAIT] control codes sometimes overwrite a few characters ago.
 	* What's the pattern? It's only some of them...
 		* Not related to the WAIT number. Is it an even/odd positioning thing?
@@ -29,6 +30,8 @@
 		* 4100 should be Thunder Dragon
 
 ## ORFIELD
+
+* ASM needs to be updated to also check for SJIS characters beginning with 81. That's necessary for all punctuation, including SJIS spaces, to show up correctly.
 
 * State of the menus:
 	* Menu
@@ -72,20 +75,14 @@
 
 ## ORBTL
 
+* "Surprise!" text points to some equipment name now
+
 * Zen art types are too long, use shorter ones from ORFIELD
 	* Might still be too long
 
 ## Graphics
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
 	* Or just do those problem files manually.
-* Need to progress in the game far enough to get to the minigames and test their graphics.
-* That one cat tank monster near Koro-pok-guru village has an animation we should translate too.
-	* Wheelcat - CHAR_43A.GEM
-* Still haven't given them over to SkyeWelse.
-* How should we handle the shop signs?
-	* All identified.
-* CD version intro graphics need to be translated too.
-	* All identified.
 
 ## CD Version
 * So, none of the executables will be the same. Uh oh.

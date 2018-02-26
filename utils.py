@@ -21,7 +21,13 @@ def typeset(s, width=37):
     if len(s) <= width:
         return s
 
-    words = s.split(b' ')
+    #words = s.split(b' ')
+    # SJIS lines, like Haley's, must be split by SJIS spaces
+    if b'\x81\x40' in s:
+        words = s.split(b'\x81\x40')
+    else:
+        words = s.split(b' ')
+
     lines = []
 
     while words:
@@ -40,6 +46,17 @@ def typeset(s, width=37):
 
     return b'/'.join(lines)
 
+def sjis_punctuate(s):
+    if b'\x82' not in s:
+        return s
+
+    print(s)
+    s = s.replace(b' ', b'\x81\x40')
+    s = s.replace(b'"', b'\x81\x56')
+
+    return s
+
+
 def shadoff_compress(s):
     #print(s)
     # Definitely don't compress filenames!
@@ -49,7 +66,7 @@ def shadoff_compress(s):
     if s.count(b' ') == len(s):
         return s
     # If it's a fullwidth Latin char SJIS string, keep it the same
-    if s[0] == 0x82:
+    if b'\x82' in s:
         return s
 
     # Don't further compress the dictionary

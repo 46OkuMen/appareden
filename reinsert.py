@@ -9,7 +9,7 @@ from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_D
 from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters, DICT_LOCATION
 from pointer_info import POINTERS_TO_REASSIGN
 import asm
-from utils import typeset, shadoff_compress, replace_control_codes
+from utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 
@@ -50,8 +50,7 @@ HIGHEST_SCN = 12803
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
 
-# TODO Re-enable
-#FILES_TO_REINSERT += msgs_to_reinsert
+FILES_TO_REINSERT += msgs_to_reinsert
 
 total_reinserted_strings = 0
 
@@ -143,6 +142,7 @@ for filename in FILES_TO_REINSERT:
             else:
                 t.english = typeset(t.english, 57)
             t.english = shadoff_compress(t.english)
+            t.english = sjis_punctuate(t.english)
 
             try:
                 i = gamefile.filestring.index(t.japanese)
