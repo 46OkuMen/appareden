@@ -88,7 +88,8 @@ for filename in FILES_TO_REINSERT:
             asm_cursor += len(code)
 
         # Wait, what is this again?
-        gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
+        # This overwrites part of the fullwidth handling code. Really should just put it there...
+        #gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
 
         # Expand space for status ailments in menu
         # ac = limit of 6, and we want 12 for Petrified
@@ -137,12 +138,12 @@ for filename in FILES_TO_REINSERT:
                     portrait_window_counter = 2
                     break
 
+            t.english = sjis_punctuate(t.english)
             if portrait_window_counter > 0:
                 t.english = typeset(t.english, 37)
             else:
                 t.english = typeset(t.english, 57)
             t.english = shadoff_compress(t.english)
-            t.english = sjis_punctuate(t.english)
 
             try:
                 i = gamefile.filestring.index(t.japanese)

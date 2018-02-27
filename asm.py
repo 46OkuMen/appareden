@@ -53,11 +53,13 @@ dictCompression:
 # 3c82 741b      3cff 7501 5e 3cfe 7b0b 56 ac beaa43 30e4 6601c6 ac           3c7e 7501 4f
 
 
-FULLWIDTH_CHECK = b'\x82\x74\x30'
+FULLWIDTH_CHECK = b'\x81\x74\x34\x3C\x82\x74\x30'
 """
 fullwidthCheck:
     cmp al, 82     ; just the 82 part of the instruction
-    jz 583e        ; fullwidthOriginal
+    jz 5842        ; fullwidthOriginal
+    cmp al, 81
+    jz 5842
 """
 
 """
@@ -76,7 +78,7 @@ dictEndCheck
 # Found the way to do 16-bit add si, ax. It's 01c6, so that and the xor ah, ah can be dropped
     # Whoops, that's not right. Need to add sl, al (which can't be done, oops)
 
-DICT_END_CHECK =     b'\x3c\xff\x75\x04\x5e\xac\xeb\xc8'
+DICT_END_CHECK =     b'\x3C\xFF\x75\x04\x5E\xAC\xEB\xC4'
 BTL_DICT_END_CHECK = b'\x3c\xff\x75\x04\x5e\xac\xeb\xcc'
 
 """
@@ -92,7 +94,7 @@ dictStartCheck:
     nop
 """
 
-DICT_START_CHECK =     b'\x3c\xfe\x75\x0b\x56\xac\xbe\xaa\x43\x30\xe4\x01\xc6\xac\x90'
+DICT_START_CHECK =     b'\x3C\xFE\x75\x0B\x56\xAC\xBE\xAA\x43\x30\xE4\x01\xC6\xAC\x90'
 BTL_DICT_START_CHECK = b'\x3c\xfe\x75\x0a\x56\xac\xbe\x18\x4c\x30\xe4\x01\xc6\xac'
 
 
@@ -108,7 +110,7 @@ spaceCompression:
 
 """
 
-OVERLINE_CODE =     b'\x3c\x7e\x75\x01\x4f'
+OVERLINE_CODE =     b'\x3C\x7E\x75\x01\x4F'
 BTL_OVERLINE_CODE = b'\x3c\x7e\x75\x01\x4f'
 """
 overlineCode:
@@ -117,7 +119,7 @@ overlineCode:
     dec di
 """
 
-SKIP_SHADOFF =     b'\x3c\x5e\x75\x03\xac\x74\x36'
+SKIP_SHADOFF =     b'\x3C\x5E\x75\x03\xAC\x74\x32'
 BTL_SKIP_SHADOFF = b'\x90\x90\x90\x90\x90\x90\x90'
 """
 skipCompression:
@@ -127,7 +129,7 @@ skipCompression:
     jz 5867        ; halfwidthOriginal
 """
 
-SHADOFF_COMPRESSION =     b'\x3c\x5a\x7f\x32\x3c\x40\x7c\x2e\x47\x04\x20\xeb\x29'
+SHADOFF_COMPRESSION =     b'\x3C\x5A\x7F\x2E\x3C\x40\x7C\x2A\x47\x04\x20\xEB\x25'
 BTL_SHADOFF_COMPRESSION = b'\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\xeb\x14'
 """
 shadoffCompression:
@@ -146,7 +148,8 @@ shadoffCompression:
 """
 
 # 8a e0 ac e8 af fe 8b d0 e8 11 ff 56 e8 4a fe e8 c7 fe be 14 04 e8 d7 fe a1 d6 03 e8 bb fe be d8 03 e8 cb fe 5e 47 47 eb 24
-FULLWIDTH_ORIGINAL = b'\x8a\xe0\xac\xe8\xaf\xfe\x8b\xd0\xe8\x11\xff\x56\xe8\x4a\xfe\xe8\xc7\xfe\xbe\x14\x04\xe8\xd7\xfe\xa1\xd6\x03\xe8\xbb\xfe\xbe\xd8\x03\xe8\xcb\xfe\x5e\x47\x47\xeb\x24'
+#                                                                                  v Begins to be overwritten
+FULLWIDTH_ORIGINAL = b'\x8A\xE0\xAC\xE8\xAB\xFE\x8B\xD0\xE8\x0D\xFF\x56\xE8\x46\xFE\x90\x90\x90\xB4\x09\xA1\xD6\x03\xE8\xBB\xFE\xBE\xD8\x03\xE8\xCB\xFE\x5E\x47\x47\xEB\x24'
 """
 fullwidthOriginal:
     mov ah, al
@@ -169,7 +172,7 @@ fullwidthOriginal:
     jmp 588b       ; jumps to the 'jmp 57da' in halfwidthOriginal, since it can't reach 57da with a short jump
 """
 
-HALFWIDTH_ORIGINAL = b'\xb4\x09\x86\xe0\x8b\xd0\xe8\xea\xfe\x56\xe8\x23\xfe\xe8\xa0\xfe\xbe\x14\x04\xe8\xc6\xfe\xa1\xd6\x03\xe8\x94\xfe\xbe\xd8\x03\xe8\xba\xfe\x5e\x47\xe9\x4c\xff'
+HALFWIDTH_ORIGINAL = b'\xB4\x09\x86\xE0\x8B\xD0\xE8\xEA\xFE\x56\xE8\x23\xFE\xE8\xA0\xFE\xBE\x14\x04\xE8\xC6\xFE\xA1\xD6\x03\xE8\x94\xFE\xBE\xD8\x03\xE8\xBA\xFE\x5E\x47\xE9\x4C'
 """
 halfwidthOriginal:
     mov ah, 09

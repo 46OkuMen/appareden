@@ -2,16 +2,12 @@
 
 ## Reinserter
 * Better typesetting accounting for control codes.
-* Better typesetting for Haley's lines.
 * [WAIT] control codes sometimes overwrite a few characters ago.
 	* What's the pattern? It's only some of them...
 		* Not related to the WAIT number. Is it an even/odd positioning thing?
 	* You can workaround it by adding spaces after it, but that's annnoying...
 
 ## MSGs
-* Vagrant "Come on(overline) The place is empty."
-	* Replaced the ~ with --, maybe that'll work?
-	* Also, the overline should come from an actual overlined character, not ~...
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
 	* Example: SCN3100.MSG, border crossing after getting Tamamo
 * When a message starts with ( instead of ", the ( glows red
@@ -30,9 +26,6 @@
 		* 4100 should be Thunder Dragon
 
 ## ORFIELD
-
-* ASM needs to be updated to also check for SJIS characters beginning with 81. That's necessary for all punctuation, including SJIS spaces, to show up correctly.
-
 * State of the menus:
 	* Menu
 	* Character Status Select

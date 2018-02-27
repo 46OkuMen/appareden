@@ -23,13 +23,15 @@ def typeset(s, width=37):
 
     #words = s.split(b' ')
     # SJIS lines, like Haley's, must be split by SJIS spaces
-    if b'\x81\x40' in s:
+    if b'\x82' in s:
         words = s.split(b'\x81\x40')
+        width = 40
     else:
         words = s.split(b' ')
 
     lines = []
 
+    #print(words)
     while words:
         #print(words)
         line = b''
@@ -39,6 +41,10 @@ def typeset(s, width=37):
             line += words.pop(0) + b' '
 
         line = line.rstrip()
+        if len(lines) > 0:
+            if line == lines[-1]:
+                print("That line is the same as the last one. Continuing onward")
+                break
         lines.append(line)
         
     #for l in lines:
@@ -52,7 +58,7 @@ def sjis_punctuate(s):
 
     print(s)
     s = s.replace(b' ', b'\x81\x40')
-    s = s.replace(b'"', b'\x81\x56')
+    #s = s.replace(b'"', b'\x81\x56')
 
     return s
 
