@@ -1,6 +1,7 @@
 # Appareden Todo
 
 ## Reinserter
+* Can't reinsert ō yet, complains about illegal multibyte sequence.
 * Better typesetting accounting for control codes.
 * [WAIT] control codes sometimes overwrite a few characters ago.
 	* What's the pattern? It's only some of them...

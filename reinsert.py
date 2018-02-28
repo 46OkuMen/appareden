@@ -124,9 +124,6 @@ for filename in FILES_TO_REINSERT:
 
         for t in Dump.get_translations(filename, sheet_name='MSG'):
 
-            #if b'Hakodate' in t.english:
-            #    print(t.english)
-
             for cc in CONTROL_CODES:
                 t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                 t.english = t.english.replace(cc, CONTROL_CODES[cc])
@@ -150,6 +147,10 @@ for filename in FILES_TO_REINSERT:
                 gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
                 reinserted_string_count += 1
             except ValueError:
+                for b in t.japanese:
+                    print("%s " % hex(b)[2:], end="\t")
+
+                print()
                 print("Couldn't find this one:", t.japanese, t.english)
 
             if portrait_window_counter > 0:
@@ -192,7 +193,6 @@ for filename in FILES_TO_REINSERT:
                 if t.location !=  DICT_LOCATION[filename]:
                     for cc in POSTPROCESSING_CONTROL_CODES[filename]:
                         t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
-                #print(t.english)
 
 
                 loc_in_block = t.location - block.start + diff
@@ -201,26 +201,21 @@ for filename in FILES_TO_REINSERT:
 
                 i = block.blockstring.index(t.japanese)
 
-                #print(hex(t.location), t.english)
 
                 if i <= last_i:
                     after_slice = block.blockstring[last_i+last_len:]
-                    #print("Looking for", t.japanese)
                     i = after_slice.index(t.japanese)
                     assert i != -1
                     i += last_i + last_len
 
                 this_string_start = block.start + i
                 this_string_end = block.start + i + len(t.english)
-                #print("String starts at %s and ends at %s" % (hex(this_string_start), hex(this_string_end)))
 
                 if this_string_end >= block.stop and not overflowing:
                     overflowing = True
                     overflow_start = i
                     overflow_original_location = t.location
                     print("It's overflowing starting with string %s" % t)
-                    #print("Absolute location:", hex(block.start + i))
-                    #print("Block is", block)
 
                     # Deactivating these, the first one always seems to be a 0-length string
                     #overflowlets.append(t.location - block.start + diff)
@@ -243,22 +238,14 @@ for filename in FILES_TO_REINSERT:
 
             block_diff = len(block.blockstring) - len(block.original_blockstring)
 
-            #print(block_diff)
-
             if overflowing:
                 overflow_string = block.blockstring[overflow_start:]
                 cursor = 0
                 for i, o in enumerate(overflowlets):
-                    #print("Start stop", hex(cursor), hex(o-overflow_start))
                     overflowlet_string = overflow_string[cursor:o-overflow_start]
                     cursor = o-overflow_start
                     absolute_overflowlet_start = o + block.start
                     overflow_strings.append((absolute_overflowlet_start, overflowlet_string, block, overflowlet_original_locations[i]))
-                    #print("Overflowlet: %s %s" % (hex(absolute_overflowlet_start), overflowlet_string))
-                #print(overflow_string)
-                #print("Overflow begins at:", hex(block.start + overflow_start))
-                #absolute_overflow_start = overflow_start + block.start
-                #overflow_strings.append((absolute_overflow_start, overflow_string, block, overflow_original_location))
 
                 # Remove the overflow string from the block entirely
                 block.blockstring = block.blockstring[:overflow_start]
@@ -280,18 +267,10 @@ for filename in FILES_TO_REINSERT:
             #print("Length is", len(o[1]))
             print([s[1]-s[0] for s in spares])
             # o[0] is location, o[1] is the string, o[2] is the parent block, o[3] is the first string's original location
-            #print("overflows:", hex(o[0]), o[1], "size:", len(o[1]))
             spare_to_use = spares[0]
 
             # s[0] is the start, s[1] is the end, s[2] is the parent block
-
-            #print("Looking at stuff between %s and %s" % (hex(o[3]), hex(o[3]+len(o[1]))))
-            #translations = [t for t in Dump.get_translations(o[2]) if t.location >= o[3] and t.location < o[3]+len(o[1])]
             translations = [t for t in Dump.get_translations(o[2]) if t.location == o[3]]
-            #print(translations[0], "is the translation that begins at", hex(o[3]), "cuz it has location", hex(translations[0].location))
-            #print("o:", o)
-            #print("Trying to reinsert", translations[0])
-            #print("o[1]:", o[1])
             assert translations[0].japanese in o[1]
             assert o[3] == translations[0].location
 
@@ -342,9 +321,7 @@ for filename in FILES_TO_REINSERT:
                 print(t.english)
 
                 try:
-                    #print(receiving_block.blockstring)
                     i = receiving_block.blockstring.index(t.japanese)
-                    #print(i)
                 except ValueError:
                     if t == translations[0]:
                         already_translated = True
@@ -365,8 +342,6 @@ for filename in FILES_TO_REINSERT:
 
                 # Edit the pointers of where the string originally was!
                 # Need to edit the pointers even if the length hasn't changed, too. diff should be initialized to the inter-block jump
-                #for p in gamefile.pointers:
-                #    print(hex(p.text_location))
                 if t == translations[0]:
                     diff = spare_to_use[0] - o[3]
                     gamefile.edit_pointers_in_range((o[3]-1, o[3]), diff)
@@ -389,7 +364,6 @@ for filename in FILES_TO_REINSERT:
             print(o[2], "overflowed", spare_to_use[2], "is the receiving block")
 
         for s in spares:
-            #print("spare:", s, s[1] - s[0])
             assert s[1] - s[0] >= 0
 
 
