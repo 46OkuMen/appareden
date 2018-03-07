@@ -1,6 +1,6 @@
 """
     Utilities for encoding images as .GEM files, as used in Appareden.
-    Possibly useful for other TGL games (Farland Story? Edge?) but untested.
+    Possibly useful for other TGL/GIGA games (Farland Story? Edge?) but untested.
 """
 
 from romtools.disk import Disk
@@ -11,6 +11,7 @@ from bitstring import BitArray
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57\xE1\x76\x87\x29\xBC\x7C\xFF\xFF\xFF\x00'
 TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xa6\xaf\xff\x32\x33\x00'
+                  # TODO: Why is this longer than the others??
 
 NAMETAG_PALETTE_RGB = [(0x00, 0x00, 0x00),
                (0x33, 0x33, 0x33),
@@ -158,6 +159,7 @@ def encode(filename):
         f.write(b'\x00\x00') # not sure about these either
         f.write(palette_bytes)
         for p in unique_patterns:
+            print(p)
             f.write(p)
 
         row_cursor = 0
