@@ -1,9 +1,9 @@
-import os, sys
-from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SPARE_BLOCK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
-from rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, MSG_DUMP_GOOGLE_SHEET, POINTER_CONSTANT
-from pointer_info import POINTERS_TO_REASSIGN
-from utils import typeset, shadoff_compress, replace_control_codes
-from romtools.disk import Disk, Gamefile, Block, Overflow
+import os, sys, re
+from .rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
+from .rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, POINTER_CONSTANT, MSGS
+from .pointer_info import POINTERS_TO_REASSIGN
+from .utils import shadoff_compress
+from romtools.disk import Gamefile
 from romtools.dump import DumpExcel, PointerExcel
 
 FILES_TRANSLATED = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORMAIN.EXE']
@@ -76,8 +76,8 @@ def test_orfield_pointers():
             else:
                 target_english = t
 
-            for cc in POSTPROCESSING_CONTROL_CODES:
-                target_english = target_english.replace(cc, POSTPROCESSING_CONTROL_CODES[cc])
+            for cc in POSTPROCESSING_CONTROL_CODES[f]:
+                target_english = target_english.replace(cc, POSTPROCESSING_CONTROL_CODES[f][cc])
 
             # Finally, look at the new pointer location in the patched file
             new_bytes = gf.filestring[p.location:p.location+2]
@@ -114,3 +114,22 @@ def test_block_integrity():
 def test_MSG_end_linebreaks():
     # Make sure that if t.japanese ends in [LN], t.english should also end in [LN].
     pass
+
+def test_MSG_double_spaces():
+    # Make sure that wherever the string b'  ' appears in a MSG, it is also two spaces in the MSG sheet.
+
+    for m in MSGS:
+        gf = Gamefile(os.path.join('original', m))
+        # TODO: Agh, this is still slow
+        translations = Dump.get_translations(m, sheet_name='MSG')
+        for t in translations:
+            string_in_file = gf.filestring[t.location:t.location+len(t.japanese)]
+
+            #print(string_in_file)
+
+        #locs = [m.start() for m in re.finditer(b' ', gf.filestring)]
+
+        #for loc in locs:
+        #    print(gf.filestring[loc-2:loc+4])
+
+    assert False

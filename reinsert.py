@@ -5,11 +5,13 @@
 
 import os
 from math import floor
-from rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
-from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters, DICT_LOCATION
-from pointer_info import POINTERS_TO_REASSIGN
-import asm
-from utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate
+
+from appareden import asm
+from appareden.rominfo import MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
+from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters, DICT_LOCATION
+from appareden.pointer_info import POINTERS_TO_REASSIGN
+from appareden.utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate
+
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
 
@@ -53,6 +55,7 @@ msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HI
 FILES_TO_REINSERT += msgs_to_reinsert
 
 total_reinserted_strings = 0
+missing_string_count = 0
 
 for filename in FILES_TO_REINSERT:
     gamefile_path = os.path.join('original', filename)
@@ -147,11 +150,12 @@ for filename in FILES_TO_REINSERT:
                 gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
                 reinserted_string_count += 1
             except ValueError:
+                print()
+                print("Couldn't find this one:", t.japanese, t.english)
+                missing_string_count += 1
                 for b in t.japanese:
                     print("%s " % hex(b)[2:], end="\t")
 
-                print()
-                print("Couldn't find this one:", t.japanese, t.english)
 
             if portrait_window_counter > 0:
                 portrait_window_counter -= 1
@@ -384,6 +388,8 @@ for filename in FILES_TO_REINSERT:
     print("Total reinserted strings is", total_reinserted_strings)
 
     gamefile.write(path_in_disk='TGL\\OR')
+
+print("Strings missing in MSGs: %s" % missing_string_count)
 
 percentage = int(floor((total_reinserted_strings / TOTAL_STRING_COUNT * 100)))
 print("Appareden", "%s" % str(percentage), "%", "complete (%s / %s)" % (total_reinserted_strings, TOTAL_STRING_COUNT))

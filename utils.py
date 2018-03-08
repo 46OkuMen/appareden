@@ -1,4 +1,8 @@
-from rominfo import S_CONTROL_CODES
+"""
+    Minor string utilities for Appareden.
+"""
+
+from .rominfo import S_CONTROL_CODES
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
@@ -56,7 +60,7 @@ def sjis_punctuate(s):
     if b'\x82' not in s:
         return s
 
-    print(s)
+    #print(s)
     s = s.replace(b' ', b'\x81\x40')
     #s = s.replace(b'"', b'\x81\x56')
 

@@ -119,9 +119,7 @@ FILE_BLOCKS = {
                 (0x271f8, 0x27557),
                 (0x275f0, 0x275fe),  # death msg
                 (0x2760e, 0x27676),  # ship msg
-                (0x28044,  0x281c9),
-                (0x281c9, 0x283c0),  # /, status names, status screen equipment slots
-                (0x283c0, 0x2847d),  # Settings
+                (0x28044, 0x2847d),  # Settings
                 (0x2847d, 0x2853f),  # Equip screen header, "whose"
                 (0x2853f, 0x28568),
                 (0x286b1, 0x28851),  # Equip screen
