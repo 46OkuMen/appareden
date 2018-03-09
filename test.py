@@ -30,8 +30,7 @@ def test_no_duplicate_pointers():
 
 # TODO: Test all files' pointers
 
-def test_orfield_pointers():
-    f = 'ORFIELD.EXE'
+def pointertest(f):
     successes = 0
     constant = POINTER_CONSTANT[f]
     gf = Gamefile(os.path.join('patched', f))
@@ -64,7 +63,7 @@ def test_orfield_pointers():
             for cc in CONTROL_CODES:
                 t = t.replace(cc, CONTROL_CODES[cc])
 
-            t = t.replace(b'~', b' ')
+            #t = t.replace(b'~', b' ')
 
             # Ignore terminal b'\x00' control code, since the result is split there anyway
             if len(t) > 0:
@@ -88,8 +87,8 @@ def test_orfield_pointers():
             result_english = gf.filestring[new_loc:new_loc+80].split(b'\x00')[0]
 
             if target_english != result_english:
-                print(hex(trans[0].location), target_english)
-                print(hex(new_loc), result_english)
+                print("Expected:", hex(trans[0].location), target_english)
+                print("Result:  ", hex(new_loc), result_english)
                 print()
                 pass
             else:
@@ -97,6 +96,13 @@ def test_orfield_pointers():
 
     print(successes, " / ", total)
     assert successes == total
+
+def test_orfield_pointers():
+    pointertest('ORFIELD.EXE')
+
+def test_orbtl_pointers():
+    pointertest('ORBTL.EXE')
+
 
 # Make sure all the blocks contain mutually exclusive, monotonically increasing intervals
 def test_block_integrity():
@@ -113,8 +119,18 @@ def test_block_integrity():
 
 def test_MSG_end_linebreaks():
     # Make sure that if t.japanese ends in [LN], t.english should also end in [LN].
-    pass
+    failures = 0
+    for m in MSGS:
+        gf = Gamefile(os.path.join('original', m))
+        translations = Dump.get_translations(m, sheet_name='MSG')
+        for t in translations:
+            if t.japanese.endswith(b'[LN]') and not t.english.endswith(b'[LN]'):
+                failures += 1
+                print(m, hex(t.location), t.english, "needs an LN")
+    assert failures == 0, "Lines need [LN]s: %s" % failures
 
+# TDOO: Can't get this to be useful enough
+"""
 def test_MSG_double_spaces():
     # Make sure that wherever the string b'  ' appears in a MSG, it is also two spaces in the MSG sheet.
 
@@ -125,7 +141,8 @@ def test_MSG_double_spaces():
         for t in translations:
             string_in_file = gf.filestring[t.location:t.location+len(t.japanese)]
 
-            #print(string_in_file)
+            print(t.japanese.count(b'  '))
+            print(string_in_file.count(b'  '))
 
         #locs = [m.start() for m in re.finditer(b' ', gf.filestring)]
 
@@ -133,3 +150,4 @@ def test_MSG_double_spaces():
         #    print(gf.filestring[loc-2:loc+4])
 
     assert False
+"""
