@@ -4,16 +4,18 @@
 Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.com/)'s English translation patch for *Appareden - Fukuryuu no Shou* (あっぱれ伝 ー伏龍の章ー) (PC-98), a traditional and colorful JRPG based on Japanese history and myth.
 
 ### Draft Reinsertion Progress
-| Segment      | %    |  Strings            | 
+
+
+| Segment      | %    |  Strings            |
 | -------------|-----:|:-------------------:|
-| Title        | 100% |    (18 / 18)        |
-| Main         |   0% |     (0 / 202)       |
-| Field        | 100% |  (1194 / 1194)      |
-| Battle       | 100% |   (786 / 786)       |
-| Cat Minigame |   0% |     (0 / 7)         |
-| Dialogue     |  83% |  (4653 / 5594)      |
-| Images       |   2% |     (1 / 44?)       |
-| Total        |  85% |  (6662 / 7845)      |
+| ORTITLE.EXE  | 72%   | (18 / 25)           |
+| ORMAIN.EXE   | 0%    | (0 / 204)           |
+| ORFIELD.EXE  | 100%  | (1205 / 1205)       |
+| ORBTL.EXE    | 100%  | (785 / 785)         |
+| SFIGHT.EXE   | 0%    | (0 / 15)            |
+| Dialogue     | 81%   | (4540 / 5592)       |
+| Images       | 2%    | (1 / 37)            |
+| **Total**    |**83%**|  **(6549 / 7866)**  |
 
 ### Requirements
 * A working hard-disk dump of *Appareden*
@@ -47,4 +49,4 @@ python gem.py
 Now, `patched/Appareden.hdi` should be playable in English as far as you've translated.
 
 ### License
-This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.d) file for details.
