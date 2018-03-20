@@ -2,56 +2,11 @@
 	Per-file ASM edits for Appareden.
 """
 
-# TODO: This needs cleanup, it is mostly old comments and old raw bytes that are meaningless now
-
-#SPACECODE_ASM = b'\x3c\x5f\x75\x07\xac\x88\xc1\x47\xe2\xfd\xac'
-#OVERLINE_ASM =  b'\x3c\x7e\x75\x01\x4f'
-#FULLWIDTH_ASM = b'\x3c\x82\x75\x0a\x88\xc4\xac\x2d\x1e\x7f\x86\xe0\xeb\x30'
-#SKIPCODE_ASM =  b'\x3c\x5e\x75\x05\xac\x0f\x84\x1c\x00'
-#ASCII_ASM =     b'\x3c\x5a\x0f\x8f\x16\x00\x3c\x40\x0f\x8c\x10\x00\x47\x04\x20\xeb\x0b\x90'
-
-#ORIGINAL_FULLWIDTH_ASM = b'\x8b\xd0\xe8\x2d\xff\x56\xe8\x66\xfe\x33\xc0\xe8\xe1\xfe\xbe\x14\x04\xe8\xf1\xfe\xa1\xd6\x03\xe8\xd5\xfe\xbe\xd8\x03\xe8\xe5\xfe\x5e\x47\x47\xeb\x8d'
-# 11 bytes, 5 bytes, 27 bytes
-# sum: 43 bytes
-# Needs to be less than (580a-584d) bytes long
-
-# inserted at 2443:580b, or 0x8bf0 in ORFIELD.EXE
-
-
-# code I'm trying to move:
-#3c 7e 75 01 4f 3c 5e 75 03 ac 74 43 3c 5a 7f 3f 3c 40 7c 3b 47 04 20 eb 36
-# All the jumps should go to 5867 except hte first, which goes to the "cmp al, 5a" instruction
-
-
-"""
-checkIfDictOver:
-    cmp al, dictEndCode ; 0xFF?
-    jnz dictCompression
-    pop esi
-"""
-
-"""
-dictCompression:
-    cmp al, dictCode
-    jnz fullwidthCheck
-    push esi ; where it's reading the text from
-    lodsb
-    mov esi, dictBase + al  ; begin reading from dictionary location + dictionary offset
-    lodsb
-"""
-
-# lodsb loads the thing from DS:SI into AL
-
 # Let's store the dictionary at 0x4b2ea, which is at seg 46f4:43aa.
 # So, put 43aa in ESI
 # mov si, 43aa = be aa 43
 
 # Dict is going to be stuff like The[ff]as[ff]
-
-# At 2443:580a:
-# fullwidth      dictcompress                                                 overline
-# 3c82 741b      3cff 7501 5e 3cfe 7b0b 56 ac beaa43 30e4 6601c6 ac           3c7e 7501 4f
-
 
 FULLWIDTH_CHECK = b'\x81\x74\x34\x3C\x82\x74\x30'
 """
@@ -207,3 +162,12 @@ ORBTL_CODE = [BTL_DICT_END_CHECK, BTL_DICT_START_CHECK, BTL_OVERLINE_CODE,
 # ORBTL dictionary should go at offset 0x29d38, which is at seg 2443:5908?
     # Nope. Ingame it's at 4b568.
     # Oh right, it loads from DS. It's at seg 4695:4c18.
+
+
+
+"""
+    ORFIELD FD: 0x8c0b. 81 72 3f 3c a0 72 08 3c e0 72 37 3c fe 73 33 8a e0 ac e8 d3 fe 3c 09 72 04 3c 0b 76 30 8b d0 e8 2d ff 56 e8 66 fe 33 c0 e8 e1 fe be 14 04 e8 f1 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d b4 09 3c a0 72 03 05 80 00 86 e0 8b d0 e8 fd fe 56 be d8 03 b9 14 00 46 80 24 80 46 c6 04 00 46 e2 f5 e8 25 fe 33 c0 e8 a0 fe be 14 04 e8 c6 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d b4 09 3c a0 72 03 05 80 00 86 e0 8b d0 e8 fd fe 56 be d8
+    ORFIELD CD: 0x8e05. 81 72 3f 3c a0 72 08 3c e0 72 37 3c fe 73 33 8a e0 ac e8 d3 fe 3c 09 72 04 3c 0b 76 30 8b d0 e8 2d ff 56 e8 66 fe 33 c0 e8 e1 fe be 14 04 e8 f1 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d b4 09 3c a0 72 03 05 80 00 86 e0 8b d0 e8 fd fe 56 be d8 03 b9 14 00 46 80 24 80 46 c6 04 00 46 e2 f5 e8 25 fe 33 c0 e8 a0 fe be 14 04 e8 c6 fe a1 d6 03 e8 94 fe be d8 03 e8 ba fe 5e 47 e9 4c ff 32 c0 e6 7c 1f 5f 5e 5d
+  
+  Yep. They are just different enough that it'll need some debugging.  
+"""

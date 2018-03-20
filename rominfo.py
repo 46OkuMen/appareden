@@ -6,8 +6,8 @@
 import os
 from collections import OrderedDict
 
-SRC_DISK = os.path.join('original', 'Appareden.HDI')
-DEST_DISK = os.path.join('patched', 'Appareden.HDI')
+SRC_DISK = os.path.join('original', 'Appareden (UPDATED).HDI')
+DEST_DISK = os.path.join('patched', 'Appareden (UPDATED).HDI')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 MSG_XLS_PATH = 'appareden_msg_dump.xlsx'
@@ -81,8 +81,8 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                        'マスター', 'コロ長老',  '武器屋のオヤジ', '長老', '骨董品屋の主人', '四界王', 'タマモ', 'ノブナガ', '老人',
                        # Mitsukuni, Izunokami, O-Toki, Gennai, Benkei, Ginpei, Shirou, Meiling, ThDragon, Sougen,
                        'ミツクニ', 'イズノカミ',      'お時', '源内', 'ベンケイ' 'ギンペー', 'シロウ',  'メイリン', '雷竜', 'ソウゲン',
-                       # O-Kuni, Okitsugu,
-                       'お国',    'オキツグ',
+                       # O-Kuni, Okitsugu, IceDragon, FlameDragon, Kuukai, Masamune, Genpaku,
+                       'お国',    'オキツグ', '氷竜',         '炎竜', 'クウカイ',   'マサムネ',  '玄白',
                        ]
 
 FILE_BLOCKS = {
@@ -357,3 +357,14 @@ FACES = {
 
 CONTROL_CODES.update(FACES)
 
+MAX_LENGTH = {
+    'Item Name': 21,
+    'Item Description': 43,
+    'Equipment (Left) Name': 18,
+    'Equipment (Right) Name': 17,
+    'Equipment Description': 43,   # Not verified
+    'Zen Name': 19,
+    'Zen Description': 36,
+
+    'Dictionary': 1000,
+}

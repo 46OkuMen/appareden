@@ -1,7 +1,8 @@
 Item names: 21 chars? (Need to check shop)
 Choice Onikoroshi Sake
 
-Item descriptions: (Shortest on shop page?)
+Item descriptions: 43 char? (Shortest on shop page?)
+Spider's silk clings to enemy stopping them (battle item screen)
 
 Left-side equipment names (hand, head, boot): 18 chars
 Tanegashima Type38
@@ -10,6 +11,14 @@ Right-side equipment names (body, arms, acc): 17 chars
 Gold Thread Happi
 
 Equipment descriptions
+
+Zen Names: 19 chars?
+Ultimate Stonebreak (19) longest on ORFIELD zen menu
+
+Zen descriptions: 36 chars?
+7 less than in-battle item description? (36) (ORBTL menu)
+An eruption of flames turns an area into a sea_ (47) (ORFIELD menu)
+
 
 
 2852e

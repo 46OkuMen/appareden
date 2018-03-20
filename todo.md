@@ -7,6 +7,11 @@
 	* What's the pattern? It's only some of them...
 		* Not related to the WAIT number. Is it an even/odd positioning thing?
 	* You can workaround it by adding spaces after it, but that's annnoying...
+* Why are random names remaining in JP after the game was updated?
+
+## Typesetting
+* It'd be best to apply typesetting to the dump itself rather than try to do it during reinsertion.
+	* Much easier testing and QA this way.
 
 ## MSGs
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
@@ -25,6 +30,7 @@
 		* 0100 = benimaru neutral
 		* 0410 = invalid filename, but starts with 4 so it's Gen'nai
 		* 4100 should be Thunder Dragon
+	* Also, this got fixed in the official update.
 
 ## ORFIELD
 * State of the menus:
@@ -83,7 +89,6 @@
 	* ORFIELD.EXE has text that is offset by some amount, but appears the same?
 		* It's not a constant amount, so there's probably some new block in the middle. Haven't looked for it specifically yet
 			* See docs/CD_differences.txt
-
 * In light of that, need to generate a new column for CD offsets. And probably re-do pointer stuff, ugh
 
 ## Cheat saves

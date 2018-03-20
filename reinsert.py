@@ -131,6 +131,8 @@ def reinsert():
 
         if filename == 'ORFIELD.EXE':
 
+            # Apply ORFIELD asm hacks
+
             # TODO: Spin this off into asm.py.
             gamefile.edit(0x151b7, B_CONTROL_CODES[b'w'])         # w = "{"
             gamefile.edit(0x15b0f, B_CONTROL_CODES[b'w'])         # w = "{"
@@ -147,22 +149,20 @@ def reinsert():
             gamefile.edit(0x15b6c, B_CONTROL_CODES[b'c'])         # c = "$"
             gamefile.edit(0x2551b, B_CONTROL_CODES[b'c'])         # c = "$"
 
-            # Apply ORFIELD asm hacks
+            # Longer, more complex text handling ASM
             asm_cursor = 0
-            # TODO reenable
+
             for code in asm.ORFIELD_CODE:
                 gamefile.edit(0x8c0b+asm_cursor, code)
                 asm_cursor += len(code)
-
-            # Wait, what is this again?
-            # This overwrites part of the fullwidth handling code. Really should just put it there...
-            #gamefile.edit(0x8c4d, b'\x90\x90\x90\x90\x90\x90\x90\xb4\x09')
+                print(hex(asm_cursor), "of ASM written")
 
             # Expand space for status ailments in menu
             # ac = limit of 6, and we want 12 for Petrified
             gamefile.edit(0x1ab14, b'\xb2')
 
         elif filename == 'ORBTL.EXE':
+            # Text handling ASM
             asm_cursor = 0
             for code in asm.ORBTL_CODE:
                 gamefile.edit(0x3647+asm_cursor, code)
@@ -195,10 +195,11 @@ def reinsert():
                     t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                     t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-                # If any portraited characters show up in this line, 
-                # this line (nametag) and next line (entire dialogue box) are narrower
+                # If a character with a portrait is given a nametag in this line,
+                # the next line needs to be typeset more aggressively due to less screen space.
                 for name in portrait_characters:
-                    if name.encode('shift-jis') in t.japanese:
+                    #if name.encode('shift-jis') in t.japanese:
+                    if name.encode('shift-jis') + b'/' == t.japanese:
                         portrait_window_counter = 2
                         break
 
