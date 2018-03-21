@@ -7,7 +7,7 @@
 	* What's the pattern? It's only some of them...
 		* Not related to the WAIT number. Is it an even/odd positioning thing?
 	* You can workaround it by adding spaces after it, but that's annnoying...
-* Why are random names remaining in JP after the game was updated?
+* Why are random names at the beginning/end of conversations not inserting after the game was updated??
 
 ## Typesetting
 * It'd be best to apply typesetting to the dump itself rather than try to do it during reinsertion.

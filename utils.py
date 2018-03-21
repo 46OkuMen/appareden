@@ -27,22 +27,24 @@ def typeset(s, width=37):
 
     #words = s.split(b' ')
     # SJIS lines, like Haley's, must be split by SJIS spaces
-    if b'\x82' in s:
-        words = s.split(b'\x81\x40')
-        width = 40
-    else:
-        words = s.split(b' ')
+    #if b'\x82' in s:
+    #    words = s.split(b'\x81\x40')
+    #    width = 40
+    #else:
+    #    words = s.split(b' ')
+
+    words = s.split(' ')
 
     lines = []
 
     #print(words)
     while words:
         #print(words)
-        line = b''
+        line = ''
         while len(line) <= width and words:
-            if len(line + words[0] + b' ') > width:
+            if len(line + words[0] + ' ') > width:
                 break
-            line += words.pop(0) + b' '
+            line += words.pop(0) + ' '
 
         line = line.rstrip()
         if len(lines) > 0:
@@ -54,7 +56,7 @@ def typeset(s, width=37):
     #for l in lines:
     #    print(l)
 
-    return b'/'.join(lines)
+    return '[LN]'.join(lines)
 
 def sjis_punctuate(s):
     if b'\x82' not in s:

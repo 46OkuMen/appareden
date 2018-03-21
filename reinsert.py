@@ -195,19 +195,21 @@ def reinsert():
                     t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                     t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
+                # All typesetting has been moved to typeset.py, which modifies the excel sheet.
+
                 # If a character with a portrait is given a nametag in this line,
                 # the next line needs to be typeset more aggressively due to less screen space.
-                for name in portrait_characters:
-                    #if name.encode('shift-jis') in t.japanese:
-                    if name.encode('shift-jis') + b'/' == t.japanese:
-                        portrait_window_counter = 2
-                        break
+                #for name in portrait_characters:
+                #    #if name.encode('shift-jis') in t.japanese:
+                #    if name.encode('shift-jis') + b'/' == t.japanese:
+                #        portrait_window_counter = 2
+                #        break
 
-                t.english = sjis_punctuate(t.english)
-                if portrait_window_counter > 0:
-                    t.english = typeset(t.english, 37)
-                else:
-                    t.english = typeset(t.english, 57)
+                #t.english = sjis_punctuate(t.english)
+                #if portrait_window_counter > 0:
+                #    t.english = typeset(t.english, 37)
+                #else:
+                #    t.english = typeset(t.english, 57)
                 t.english = shadoff_compress(t.english)
 
                 try:
@@ -222,8 +224,8 @@ def reinsert():
                         print("%s " % hex(b)[2:], end="\t")
 
 
-                if portrait_window_counter > 0:
-                    portrait_window_counter -= 1
+                #if portrait_window_counter > 0:
+                #    portrait_window_counter -= 1
 
 
         if filename.endswith('.EXE'):
