@@ -1,3 +1,7 @@
+"""
+    Use python2 to run this
+"""
+
 import os
 import xlsxwriter
 
@@ -12,7 +16,20 @@ print len(msgs)
 workbook = xlsxwriter.Workbook('appareden_msg_dump.xlsx')
 header = workbook.add_format({'bold': True, 'align': 'center', 'bottom': True, 'bg_color': 'gray'})
 
+
+worksheet = workbook.add_worksheet('MSGS')
+worksheet.set_column('B:B', 60)
+worksheet.set_column('C:C', 60)
+worksheet.write(0, 0, 'File', header)
+worksheet.write(0, 1, 'Offset', header)
+worksheet.write(0, 2, 'Japanese', header)
+worksheet.write(0, 3, 'English', header)
+
+row = 1
+
 for m in msgs:
+    portrait = None
+    flush_portrait = False
     with open(m, 'rb') as f:
         contents = f.read()
         cursor = 0
@@ -45,16 +62,24 @@ for m in msgs:
                 if ord(contents[cursor]) == 0x66:
                     # it's a face control code
                     #sjis_buffer += '[FACE'
+                    portrait = ''
                     cursor += 1
                     counter = 5
                     while counter:
                         #sjis_buffer += contents[cursor]
+                        portrait += contents[cursor]
                         cursor += 1
                         counter -= 1
                     #sjis_buffer += ']'
                 #else:
                 #    sjis_buffer += contents[cursor-1]
                 #    sjis_buffer += contents[cursor]
+                elif ord(contents[cursor]) != 0x6b:
+                    # If we run into a >w or >c, that's the end of this portrait...?
+                    # Anything except >k ends the portrait streak.
+                    # (>k clears the window but keeps the same portrait)
+                    # Need to flush it after it's added to the list of sjis strings.
+                    flush_portrait = True
                 broken = True
 
             elif ord(contents[cursor]) == 0x23:
@@ -68,7 +93,10 @@ for m in msgs:
                 sjis_buffer += '[LN]'
             else:
                 if sjis_buffer and sjis_buffer != '[LN]':
-                    sjis_strings.append((sjis_buffer_start, sjis_buffer))
+                    if portrait:
+                        sjis_strings.append((sjis_buffer_start, sjis_buffer, portrait))
+                    else:
+                        sjis_strings.append((sjis_buffer_start, sjis_buffer, ''))
                 sjis_buffer = ""
                 sjis_buffer_start = cursor+1
 
@@ -83,28 +111,29 @@ for m in msgs:
 
             if broken:
                 if sjis_buffer and sjis_buffer != '[LN]':
-                    sjis_strings.append((sjis_buffer_start, sjis_buffer))
+                    sjis_strings.append((sjis_buffer_start, sjis_buffer, portrait))
                 sjis_buffer = ""
                 sjis_buffer_start = cursor+1
                 broken = False
+
+            if flush_portrait:
+                portrait = None
+                flush_portrait = False
 
             cursor += 1
 
         if len(sjis_strings) == 0:
             continue
 
-        worksheet = workbook.add_worksheet(m.split('\\')[-1])
-        worksheet.set_column('B:B', 60)
-        worksheet.set_column('C:C', 60)
-        worksheet.write(0, 0, 'Offset', header)
-        worksheet.write(0, 1, 'Japanese', header)
-        worksheet.write(0, 2, 'English', header)
-        row = 1
         for s in sjis_strings:
             loc = '0x' + hex(s[0]).lstrip('0x').zfill(4)
             jp = s[1].decode('shift-jis')
-            worksheet.write(row, 0, loc)
-            worksheet.write(row, 1, jp)
+            portrait = s[2]
+            filename = m.split('\\')[-1]
+            worksheet.write(row, 0, filename)
+            worksheet.write(row, 1, loc)
+            worksheet.write(row, 2, jp)
+            worksheet.write(row, 3, portrait)
             row += 1
 
 workbook.close()

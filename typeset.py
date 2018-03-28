@@ -94,30 +94,30 @@ for m in msgs_to_typeset:
 
             english = properly_space_waits(english)
 
-            print(english)
+            #print(english)
             row[en_typeset_col].value = english
             english_lines = english.split('[LN]')
             line_count = 5
             for e in english_lines:
                 if portrait_window_counter > 0:
                     pass
-                    #print ("%s%s" % (" "*20, e))
+                    print ("%s%s" % (" "*20, e))
                 else:
-                    #print(e)
+                    print(e)
                     pass
                 line_count -= 1
 
             if not nametag:
 
                 while line_count > 0:
-                    #print()
+                    print()
                     line_count -= 1
 
-                #print('-'*57)
+                print('-'*57)
 
                 if line_count < 0:
                     pass
-                    #print("^ This window overflows")
+                    print("^ This window overflows")
 
             if portrait_window_counter > 0:
                 portrait_window_counter -= 1

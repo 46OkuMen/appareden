@@ -28,12 +28,16 @@
 		* "A hot bath bath can't be beat,[WAIT2]Orochi!! Strike." -> "A hot bath bath can't be Orochi!! Strike."
 		* "A beat,[WAIT2]Orochi!! Strike." -> "A beat,Orochi!! Strike."
 		* "A[WAIT2]Orochi!! Strike." -> "A Orochi!! Strike."
+		* "a[WAIT2]Orochi!! Strike." -> "aOrochi!! Strike."
+		* "a[WAIT2]a[WAIT2]a[WAIT2]" -> "aaa"
 
 
 	* First theory: [WAIT2] should always have two spaces at the end of it, and other spaces should be removed?
 		* Non-initial ones don't need any more spaces.
 	* Second theory: [WAIT] has an internal counter of 1 space, which decreases by 1 for every (lowercase?) word before it.
+		* So, need to count the lowercase-starting words preceding the WAIT and on the same line, then add n-1 spaces before/after the WAIT.
 * Why are random names at the beginning/end of conversations not inserting after the game was updated??
+	* Probably need to use the stricter reinserter like in the EXEs
 
 ## Typesetting
 * It'd be best to apply typesetting to the dump itself rather than try to do it during reinsertion.
@@ -43,6 +47,7 @@
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
 	* Example: SCN3100.MSG, border crossing after getting Tamamo
 * When a message starts with ( instead of ", the ( glows red
+	* Is an old SJIS thing being left in there?? Might be an issue that I always split before SJIS quotes...
 * Numbers usually lack a space in front. Should I add another one?
 	* It's probably due to the Shadoff compression, any alterations I should make to that?
 * Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
@@ -57,6 +62,8 @@
 		* 0410 = invalid filename, but starts with 4 so it's Gen'nai
 		* 4100 should be Thunder Dragon
 	* Also, this got fixed in the official update.
+
+* What's with the "#(" at 0x36553 in SCN06001.MSG? Is it a typo?
 
 ## ORFIELD
 * State of the menus:
