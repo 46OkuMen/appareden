@@ -139,3 +139,29 @@ def replace_control_codes(s):
         cursor += 1
     s = s.encode('shift-jis')
     return s
+
+def properly_space_waits(s):
+    """
+        Every [WAIT*] control code interferes with the spacing a bit.
+        (More accurately, Shadoff compression interferes with their spacing)
+        Need to add (n-1) spaces after or before every WAIT,
+        where n = the number of lowercase words that preceded it on the same line.
+    """
+    result = ''
+    wait_segments = s.split('[WAIT')
+    if len(wait_segments) <= 1:
+        return s
+    else:
+        for i, w in enumerate(wait_segments):
+            if i == len(wait_segments)-1:
+                result += w
+                break
+            ln_segments = w.split('[LN]')
+            for j, l in enumerate(ln_segments):
+                if j == len(ln_segments)-1:
+                    words = l.split()
+                    lowercase_count = len([word for word in words if word[0].islower()])
+                    result += l + ' '*(lowercase_count-1) + '[WAIT'
+                else:
+                    result += l + '[LN]'
+    return result

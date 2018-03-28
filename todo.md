@@ -6,7 +6,33 @@
 * [WAIT] control codes sometimes overwrite a few characters ago.
 	* What's the pattern? It's only some of them...
 		* Not related to the WAIT number. Is it an even/odd positioning thing?
-	* You can workaround it by adding spaces after it, but that's annnoying...
+		* "A hot bath,[WAIT2]ya know?"     -> "A hot bathya know?"
+		* "A hot bath,[WAIT3]ya know?"     -> "A hot bathya know?"
+		* "A hot bath, [WAIT2]ya know?"    -> "A hot bathya know?"
+		* "A hot bath,  [WAIT2]ya know?"   -> "A hot bath,ya konw?"
+		* "A hot bath,  [WAIT2]Ya know?"   -> "A hot bath,Ya know?"
+		* "A hot bath,[WAIT2] ya know?"    -> "A hot bath,ya know?"
+		* "A hot bath, [WAIT2] ya know?"   -> "A hot bath,ya know?"
+		* "A hot bath,[WAIT2]  ya know?"   -> "A hot bath, ya know?" (correct)
+		* "A hot bath,  [WAIT2]ya know?"   -> "A hot bath, ya know?" (correct)
+		* "A hot bath,  [WAIT2]  ya know?" -> "A hot bath,   ya know?"
+		* "A hot bath, [WAIT2]  ya know?"  -> "A hot bath, ya know?"
+		* "A hot bath, [WAIT2][WAIT2]ya know?" -> "A hot bath, ya know?" (correct)
+		* "Khh.... [WAIT6]Orochi!! Strike." -> "Khh.... Orochi! Strike."
+		* "Khh....[WAIT2]orochi!! Strike."  -> "Khh.... orochi! Strike."
+		* "Khh....[WAIT2]  Orochi!! Strike." -> "Khh....   Orochi! Strike."
+		* "Khh....  [WAIT2]Orochi!! Strike." -> "Khh....   Orochi! Strike."
+		* "Khh.... [WAIT2] Orochi!! Strike." -> "Khh....   Orochi! Strike."
+		* "A hot bath can't be beat, [WAIT2] Orochi!! Strike." -> "A hot bath can't be beOrochi!! Strike."
+		* "A hot bath can't be beat,[WAIT2]Orochi!! Strike."   -> "A hot bath can't be bOrochi!! Strike."
+		* "A hot bath bath can't be beat,[WAIT2]Orochi!! Strike." -> "A hot bath bath can't be Orochi!! Strike."
+		* "A beat,[WAIT2]Orochi!! Strike." -> "A beat,Orochi!! Strike."
+		* "A[WAIT2]Orochi!! Strike." -> "A Orochi!! Strike."
+
+
+	* First theory: [WAIT2] should always have two spaces at the end of it, and other spaces should be removed?
+		* Non-initial ones don't need any more spaces.
+	* Second theory: [WAIT] has an internal counter of 1 space, which decreases by 1 for every (lowercase?) word before it.
 * Why are random names at the beginning/end of conversations not inserting after the game was updated??
 
 ## Typesetting

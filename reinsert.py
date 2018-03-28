@@ -58,6 +58,7 @@ gems_to_reinsert = ['ORTITLE.GEM']
 #HIGHEST_SCN = 1
 #HIGHEST_SCN = 11001
 HIGHEST_SCN = 12803
+#HIGHEST_SCN = 2401
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_reinsert = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
@@ -333,6 +334,10 @@ def reinsert():
             spares = spares[::-1]  # largest first
 
             for o in overflow_strings:
+                # Catch the spares problems as soon as they arise
+                for s in spares:
+                    assert s[1] - s[0] >= 0
+
                 print()
                 assert len(o[1]) > 0
                 #print("Length is", len(o[1]))
@@ -433,9 +438,6 @@ def reinsert():
                 spares = spares[::-1]  # largest first
 
                 print(o[2], "overflowed", spare_to_use[2], "is the receiving block")
-
-            for s in spares:
-                assert s[1] - s[0] >= 0
 
 
             # Incorporate after handling spares

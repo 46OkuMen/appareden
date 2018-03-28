@@ -4,7 +4,7 @@
 """
 from appareden.rominfo import CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES, MSGS
 from appareden.rominfo import DUMP_XLS_PATH,  portrait_characters, MAX_LENGTH
-from appareden.utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate
+from appareden.utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate, properly_space_waits
 
 from romtools.dump import DumpExcel
 
@@ -37,7 +37,6 @@ for f in filenames:
                 row[en_col].value = english
                 print()
 
-Dump.workbook.save(DUMP_XLS_PATH)
 
 # More experimental: Typesetting MSG strings
 
@@ -51,6 +50,7 @@ first_row = list(worksheet.rows)[0]
 header_values = [t.value for t in first_row]
 en_col = header_values.index('English (Ingame)')
 jp_col = header_values.index('Japanese')
+en_typeset_col = header_values.index('English (Typeset)')
 file_col = header_values.index('File')
 
 for m in msgs_to_typeset:
@@ -62,11 +62,11 @@ for m in msgs_to_typeset:
             japanese = row[jp_col].value
             english = row[en_col].value
 
-            for cc in CONTROL_CODES:
-                # Skip this one
-                if cc == b'[ff]':
-                    continue
-                english = english.replace(cc.decode('shift-jis'), CONTROL_CODES[cc].decode('shift-jis'))
+            #for cc in CONTROL_CODES:
+            #    # Skip this one
+            #    if cc == b'[ff]':
+            #        continue
+            #    english = english.replace(cc.decode('shift-jis'), CONTROL_CODES[cc].decode('shift-jis'))
 
             # If a character with a portrait is given a nametag in this line,
             # the next line needs to be typeset more aggressively due to less screen space.
@@ -74,13 +74,14 @@ for m in msgs_to_typeset:
             if english.count('"') == 0:
                 # Nametag
                 nametag = True
-                print("-"*57)
+                #print("-"*57)
 
             for name in portrait_characters:
                 #if name.encode('shift-jis') in t.japanese:
                 if name == japanese.replace('[LN]', '').replace('　', ''):
                     portrait_window_counter = 2
                     break
+
 
             # For Haley's lines
             # TODO: DIsabling for now
@@ -91,26 +92,34 @@ for m in msgs_to_typeset:
             else:
                 english = typeset(english, 57)
 
+            english = properly_space_waits(english)
 
+            print(english)
+            row[en_typeset_col].value = english
             english_lines = english.split('[LN]')
             line_count = 5
             for e in english_lines:
                 if portrait_window_counter > 0:
-                    print ("%s%s" % (" "*20, e))
+                    pass
+                    #print ("%s%s" % (" "*20, e))
                 else:
-                    print(e)
+                    #print(e)
+                    pass
                 line_count -= 1
 
             if not nametag:
 
                 while line_count > 0:
-                    print()
+                    #print()
                     line_count -= 1
 
-                print('-'*57)
+                #print('-'*57)
 
                 if line_count < 0:
-                    print("^ This window overflows")
+                    pass
+                    #print("^ This window overflows")
 
             if portrait_window_counter > 0:
                 portrait_window_counter -= 1
+
+Dump.workbook.save(DUMP_XLS_PATH)

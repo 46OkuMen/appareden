@@ -111,8 +111,7 @@ FILE_BLOCKS = {
                 (0x26855, 0x2694e),  # ui texts
                 (0x26a0b, 0x26a8f),  # places
                 (0x26b28, 0x26bbd),
-                (0x26e16, 0x26e8a),
-                (0x26e94, 0x26ef9),
+                (0x26e16, 0x26ef9),
                 (0x26ef9, 0x26f1c),
                 (0x2718d, 0x271ac),
                 (0x271c1, 0x271e6),
