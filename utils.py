@@ -160,8 +160,8 @@ def properly_space_waits(s):
             for j, l in enumerate(ln_segments):
                 if j == len(ln_segments)-1:
                     words = l.split()
-                    lowercase_count = len([word for word in words if word[0].islower()])
-                    result += l + ' '*(lowercase_count-1) + '[WAIT'
+                    lowercase_count = len([word for word in words if word[0].islower()]) + 1
+                    result += l + ' '*(lowercase_count) + '[WAIT'
                 else:
                     result += l + '[LN]'
     return result

@@ -1,5 +1,5 @@
 """
-	Per-file ASM edits for Appareden.
+    Per-file ASM edits for Appareden.
 """
 
 # Let's store the dictionary at 0x4b2ea, which is at seg 46f4:43aa.

@@ -50,17 +50,21 @@ first_row = list(worksheet.rows)[0]
 header_values = [t.value for t in first_row]
 en_col = header_values.index('English (Ingame)')
 jp_col = header_values.index('Japanese')
+portrait_col = header_values.index('Portrait')
 en_typeset_col = header_values.index('English (Typeset)')
 file_col = header_values.index('File')
 
+WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
+
 for m in msgs_to_typeset:
-    portrait_window_counter = 0
+    #portrait_window_counter = 0
     for row in worksheet.rows:
         nametag = False
         file = row[file_col].value
         if file == m:
             japanese = row[jp_col].value
             english = row[en_col].value
+            portrait = row[portrait_col].value
 
             #for cc in CONTROL_CODES:
             #    # Skip this one
@@ -76,35 +80,36 @@ for m in msgs_to_typeset:
                 nametag = True
                 #print("-"*57)
 
-            for name in portrait_characters:
-                #if name.encode('shift-jis') in t.japanese:
-                if name == japanese.replace('[LN]', '').replace('　', ''):
-                    portrait_window_counter = 2
-                    break
+            #for name in portrait_characters:
+            #    #if name.encode('shift-jis') in t.japanese:
+            #    if name == japanese.replace('[LN]', '').replace('　', ''):
+            #        portrait_window_counter = 2
+            #        break
 
 
             # For Haley's lines
             # TODO: DIsabling for now
             #english = sjis_punctuate(english)
 
-            if portrait_window_counter > 0:
+            #if portrait_window_counter > 0:
+            if portrait:
                 english = typeset(english, 37)
             else:
                 english = typeset(english, 57)
 
-            english = properly_space_waits(english)
 
-            #print(english)
-            row[en_typeset_col].value = english
             english_lines = english.split('[LN]')
             line_count = 5
             for e in english_lines:
-                if portrait_window_counter > 0:
-                    pass
+
+                # Remove WAIT control codes when printing here
+                for w in WAITS:
+                    e = e.replace(w, '')
+
+                if portrait:
                     print ("%s%s" % (" "*20, e))
                 else:
                     print(e)
-                    pass
                 line_count -= 1
 
             if not nametag:
@@ -116,10 +121,11 @@ for m in msgs_to_typeset:
                 print('-'*57)
 
                 if line_count < 0:
-                    pass
                     print("^ This window overflows")
 
-            if portrait_window_counter > 0:
-                portrait_window_counter -= 1
+    
+            english = properly_space_waits(english)
+            #print(english)
+            row[en_typeset_col].value = english
 
 Dump.workbook.save(DUMP_XLS_PATH)

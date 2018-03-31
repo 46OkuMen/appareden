@@ -5,6 +5,8 @@
 import os
 import xlsxwriter
 
+from rominfo import PORTRAITS
+
 dir = os.curdir
 
 msgs = [os.path.join(dir, 'original', 'OR', m) for m in os.listdir(os.path.join(dir, 'original', 'OR')) if m.endswith('.MSG')]
@@ -85,6 +87,15 @@ for m in msgs:
             elif ord(contents[cursor]) == 0x23:
                 # Don't include "#"
                 broken = True
+
+            #elif ord(contents[cursor]) == 0x40:
+            #    # "@", symbols a nametag until the  "n", 6e
+            #    cursor += 1
+            #    while ord(contents[cursor]) != 0x6e:
+            #        sjis_buffer += contents[cursor]
+            #        cursor += 1
+            #    sjis_buffer += '[LN]'
+            #    broken = True
 
             elif 0x20 <= ord(contents[cursor]) <= 0x7e and ord(contents[cursor]) != 0x6e and ord(contents[cursor]) != 0x40:
                 # ASCII characters, but not 'n' or "@"
