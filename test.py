@@ -1,12 +1,12 @@
 import os, sys, re
 from .rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
-from .rominfo import DUMP_XLS_PATH, MSG_XLS_PATH, POINTER_XLS_PATH, POINTER_CONSTANT, MSGS
+from .rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, POINTER_CONSTANT, MSGS
 from .pointer_info import POINTERS_TO_REASSIGN
 from .utils import shadoff_compress
 from romtools.disk import Gamefile
 from romtools.dump import DumpExcel, PointerExcel
 
-FILES_TRANSLATED = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORMAIN.EXE']
+FILES_TRANSLATED = ['ORFIELD.EXE', 'ORBTL.EXE']
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 #MsgDump = DumpExcel(MSG_XLS_PATH)
@@ -27,8 +27,6 @@ def test_no_duplicate_pointers():
                 print(pointer_list)
                 for p in pointer_list[1:]:
                     assert pointer_list[0].location != p.location
-
-# TODO: Test all files' pointers
 
 def pointertest(f):
     successes = 0

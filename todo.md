@@ -36,8 +36,6 @@
 		* Non-initial ones don't need any more spaces.
 	* Second theory: [WAIT] has an internal counter of 1 space, which decreases by 1 for every (lowercase?) word before it.
 		* So, need to count the lowercase-starting words preceding the WAIT and on the same line, then add n-1 spaces before/after the WAIT.
-* Why are random names at the beginning/end of conversations not inserting after the game was updated??
-	* Probably need to use the stricter reinserter like in the EXEs
 
 ## Typesetting
 * It'd be best to apply typesetting to the dump itself rather than try to do it during reinsertion.
@@ -51,18 +49,6 @@
 * Numbers usually lack a space in front. Should I add another one?
 	* It's probably due to the Shadoff compression, any alterations I should make to that?
 * Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
-* Thunder Dragon displays Gen'nai's face
-	* It uses control code >f04100
-		* And indeed, FACE4100.GEM is Thunder Dragon...
-		* Code >f04100, 4200, 4700, etc. all show Gen'nai's face. Where is it going wrong?
-		* GEM in current use is at memory 0x4503. 0000 for Gento, 0100 for Benimaru. 0400 is Gen'nai, shows up when 
-	* First few control codes in scene: 01000, 00091, 01050, 00111
-		* Face image files are only 4 digits long
-		* 0100 = benimaru neutral
-		* 0410 = invalid filename, but starts with 4 so it's Gen'nai
-		* 4100 should be Thunder Dragon
-	* Also, this got fixed in the official update.
-
 * What's with the "#(" at 0x36553 in SCN06001.MSG? Is it a typo?
 
 ## ORFIELD

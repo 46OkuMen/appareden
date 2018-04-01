@@ -4,16 +4,17 @@
 """
 
 import os
+import re
 from math import floor
 
 from appareden import asm
 from appareden.rominfo import PROGRESS_ROWS, MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
-from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, SYS_DUMP_GOOGLE_SHEET, portrait_characters, DICT_LOCATION
+from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, DICT_LOCATION
 from appareden.pointer_info import POINTERS_TO_REASSIGN
-from appareden.utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate
+from appareden.utils import shadoff_compress, replace_control_codes
 
 from romtools.disk import Disk, Gamefile, Block, Overflow
-from romtools.dump import DumpExcel, PointerExcel, update_google_sheets
+from romtools.dump import DumpExcel, PointerExcel
 
 #update_google_sheets(DUMP_XLS_PATH, SYS_DUMP_GOOGLE_SHEET)
 #update_google_sheets(MSG_XLS_PATH, MSG_DUMP_GOOGLE_SHEET)
@@ -121,6 +122,26 @@ def write_table_to_readme(table):
         f.seek(0)
         f.write(readme)
 
+def final_overflow_length(o, translations):
+    # The length a string will have when its J strings are replaced by E strings.
+    filename = translations[0].gamefile.gamefile.filename
+
+    final_overflow_len = len(o[1])   # THIS GETS USED LATER SO IT NEEDS ACCURACY
+    for t in translations:
+        jp = t.japanese
+        en = t.english
+        for cc in CONTROL_CODES:
+            jp = jp.replace(cc, CONTROL_CODES[cc])
+            en = en.replace(cc, CONTROL_CODES[cc])
+
+        if filename in SHADOFF_COMPRESSED_EXES:
+            en = shadoff_compress(en)
+        for cc in POSTPROCESSING_CONTROL_CODES[filename]:
+            en = en.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
+
+        this_diff = len(en) - len(jp)
+        final_overflow_len += this_diff
+    return final_overflow_len
 
 def reinsert():
     missing_string_count = 0
@@ -183,12 +204,11 @@ def reinsert():
                 gamefile.pointers[dest] += gamefile.pointers[src]
                 gamefile.pointers.pop(src)
 
-
         if filename.endswith('.MSG'):
             # First, gotta replace all the control codes.
             gamefile.filestring = replace_control_codes(gamefile.filestring)
 
-            portrait_window_counter = 0
+            last_i = 0
 
             for t in Dump.get_translations(filename, sheet_name='MSG'):
 
@@ -198,23 +218,13 @@ def reinsert():
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
-                # If a character with a portrait is given a nametag in this line,
-                # the next line needs to be typeset more aggressively due to less screen space.
-                #for name in portrait_characters:
-                #    #if name.encode('shift-jis') in t.japanese:
-                #    if name.encode('shift-jis') + b'/' == t.japanese:
-                #        portrait_window_counter = 2
-                #        break
-
-                #t.english = sjis_punctuate(t.english)
-                #if portrait_window_counter > 0:
-                #    t.english = typeset(t.english, 37)
-                #else:
-                #    t.english = typeset(t.english, 57)
                 t.english = shadoff_compress(t.english)
 
                 try:
                     i = gamefile.filestring.index(t.japanese)
+                    if last_i > i:
+                        print("That was before the previous one")
+                    last_i = i
                     gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
                     REINSERTED_STRING_COUNTS['Dialogue'] += 1
                 except ValueError:
@@ -223,10 +233,6 @@ def reinsert():
                     missing_string_count += 1
                     for b in t.japanese:
                         print("%s " % hex(b)[2:], end="\t")
-
-
-                #if portrait_window_counter > 0:
-                #    portrait_window_counter -= 1
 
 
         if filename.endswith('.EXE'):
@@ -247,7 +253,11 @@ def reinsert():
                 last_string_original_location = 0
                 for t in Dump.get_translations(block):
 
+                    if t.location == 0x252f3:
+                        print("It's happening")
+
                     if overflowing:
+                        # each overflowlet is a location in the blockstring where a new string begins.
                         overflowlets.append(t.location - block.start + diff)
                         overflowlet_original_locations.append(t.location)
                         continue
@@ -286,14 +296,15 @@ def reinsert():
                     if this_string_end >= block.stop and not overflowing:
                         overflowing = True
                         overflow_start = i
-                        overflow_original_location = t.location
+                        #overflow_original_location = t.location
                         print("It's overflowing starting with string %s" % t)
 
-                        # Deactivating these, the first one always seems to be a 0-length string
-                        #overflowlets.append(t.location - block.start + diff)
+                        overflowlets.append(t.location - block.start + diff)
                         overflowlet_original_locations.append(t.location)
-                        continue
+                        print("T location was %s" % hex(t.location))
 
+                        # Avoid adjusting pointers
+                        continue
 
                     # Can't do translations if it's overflowing, Those will come later
                     if not not_translated:
@@ -312,11 +323,38 @@ def reinsert():
 
                 if overflowing:
                     overflow_string = block.blockstring[overflow_start:]
+                    print("Overflow string: %s" % overflow_string, hex(overflow_start + block.start))
                     cursor = 0
+
+                    #assert len(overflowlet_original_locations) == len(overflowlets)
+                    #for ool in overflowlet_original_locations:
+                    #    print(hex(ool))
+
+                    for o in overflowlets:
+                        print(o)
+
+                    #if not overflowlets:
+                    #    print("Need to append overflow start?")
+                    #    overflowlets.append(overflow_start)
+
+                    overflowlet_original_locations.append(block.stop)
+
                     for i, o in enumerate(overflowlets):
-                        overflowlet_string = overflow_string[cursor:o-overflow_start]
-                        cursor = o-overflow_start
+                        print(o, overflow_start, o-overflow_start)
+
+                        this_overflowlet_length = overflowlet_original_locations[i+1] - overflowlet_original_locations[i]
+                        overflowlet_string = overflow_string[cursor:cursor+this_overflowlet_length]
+                        print(overflowlet_string)
+                        
+                        #overflowlet_string = overflow_string[cursor:o-overflow_start]
+                        if len(overflowlet_string) < 1:
+                            print("That overflowlet is empty")
+                            continue
+                        #cursor = o-overflow_start
+                        cursor += this_overflowlet_length
                         absolute_overflowlet_start = o + block.start
+                        #print("Here's an overflow string that was part of that:")
+                        #print((absolute_overflowlet_start, overflowlet_string, block, hex(overflowlet_original_locations[i])))
                         overflow_strings.append((absolute_overflowlet_start, overflowlet_string, block, overflowlet_original_locations[i]))
 
                     # Remove the overflow string from the block entirely
@@ -334,29 +372,29 @@ def reinsert():
             spares = spares[::-1]  # largest first
 
             for o in overflow_strings:
+                print(o)
+
+            for o in overflow_strings:
                 # Catch the spares problems as soon as they arise
                 for s in spares:
                     assert s[1] - s[0] >= 0
 
                 print()
-                assert len(o[1]) > 0
+                if len(o[1]) < 1:
+                    continue
                 #print("Length is", len(o[1]))
-                print([s[1]-s[0] for s in spares])
+                #print([s[1]-s[0] for s in spares])
                 # o[0] is location, o[1] is the string, o[2] is the parent block, o[3] is the first string's original location
                 spare_to_use = spares[0]
 
                 # s[0] is the start, s[1] is the end, s[2] is the parent block
                 translations = [t for t in Dump.get_translations(o[2]) if t.location == o[3]]
+
                 assert translations[0].japanese in o[1]
                 assert o[3] == translations[0].location
 
-                # TODO: For some reason this calculation is not accurate?
-                #overflow_len_diff = sum([len(t.english) - len(t.japanese) for t in translations])
-                #final_overflow_len = len(o[1]) + overflow_len_diff + 3   # Cuz, why not
-                #print(o)
-                #print("Translations here:", translations)
-                final_overflow_len = sum([len(t.english) for t in translations])    # THIS GETS USED LATER SO IT NEEDS ACCURACY
-                #print("Anticipated length:", final_overflow_len)
+                final_overflow_len = final_overflow_length(o, translations)
+
                 spare_to_use = None
                 for s in spares:
                     spare_len = s[1] - s[0]
@@ -394,7 +432,7 @@ def reinsert():
 
                     this_diff = len(t.english) - len(t.japanese)
                     final_overflow_len = len(o[1]) + this_diff
-                    print(t.english)
+                    #print(t.english)
 
                     try:
                         i = receiving_block.blockstring.index(t.japanese)
@@ -437,7 +475,7 @@ def reinsert():
                 spares.sort(key=lambda x: x[1] - x[0])  # sort by size
                 spares = spares[::-1]  # largest first
 
-                print(o[2], "overflowed", spare_to_use[2], "is the receiving block")
+                #print(o[2], "overflowed", spare_to_use[2], "is the receiving block")
 
 
             # Incorporate after handling spares
@@ -453,17 +491,9 @@ def reinsert():
             percentage = int(floor((REINSERTED_STRING_COUNTS[filename] / STRING_COUNTS[filename] * 100)))
             print(filename, str(percentage), "% complete", "(%s / %s)" % (REINSERTED_STRING_COUNTS[filename], STRING_COUNTS[filename]))
 
-        #total_reinserted_strings += REINSERTED_STRING_COUNTS[filename]
-        #print("Total reinserted strings is", total_reinserted_strings)
-
         gamefile.write(path_in_disk='TGL\\OR')
 
     print("Strings missing in MSGs: %s" % missing_string_count)
-
-    #total_reinserted_strings = sum(list(REINSERTED_STRING_COUNTS.values()))
-
-    #percentage = int(floor((total_reinserted_strings / TOTAL_STRING_COUNT * 100)))
-    #print("Appareden", "%s" % str(percentage), "%", "complete (%s / %s)" % (total_reinserted_strings, TOTAL_STRING_COUNT))
 
     for g in gems_to_reinsert:
         # This doesn't encode any of them, just inserts what's already there

@@ -2,7 +2,6 @@
     Info on Appareden rom structure and project directory layout.
 """
 
-
 import os
 from collections import OrderedDict
 
@@ -10,11 +9,9 @@ SRC_DISK = os.path.join('original', 'Appareden (UPDATED).HDI')
 DEST_DISK = os.path.join('patched', 'Appareden (UPDATED).HDI')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
-MSG_XLS_PATH = 'appareden_msg_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 
-SYS_DUMP_GOOGLE_SHEET = 'Appareden Combined Dump'
-
+# Rows to be displayed in the progress section of the README.
 PROGRESS_ROWS = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFIGHT.EXE', 'Dialogue', 'Images']
 
 MSGS = ['SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.MSG',
@@ -71,10 +68,11 @@ MSGS = ['SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.MSG',
 
 SHADOFF_COMPRESSED_EXES = ['ORFIELD.EXE',]
 
+# First bytes in SJIS Japanese strings.
 SJIS_FIRST_BYTES = [0x81, 0x82, 0x83, 0x84, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0xad, 0x8e, 0x8f, 0x90, 0x91, 0x92,
                     0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f, 0xe0, 0xe1,
                     0xe2, 0xe3, 0xe4, 0x35, 0xe6, 0xe7, 0xe8, 0xe9, 0xea]
-
+"""
 #                      Gento,  Benimaru, Goemon, WeaponShop, ArmorShop,    Samurai, Hanzou, Innkeeper, ItemShop,
 portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主人', '防具屋の主人', '武士', 'ハンゾウ', '宿屋の主人', '道具屋の娘',
                       # Master, Koro Elder, WeaponsGeezer, Elder, AntiquesShop, Shikai, Tamamo, Nobunaga, Old Man,
@@ -84,55 +82,55 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                        # O-Kuni, Okitsugu, IceDragon, FlameDragon, Kuukai, Masamune, Genpaku,
                        'お国',    'オキツグ', '氷竜',         '炎竜', 'クウカイ',   'マサムネ',  '玄白',
                        ]
+"""
 
 FILE_BLOCKS = {
     'ENDING.EXE': [(0x64bb, 0x6512), ],  # memory error texts
     'NEKORUN.EXE': [(0xa840, 0xa8aa),   # error text + scene text
-                (0xacc0, 0xacda),   # memory error text
-                (0xaecc, 0xaf00), ],  # ems driver version text"
+                    (0xacc0, 0xacda),   # memory error text
+                    (0xaecc, 0xaf00), ],  # ems driver version text"
     'ORBTL.EXE': [(0x25130, 0x25150),   # null pointer error
-              (0x251d2, 0x2524b),  # battle commands
-              (0x252dd, 0x252fd),  # run/surprise
-              (0x25330, 0x253d2),  # after battle
-              (0x262e8, 0x26302),  # memory error text
-              (0x2715a, 0x271aa),  # ems driver version texts
-              (0x27282, 0x273fd),  # insufficient stuff text
-              (0x28178, 0x28c29),  # skill/spell names/descriptions
-              (0x28c67, 0x28cc0),  # item menu
-              (0x29d38, 0x2b066),  # item descriptions
-              (0x2d2ce, 0x2d931),  # people, places, things
-              (0x2ea7a, 0x2eb0d)],  # stealing msgs"
+                  (0x251d2, 0x2524b),  # battle commands
+                  (0x252dd, 0x252fd),  # run/surprise
+                  (0x25330, 0x253d2),  # after battle
+                  (0x2715a, 0x271aa),  # ems driver version texts
+                  (0x27282, 0x273fd),  # insufficient stuff text
+                  (0x28178, 0x28c29),  # skill/spell names/descriptions
+                  (0x28c67, 0x28cc0),  # item menu
+                  (0x29d38, 0x2b066),  # item descriptions
+                  (0x2d2ce, 0x2d931),  # people, places, things
+                  (0x2ea7a, 0x2eb0d)],  # stealing msgs"
     'ORFIELD.EXE': [(0x25f20, 0x25f40),  # null pointer error                  # TODO: Try to end blocks after section headers!! That'll keep their length where it needs to be.
-                (0x25f72, 0x25fba),  # ems driver version texts
-                (0x26120, 0x26195),  # names and memory error text
-                (0x26368, 0x26444),  # memory and disk switches
-                (0x26641, 0x26776),  # save and ui texts
-                (0x267ef, 0x267ff),
-                (0x26855, 0x2694e),  # ui texts
-                (0x26a0b, 0x26a8f),  # places
-                (0x26b28, 0x26bbd),
-                (0x26e16, 0x26ef9),
-                (0x26ef9, 0x26f1c),
-                (0x2718d, 0x271ac),
-                (0x271c1, 0x271e6),
-                (0x271f8, 0x27557),
-                (0x275f0, 0x275fe),  # death msg
-                (0x2760e, 0x27676),  # ship msg
-                (0x28044, 0x2847d),  # Settings
-                (0x2847d, 0x2853f),  # Equip screen header, "whose"
-                (0x2853f, 0x28568),
-                (0x286b1, 0x28851),  # Equip screen
-                (0x2894e, 0x28989),  # Equipment categories
-                (0x2899c, 0x289c7),  # Unequip message, "who will use it"
-                (0x28a15, 0x28ccf),
-                (0x28ce2, 0x28cf0),
-                (0x28d3e, 0x29020), # Equipment and such
-                (0x29020, 0x290bc),  # menu msgs
-                (0x2a2ba, 0x2cc45),  # items and weapons
-                (0x2d022, 0x2d3c4),  # result msgs
-                (0x2da74, 0x2e690),  # skills/spells names/descriptions
-                (0x2e9b2, 0x2ea85),
-                (0x2eb4d, 0x2ef13),],  # result msgs"
+                    (0x25f72, 0x25fba),  # ems driver version texts
+                    (0x26120, 0x26195),  # names and memory error text
+                    (0x26368, 0x26444),  # memory and disk switches
+                    (0x26641, 0x26776),  # save and ui texts
+                    (0x267ef, 0x267ff),
+                    (0x26855, 0x2694e),  # ui texts
+                    (0x26a0b, 0x26a8f),  # places
+                    (0x26b28, 0x26bbd),
+                    (0x26e16, 0x26ef9),
+                    (0x26ef9, 0x26f1c),
+                    (0x2718d, 0x271ac),
+                    (0x271c1, 0x271e6),
+                    (0x271f8, 0x27557),
+                    (0x275f0, 0x275fe),  # death msg
+                    (0x2760e, 0x27676),  # ship msg
+                    (0x28044, 0x2847d),  # Settings
+                    (0x2847d, 0x2853f),  # Equip screen header, "whose"
+                    (0x2853f, 0x28568),
+                    (0x286b1, 0x28851),  # Equip screen
+                    (0x2894e, 0x28989),  # Equipment categories
+                    (0x2899c, 0x289c7),  # Unequip message, "who will use it"
+                    (0x28a15, 0x28ccf),
+                    (0x28ce2, 0x28cf0),
+                    (0x28d3e, 0x29020), # Equipment and such
+                    (0x29020, 0x290bc),  # menu msgs
+                    (0x2a2ba, 0x2cc45),  # items and weapons
+                    (0x2d022, 0x2d3c4),  # result msgs
+                    (0x2da74, 0x2e690),  # skills/spells names/descriptions
+                    (0x2e9b2, 0x2ea85),
+                    (0x2eb4d, 0x2ef13),],  # result msgs"
     'ORMAIN.EXE': [(0x1580, 0x167b),   # null pointer msgs
                    (0x1706, 0x1735),   # ems driver msgs
                    (0x3ee4, 0x4547), ],   # names, menus, things"
@@ -141,10 +139,11 @@ FILE_BLOCKS = {
                     (0x407b, 0x4104),   # release dates?
                     (0x5000, 0x501a), ],   # memory error"
     'SFIGHT.EXE': [(0xd090, 0xd135),   # null pointer msgs
-               (0xd4ea, 0xd586),   # names and things
-               (0xd6c6, 0xd6fa)],    # ems driver msgs"
+                   (0xd4ea, 0xd586),   # names and things
+                   (0xd6c6, 0xd6fa)],    # ems driver msgs"
 }
 
+# The constant added to a pointer's value to get its dereference.
 POINTER_CONSTANT = {
     'ORTITLE.EXE': 0x3eb0,
     'ORMAIN.EXE': 0x1570,
@@ -153,6 +152,7 @@ POINTER_CONSTANT = {
     'SFIGHT.EXE': 0xd080,
 }
 
+# Location of the compression dictionary, where applicable.
 DICT_LOCATION = {
     'ORFIELD.EXE': 0x2a2ba,
     'ORBTL.EXE':  0x29d38,
@@ -212,18 +212,21 @@ POINTER_TABLES = {
     ]
 }
 
+# Control codes reassigned in ASM, as strings.
 S_CONTROL_CODES = {
   'w': '}',
   'c': '$',
   'n': '/'
 }
 
+# Those control codes as bytes.
 B_CONTROL_CODES = {
   b'w': b'}',
   b'c': b'$',
   b'n': b'/'
 }
 
+# Control codes as given in the dump.
 CONTROL_CODES = {
   b'[LN]': b'/',
   b'[WAIT1]': B_CONTROL_CODES[b'w'] + b'01',
@@ -238,6 +241,7 @@ CONTROL_CODES = {
 
 }
 
+# (??)
 POSTPROCESSING_CONTROL_CODES = {
 
 'ORFIELD.EXE': OrderedDict([
@@ -348,13 +352,6 @@ POSTPROCESSING_CONTROL_CODES = {
 # TODO: Caps are a little tricky here... ^ always breaks the compressed word since it adds 20 to ef.
 
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
-
-FACES = {
-  b'[FACE0410]': b'>f04100@',
-  b'[FACE4100]': b'>f41000@',
-}
-
-CONTROL_CODES.update(FACES)
 
 MAX_LENGTH = {
     'Item Name': 21,

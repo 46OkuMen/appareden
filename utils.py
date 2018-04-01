@@ -93,7 +93,9 @@ def shadoff_compress(s):
     # TODO: Remove the continuous-spaces processing
 
     continuous_spaces = 0
-    #print(chars)
+    
+    # TODO: Need to check isdigit() and add another space before it??
+
     while chars:
         c = chars.pop(0)
         if c == ' ':
@@ -109,9 +111,6 @@ def shadoff_compress(s):
             compressed += '^'
             compressed += c
         else:
-            #if continuous_spaces > 2:
-            #    compressed += '_' + chr(continuous_spaces)
-            #    c = c.upper()
             if continuous_spaces > 0:
                 compressed += ' '*(continuous_spaces-1)
                 c = c.upper()
