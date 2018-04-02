@@ -1,50 +1,49 @@
 """
     Minor string utilities for Appareden.
 """
-
+import re
 from .rominfo import S_CONTROL_CODES
+
+WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
 
-    # TODO: Not working properly yet.
-    length = 0
-    chars = s.split()
-    while chars:
-        if chars[0] != b'[':
-            length += 1
-            chars.pop(0)
-        else:
-            while chars[0] != b']':
-                chars.pop(0)
-            chars.pop(0)
+    # TODO: Rough so far. Only removes stuff in brackets.
 
-    return length
+    pattern = rb'\[.*?\]'
+    return len(re.sub(pattern, b'', s))
+
 
 def typeset(s, width=37):
     if len(s) <= width:
         return s
 
-    #words = s.split(b' ')
     # SJIS lines, like Haley's, must be split by SJIS spaces
-    #if b'\x82' in s:
-    #    words = s.split(b'\x81\x40')
-    #    width = 40
-    #else:
-    #    words = s.split(b' ')
 
-    words = s.split(' ')
+    sjis = s.encode('shift-jis')
+
+    if b'\x82' in sjis:
+        space = b'\x81\x40'
+        #words = sjis.split(b'\x81\x40')
+        width = 40
+    else:
+        space = b' '
+        
+    words = sjis.split(space)
+
+    #words = s.split(' ')
 
     lines = []
 
     #print(words)
     while words:
         #print(words)
-        line = ''
-        while len(line) <= width and words:
-            if len(line + words[0] + ' ') > width:
+        line = b''
+        while effective_length(line) <= width and words:
+            if effective_length(line + words[0] + space) > width:
                 break
-            line += words.pop(0) + ' '
+            line += words.pop(0) + space
 
         line = line.rstrip()
         if len(lines) > 0:
@@ -53,18 +52,21 @@ def typeset(s, width=37):
                 break
         lines.append(line)
         
-    #for l in lines:
-    #    print(l)
+
+    lines = [l.decode('shift-jis') for l in lines]
 
     return '[LN]'.join(lines)
 
 def sjis_punctuate(s):
-    if b'\x82' not in s:
+    sjis = s.encode('shift-jis')
+    if b'\x82' not in sjis:
         return s
 
     #print(s)
-    s = s.replace(b' ', b'\x81\x40')
+    sjis = sjis.replace(b' ', b'\x81\x40')
     #s = s.replace(b'"', b'\x81\x56')
+
+    s = sjis.decode('shift-jis')
 
     return s
 

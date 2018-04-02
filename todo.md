@@ -36,10 +36,12 @@
 		* Non-initial ones don't need any more spaces.
 	* Second theory: [WAIT] has an internal counter of 1 space, which decreases by 1 for every (lowercase?) word before it.
 		* So, need to count the lowercase-starting words preceding the WAIT and on the same line, then add n-1 spaces before/after the WAIT.
+	* Whatever I'm doing now, it has one too many spaces usually?
+
+* Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## Typesetting
-* It'd be best to apply typesetting to the dump itself rather than try to do it during reinsertion.
-	* Much easier testing and QA this way.
+* Haley's "Your eyes... they are so sad..." remains on one line when it should break after "they".
 
 ## MSGs
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
@@ -58,11 +60,12 @@
 		* Buffer problems
 	* Status Screen
 	* Equipment Screen
+		* OK
 	* Item SCreen
+		* OK
 	* Zen Screen
-		* Header still not aligned quite right
-		* Current Status, HP, etc. are all blank/messed up after combining the blocks to get the header working
-			* Whoops, works now. Just hadn't saved pointer_info.py
+		* Buffer problem? "out" as the blank space
+		* "Can't use the Zen arts" string is broken
 	* Settings
 		* Auto-Battle ON/OFF is super broken still
 			* Now it's really, really broken
@@ -95,6 +98,7 @@
 ## ORBTL
 
 * "Surprise!" text points to some equipment name now
+	* Is this fixed yet?
 
 * Zen art types are too long, use shorter ones from ORFIELD
 	* Might still be too long
@@ -113,11 +117,10 @@
 ## Cheat saves
 * Some more equipment in the inventory than are valid equipments
 * Some more items than are valid items
-	*The items "Heals10-20", "Revive dead", and "Sandals?" have glitched status windows
+	* The items "Heals10-20", "Revive dead", and "Sandals?" have glitched status windows
 * Can't finish a battle, Harry just levels up forever
 	* Whoops, it's not forever, just a lot of times (up to lv72)
 	* Lv72 Harry file now in Journal Go
-
 ## Determined to be non-issues
 * Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
 	* It does so in the Japanese version too

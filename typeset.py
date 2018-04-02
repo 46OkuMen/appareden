@@ -2,9 +2,10 @@
     Text typesetter for Appareden.
     Truncates ORFIELD text that exceeds limits.
 """
-from appareden.rominfo import CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES, MSGS
-from appareden.rominfo import DUMP_XLS_PATH,  portrait_characters, MAX_LENGTH
-from appareden.utils import typeset, shadoff_compress, replace_control_codes, sjis_punctuate, properly_space_waits
+from appareden.rominfo import CONTROL_CODES, B_CONTROL_CODES, WAITS, MSGS
+from appareden.rominfo import DUMP_XLS_PATH, MAX_LENGTH
+from appareden.utils import typeset, replace_control_codes, sjis_punctuate, properly_space_waits, WAITS
+from appareden.reinsert import HIGHEST_SCN
 
 from romtools.dump import DumpExcel
 
@@ -40,8 +41,6 @@ for f in filenames:
 
 # More experimental: Typesetting MSG strings
 
-HIGHEST_SCN = 2401
-
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_typeset = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
 rownum = 0
@@ -54,8 +53,6 @@ portrait_col = header_values.index('Portrait')
 en_typeset_col = header_values.index('English (Typeset)')
 file_col = header_values.index('File')
 
-WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
-
 for m in msgs_to_typeset:
     #portrait_window_counter = 0
     for row in worksheet.rows:
@@ -66,6 +63,9 @@ for m in msgs_to_typeset:
             english = row[en_col].value
             portrait = row[portrait_col].value
 
+            if english is None:
+                continue
+
             #for cc in CONTROL_CODES:
             #    # Skip this one
             #    if cc == b'[ff]':
@@ -75,7 +75,7 @@ for m in msgs_to_typeset:
             # If a character with a portrait is given a nametag in this line,
             # the next line needs to be typeset more aggressively due to less screen space.
 
-            if english.count('"') == 0:
+            if english.count('"') == 0 and english.count("(") == 0:
                 # Nametag
                 nametag = True
                 #print("-"*57)
@@ -88,8 +88,7 @@ for m in msgs_to_typeset:
 
 
             # For Haley's lines
-            # TODO: DIsabling for now
-            #english = sjis_punctuate(english)
+            english = sjis_punctuate(english)
 
             #if portrait_window_counter > 0:
             if portrait:
