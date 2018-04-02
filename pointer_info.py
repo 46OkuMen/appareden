@@ -213,6 +213,7 @@ POINTERS_TO_REASSIGN = {
             (0x2ee41, 0x26667),
             (0x2ee75, 0x26667),
             (0x2eea3, 0x26667),
+            (0x28f60, 0x26667),
 
             (0x26b41, 0x26941),  # Yes
             (0x283f8, 0x26941),
@@ -256,6 +257,7 @@ POINTERS_TO_REASSIGN = {
             (0x2ee44, 0x26ee1),
             (0x2ee78, 0x26ee1),
             (0x2eea6, 0x26ee1),
+            (0x28f63, 0x26ee1),
 
             (0x2d0b8, 0x2d077),   # &c
             (0x2d132, 0x2d077),
@@ -274,6 +276,10 @@ POINTERS_TO_REASSIGN = {
             (0x28faa, 0x28c41), # HP      /
             (0x28fb9, 0x28c50), # ZP      /
             (0x28fc8, 0x28c5f), # Status
+
+            (0x271d2, 0x2718d), # &5You have nothing
+
+            (0x26e68, 0x26e32), # Sell Items
 
 
     ],
@@ -312,5 +318,12 @@ POINTERS_TO_REASSIGN = {
 
             (0x28c97, 0x27346),   # a:back1.gem
             (0x2738f, 0x27346),
+
+            (0x2eab3, 0x2ea8e),  # Steal texts
+            (0x2eac4, 0x2ea7a),
+            (0x2eac9, 0x2ea7f),
+            (0x2ead8, 0x2ea8e),
+            (0x2eaec, 0x2eaa2),
+            (0x2eafd, 0x2ea8e),
     ]
 }

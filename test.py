@@ -76,6 +76,9 @@ def pointertest(f):
             for cc in POSTPROCESSING_CONTROL_CODES[f]:
                 target_english = target_english.replace(cc, POSTPROCESSING_CONTROL_CODES[f][cc])
 
+            # For the dictionary entries
+            target_english = target_english.split(b'\x00')[0]
+
             # Finally, look at the new pointer location in the patched file
             new_bytes = gf.filestring[p.location:p.location+2]
             new_value = int.from_bytes(new_bytes, byteorder='little')

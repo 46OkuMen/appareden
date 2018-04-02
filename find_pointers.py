@@ -1,6 +1,5 @@
 import os
-import re
-from rominfo import FILES, FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK, POINTER_TABLES
+from rominfo import FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK, POINTER_TABLES
 from pointer_info import POINTER_DISAMBIGUATION
 from romtools.dump import BorlandPointer, DumpExcel, PointerExcel
 from romtools.disk import Gamefile, Block, Disk
