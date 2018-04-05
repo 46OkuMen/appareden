@@ -16,12 +16,13 @@ def effective_length(s):
 
 
 def typeset(s, width=37):
-    if len(s) <= width:
-        return s
 
     # SJIS lines, like Haley's, must be split by SJIS spaces
 
     sjis = s.encode('shift-jis')
+
+    if effective_length(sjis) <= width:
+        return s
 
     if b'\x82' in sjis:
         space = b'\x81\x40'

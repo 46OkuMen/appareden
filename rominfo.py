@@ -89,8 +89,7 @@ FILE_BLOCKS = {
     'NEKORUN.EXE': [(0xa840, 0xa8aa),   # error text + scene text
                     (0xacc0, 0xacda),   # memory error text
                     (0xaecc, 0xaf00), ],  # ems driver version text"
-    'ORBTL.EXE': [(0x25130, 0x25151),   # null pointer error
-                  (0x251d2, 0x2524c),  # battle commands
+    'ORBTL.EXE': [(0x251d2, 0x2524c),  # battle commands
                   (0x252dd, 0x252fe),  # run/surprise
                   (0x25330, 0x253d3),  # after battle
                   (0x2715a, 0x271ac),  # ems driver version texts
@@ -100,36 +99,25 @@ FILE_BLOCKS = {
                   (0x29d38, 0x2b067),  # item descriptions
                   (0x2d2ce, 0x2d932),  # people, places, things
                   (0x2ea7a, 0x2eb0e)],  # stealing msgs"
-    'ORFIELD.EXE': [(0x25f20, 0x25f40),  # null pointer error                  # TODO: Try to end blocks after section headers!! That'll keep their length where it needs to be.
-                    (0x25f72, 0x25fba),  # ems driver version texts
-                    (0x26120, 0x26195),  # names and memory error text
+    'ORFIELD.EXE': [(0x26120, 0x26195),  # names and memory error text
                     (0x26368, 0x26444),  # memory and disk switches
                     (0x26641, 0x26777),  # save and ui texts
                     (0x267ef, 0x267ff),
                     (0x26855, 0x2694f),  # ui texts
                     (0x26a0b, 0x26a8f),  # places
-                    (0x26b28, 0x26bbd),
-                    (0x26e16, 0x26ef9),
-                    (0x26ef9, 0x26f1c),
-                    (0x2718d, 0x271ad),
-                    (0x271c1, 0x271e7),
-                    (0x271f8, 0x27557),
+                    (0x26b28, 0x26bbd),            # TODO: Item shop slots can go here
+                    (0x26e16, 0x26f1c),            # TODO: Armor shop slots can go here
+                    (0x2718d, 0x27557),
                     (0x275f0, 0x275fe),  # death msg
-                    (0x2760e, 0x27676),  # ship msg
-                    (0x28044, 0x2847d),  # Settings
-                    (0x2847d, 0x28568),
-                    (0x286b1, 0x28851),  # Equip screen
-                    (0x2894e, 0x28989),  # Equipment categories
-                    (0x2899c, 0x289c7),  # Unequip message, "who will use it"
-                    (0x28a15, 0x28cf1),
-                    (0x28d3e, 0x28f60),
-                    (0x28f60, 0x29020), # Equipment and such
-                    (0x29020, 0x290bc),  # menu msgs
-                    (0x2a2ba, 0x2cc45),  # items and weapons
-                    (0x2d022, 0x2d3c4),  # result msgs
-                    (0x2da74, 0x2e690),  # skills/spells names/descriptions
-                    (0x2e9b2, 0x2ea85),
-                    (0x2eb4d, 0x2ef14),],  # result msgs"
+                    (0x2760e, 0x27626),  # ship msg
+                    (0x28044, 0x28851),  # Equip screen
+                    (0x2894e, 0x29020), # Equipment and such
+                    (0x29020, 0x290be),  # menu msgs
+                    (0x2a2ba, 0x2cc46),  # items and weapons
+                    (0x2d022, 0x2d3c6),  # result msgs
+                    (0x2da74, 0x2e692),  # skills/spells names/descriptions
+                    (0x2e9b2, 0x2ea85),             # TODO: More slots can go here
+                    (0x2eb4d, 0x2ef14),],  # result msgs" # TODO: Two undocumented sets of slots here!!
     'ORMAIN.EXE': [(0x1580, 0x167b),   # null pointer msgs
                    (0x1706, 0x1735),   # ems driver msgs
                    (0x3ee4, 0x4547), ],   # names, menus, things"
@@ -360,7 +348,7 @@ MAX_LENGTH = {
     'Equipment (Right) Name': 17,
     'Equipment Description': 43,   # Not verified
     'Zen Name': 19,
-    'Zen Description': 36,
+    'Zen Description': 36,   # 40 in battle screen
 
     'Dictionary': 1000,
 }

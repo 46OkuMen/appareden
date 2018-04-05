@@ -125,7 +125,7 @@ def test_MSG_end_linebreaks():
         gf = Gamefile(os.path.join('original', m))
         translations = Dump.get_translations(m, sheet_name='MSG')
         for t in translations:
-            if t.japanese.endswith(b'[LN]') and not t.english.endswith(b'[LN]'):
+            if t.japanese.endswith(b'[LN]') and not t.english.rstrip(b' ').rstrip(b'\x81\x40').endswith(b'[LN]'):
                 failures += 1
                 print(m, hex(t.location), t.english, "needs an LN")
     assert failures == 0, "Lines need [LN]s: %s" % failures
