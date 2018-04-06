@@ -3,13 +3,34 @@
 """
 
 import os
-from collections import OrderedDict
 
 SRC_DISK = os.path.join('original_CD', 'Appareden (CD-UPDATED).HDI')
 DEST_DISK = os.path.join('patched_CD', 'Appareden (CD-UPDATED).HDI')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
+
+
+def orfield_fd_to_cd(n):
+    """
+        Given an offset in ORFIELD.EXE FD, return the CD offset.
+    """
+    if n < 0x26641:
+        return n + 1568
+    else:
+        return n + 1606
+
+
+def orbtl_fd_to_cd(n):
+    """
+        Given an offset in ORBTL.EXE FD, return the CD offset.
+    """
+    if 0x151d2 <= n < 0x2715a:
+        return n + 528
+    elif 0x2715a <= n < 0x28178:
+        return n - 1470
+    else:
+        return n - 1442
 
 # These are done
 POINTER_CONSTANT = {
@@ -36,9 +57,8 @@ POINTER_TABLES = {
         (0x28abc, 0x28b56, 2),    # done
         (0x28b66, 0x29796, 16),   # done
         (0x2af1c, 0x2af2d, 2),    # done
-        (0x2af2d, 0x2b1fe, 0x28), # done
-        (0x2b224, 0x2cd08, 0x28), # done
-
+        (0x2b0bc, 0x2b1fe, 0x28), # done
+        (0x2b224, 0x2cd07, 0x28), # done
     ],
     'SFIGHT.EXE': [],
     'ORFIELD.EXE': [
@@ -62,6 +82,5 @@ POINTER_TABLES = {
         (0x2d746, 0x2d7c6, 2),
         (0x2d7c6, 0x2da68, 0x10), # BOT TOP 1e 00 04 00 06 00 01 00 1a 00 00 00 01 00, repeat
         (0x2da66, 0x2da74, 2),
-
     ]
 }

@@ -129,7 +129,10 @@ for f in files_to_search:
             #print(0x26ad8 in previous_pointer_locations)
             #print(hex(pointer_location))
             if pointer_location in previous_pointer_locations:
-                print("Duplicate detected at %s, skipping" % hex(pointer_location))
+                try:
+                    print("Duplicate detected at %s, skipping" % hex(pointer_location))
+                except TypeError:
+                    print("Duplicate detected at %s, skipping" % pointer_location)
                 continue 
 
             obj = BorlandPointer(GF, pointer_location, text_location)
@@ -139,7 +142,7 @@ for f in files_to_search:
             except TypeError:
                 problem_count += 1
                 if len(all_locs) == 0:
-                    print("Problem finding %s" % t.japanese.decode('shift_jis'), "not found")
+                    print("Problem finding %s allegedly at %s, not found" % (t.japanese.decode('shift_jis'), hex(t.location)))
                 elif len(all_locs) == 1:
                     print(t.japanese.decode('shift_jis'), 'seems fine')
                 else:
