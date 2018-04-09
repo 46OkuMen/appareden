@@ -14,7 +14,7 @@ POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 # Rows to be displayed in the progress section of the README.
 PROGRESS_ROWS = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFIGHT.EXE', 'Dialogue', 'Images']
 
-MSGS = ['SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.MSG',
+MSGS = ['ENDING.MSG', 'SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.MSG',
         'SCN02404.MSG', 'SCN02500.MSG', 'SCN02501.MSG', 'SCN02502.MSG',
         'SCN02503.MSG', 'SCN02600.MSG', 'SCN02601.MSG', 'SCN02700.MSG', 'SCN02701.MSG',
         'SCN02702.MSG', 'SCN02800.MSG', 'SCN02900.MSG', 'SCN02901.MSG',
@@ -63,7 +63,7 @@ MSGS = ['SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.MSG',
         'SCN12000.MSG', 'SCN12300.MSG', 'SCN12301.MSG', 'SCN12302.MSG',
         'SCN12303.MSG', 'SCN12304.MSG', 'SCN12305.MSG', 'SCN12306.MSG',
         'SCN12307.MSG', 'SCN12603.MSG', 'SCN12704.MSG', 'SCN12800.MSG',
-        'SCN12803.MSG',
+        'SCN12803.MSG'
         ]
 
 SHADOFF_COMPRESSED_EXES = ['ORFIELD.EXE',]
@@ -101,18 +101,18 @@ FILE_BLOCKS = {
                   (0x2ea7a, 0x2eb0e)],  # stealing msgs"
     'ORFIELD.EXE': [(0x26120, 0x26195),  # names and memory error text
                     (0x26368, 0x26444),  # memory and disk switches
-                    (0x26641, 0x26777),  # save and ui texts
+                    (0x2663e, 0x26777),  # save and ui texts
                     (0x267ef, 0x267ff),
                     (0x26855, 0x2694f),  # ui texts
                     (0x26a0b, 0x26a8f),  # places
                     (0x26b28, 0x26bbd),            # TODO: Item shop slots can go here
-                    (0x26e16, 0x26f1c),            # TODO: Armor shop slots can go here
+                    (0x26e16, 0x26f1d),            # TODO: Armor shop slots can go here
                     (0x2718d, 0x27557),
                     (0x275f0, 0x275fe),  # death msg
                     (0x2760e, 0x27626),  # ship msg
-                    (0x28044, 0x28851),  # Equip screen
-                    (0x2894e, 0x29020), # Equipment and such
-                    (0x29020, 0x290be),  # menu msgs
+                    (0x28044, 0x28761),  # Equip screen         # TODO: Equipment slots can go after this
+                    (0x2894e, 0x29021), # Equipment and such
+                    (0x29021, 0x290be),  # menu msgs
                     (0x2a2ba, 0x2cc46),  # items and weapons
                     (0x2d022, 0x2d3c6),  # result msgs
                     (0x2da74, 0x2e692),  # skills/spells names/descriptions
@@ -226,7 +226,9 @@ CONTROL_CODES = {
   b'[BLANK]': b'',
   b'[ff]': bytes([0xff]),
   b'[sysLN]': b'\r\n',
-
+  b'(': b'\x81\x69',
+  b')': b'\x81\x6a',
+  # b'[o]': b'o\x81\x50 '
 }
 
 # (??)

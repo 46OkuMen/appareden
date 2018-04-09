@@ -3,6 +3,8 @@
 """
 
 import os
+import rominfo
+import pointer_info
 
 SRC_DISK = os.path.join('original_CD', 'Appareden (CD-UPDATED).HDI')
 DEST_DISK = os.path.join('patched_CD', 'Appareden (CD-UPDATED).HDI')
@@ -15,7 +17,7 @@ def orfield_fd_to_cd(n):
     """
         Given an offset in ORFIELD.EXE FD, return the CD offset.
     """
-    if n < 0x26641:
+    if n < 0x2663e:
         return n + 1568
     else:
         return n + 1606
@@ -31,6 +33,17 @@ def orbtl_fd_to_cd(n):
         return n - 1470
     else:
         return n - 1442
+
+FILE_BLOCKS = {
+    'ORFIELD.EXE': [],
+    'ORBTL.EXE': [],
+}
+
+for fb in rominfo.FILE_BLOCKS['ORFIELD.EXE']:
+    FILE_BLOCKS['ORFIELD.EXE'].append((orfield_fd_to_cd(fb[0]), orfield_fd_to_cd(fb[1])))
+
+for fb in rominfo.FILE_BLOCKS['ORBTL.EXE']:
+    FILE_BLOCKS['ORBTL.EXE'].append((orbtl_fd_to_cd(fb[0]), orbtl_fd_to_cd(fb[1])))
 
 # These are done
 POINTER_CONSTANT = {
@@ -62,25 +75,33 @@ POINTER_TABLES = {
     ],
     'SFIGHT.EXE': [],
     'ORFIELD.EXE': [
-        (0x260a8, 0x260bc, 2),
-        (0x26362, 0x26368, 2),
-        (0x265ee, 0x2663e, 2),
-        (0x269e2, 0x269fa, 2),
-        (0x26a90, 0x26a96, 2),
-        (0x26aa0, 0x26acc, 2),
-        (0x26ad8, 0x26afa, 2),
-        (0x26b04, 0x26acc, 2),
-        (0x26ad8, 0x26afa, 2),
-        (0x26b04, 0x26b26, 2),
-        (0x27f00, 0x27f90, 2),
-        (0x27fa4, 0x28041, 2),
-        (0x290be, 0x29450, 0xc), # BOT TOP 00 00 08 00 03 00 06 00 2d 00, repeat
-        (0x2945a, 0x294f4, 2),
-        (0x29504, 0x2a136, 0x10), # BOT TOP 05 00 01 00 00 00 00 00 ff 01 06 00 f4 01, repeat
-        (0x2a136, 0x2a2ba, 2),
-        (0x2d3c6, 0x2d746, 0xe), # BOT TOP 00 01 00 04 00 00 00 3c 00 c6 00, repeat
-        (0x2d746, 0x2d7c6, 2),
-        (0x2d7c6, 0x2da68, 0x10), # BOT TOP 1e 00 04 00 06 00 01 00 1a 00 00 00 01 00, repeat
-        (0x2da66, 0x2da74, 2),
+        (0x266c8, 0x266dc, 2),    # done
+        (0x26982, 0x26988, 2),    # done
+        (0x26c34, 0x26c84, 2),    # done
+        (0x27028, 0x27040, 2),    # done
+        (0x270d6, 0x270dc, 2),    # done
+        (0x270e6, 0x270f0, 2),    # done
+        (0x27116, 0x27140, 2),    # done
+        (0x2714a, 0x2716c, 2),    # done
+        (0x28546, 0x285d6, 2),    # done
+        (0x285ea, 0x28687, 2),    # done
+        (0x29704, 0x29a8a, 0xc),  # done
+        (0x29a94, 0x29b3a, 2),    # done
+        (0x29b4a, 0x2a77c, 0x10), # done
+        (0x2a77d, 0x2a900, 2),    # done
+        (0x2da03, 0x2dd8c, 0xe),  # done
+        (0x2dd8c, 0x2de0a, 2),    # done
+        (0x2de0a, 0x2e0ae, 0x10), # done
+        #(0x2e0ac, 0x2e0ae, 2),
     ]
 }
+
+POINTERS_TO_REASSIGN = {
+    'ORFIELD.EXE': [],
+    'ORBTL.EXE': []
+}
+for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORFIELD.EXE']:
+    POINTERS_TO_REASSIGN = (orfield_fd_to_cd(src), orfield_fd_to_cd(dest))
+
+for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORBTL.EXE']:
+    POINTERS_TO_REASSIGN = (orbtl_fd_to_cd(src), orbtl_fd_to_cd(dest))

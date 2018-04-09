@@ -97,11 +97,6 @@ shadoffCompression:
     jmp 5867       ; halfwidthOriginal
 """
 
-#NOPS = b'\x90'*13
-"""
-    just some nops.
-"""
-
 # 8a e0 ac e8 af fe 8b d0 e8 11 ff 56 e8 4a fe e8 c7 fe be 14 04 e8 d7 fe a1 d6 03 e8 bb fe be d8 03 e8 cb fe 5e 47 47 eb 24
 #                                                                                  v Begins to be overwritten
 FULLWIDTH_ORIGINAL = b'\x8A\xE0\xAC\xE8\xAB\xFE\x8B\xD0\xE8\x0D\xFF\x56\xE8\x46\xFE\x90\x90\x90\xB4\x09\xA1\xD6\x03\xE8\xBB\xFE\xBE\xD8\x03\xE8\xCB\xFE\x5E\x47\x47\xEB\x24'

@@ -109,22 +109,21 @@ PORTRAITS = {
     "1103": "(Meiling's friend?) concerned",
     "1104": "(Meiling's friend?) shocked, tear drop",
 
-    "1200":
+    "1200": 
 
     "1400":
 
     "1500":
     "1501":
 
-    "1800":
-    "1801":
+    "1800": "Ronin, looking down",
+    "1801": "Ronin, shouting",
 
-    "2600":
-    "2601":
-    "2601":
-    "2602":
-    "2603":
-    "2604":
+    "2600": "Okitsugu, neutral",
+    "2601": "Okitsugu, shouting",
+    "2602": "Okitsugu, laughing",
+    "2603": "Okitsugu, evil toothy smile",
+    "2604": "Okitsugu, eyes narrowed",
 
     "3200":
     "3201":
@@ -138,23 +137,23 @@ PORTRAITS = {
     "3500":
     "3501":
 
-    "3900":
+    "3900": "Sougen",
 
-    "4000":
+    "4000": "Ice Dragon",
 
-    "4100":
+    "4100": "Thunder Dragon",
 
-    "4200":
+    "4200": "Fire Dragon",
 
-    "4300":
-    "4301":
-    "4302":
+    "4300": "Tiamat, neutral",
+    "4301": "Tiamat, intense",
+    "4302": "Tiamat, smiling",
 
-    "4400":
+    "4400": "Vritra",
 
-    "4500":
+    "4500": "Typhon",
 
-    "4600":
+    "4600": 
 
     "4700":
 
@@ -172,7 +171,7 @@ PORTRAITS = {
 
     "6500":
 
-    "6600":
+    "6600": "Masamune",
 
     "6700":
 
@@ -187,13 +186,13 @@ PORTRAITS = {
     "7301":
     "7302":
 
-    "7400":
+    "7400": "Thing 1",
 
-    "7500":
+    "7500": "Thing 2",
 
     "7600": "Innkeeper",
 
-    "7700": "Green dragon",
+    "7700": "Sacrosanct Dragon"
 }
 
 # Crop all to 160x160

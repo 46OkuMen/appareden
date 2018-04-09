@@ -5,7 +5,7 @@
 from appareden.rominfo import CONTROL_CODES, B_CONTROL_CODES, WAITS, MSGS
 from appareden.rominfo import DUMP_XLS_PATH, MAX_LENGTH
 from appareden.utils import typeset, replace_control_codes, sjis_punctuate, properly_space_waits, WAITS
-from appareden.reinsert import HIGHEST_SCN
+from appareden.reinsert import MSGS
 
 from romtools.dump import DumpExcel
 
@@ -42,7 +42,7 @@ for f in filenames:
 # More experimental: Typesetting MSG strings
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
-msgs_to_typeset = [f for f in MSGS if int(f.lstrip('SCN').rstrip('.MSG')) <= HIGHEST_SCN]
+msgs_to_typeset = MSGS
 rownum = 0
 worksheet = Dump.workbook.get_sheet_by_name('MSG')
 first_row = list(worksheet.rows)[0]

@@ -44,38 +44,43 @@
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## Typesetting
-
+* Fix the wait spaces
+* Indent non-first lines after quotes
 
 ## MSGs
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
 	* Example: SCN3100.MSG, border crossing after getting Tamamo
 * When a message starts with ( instead of ", the ( glows red
 	* Is an old SJIS thing being left in there?? Might be an issue that I always split before SJIS quotes...
+	* ( appears to be one of the "cursed" punctuation, along with curly braces and tick mark and overline. I will use SJIS spaces for now.
 * Numbers usually lack a space in front. Should I add another one?
 	* It's probably due to the Shadoff compression, any alterations I should make to that?
+	* This should be fixed in the typesetter now.
 * Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
-* What's with the "#(" at 0x36553 in SCN06001.MSG? Is it a typo?
 
 ## ORFIELD
 * State of the menus:
 	* Menu
 	* Character Status Select
-		* Buffer problems
+		* OK
 	* Status Screen
 	* Equipment Screen
 		* OK
 	* Item SCreen
 		* OK
 	* Zen Screen
-		* Buffer problem? "out" as the blank space
-		* "Can't use the Zen arts" string is broken
+		* OK
 	* Settings
 		* Auto-Battle ON/OFF is super broken still
 			* Now it's really, really broken
 			* I should try just leaving it as the SJIS all caps versions, since those are supported now.
 				* Well uh, that looks great but it crashes upon going back to the previous screen now.
-		* Order screen is having buffer problems
-			* (Only upon making a switch)
+			* It crashes when leaving the menu...
+				* Has something to do with a string in the 114 - 163 block in ORFIELD??
+					* Some kind of overlfow thing? It also eats the "Auto-Battle" header string.
+		* Order Change
+			* OK (Finally...)
+		* Exit
 	* Item Shop
 		* Max name length: ?
 		* Max description length: 33
@@ -115,26 +120,35 @@
 * See what was updated in the MSGs.
 	* Floppy:
 		* SCN05000
+			* Fixing some control codes
 		* SCN05103
+			* da -> de
 		* SCN06003
+			* Remove the random "7"
 		* SCN10502
+			* ?? (This file is just #e)
 		* SCN10900
+			* Some change to the demo text?
 		* ENDING
+			* Shi -> to
 	* CD:
 		* SCN12306
+			* Portrait 71011 -> 71001
 		* And all the ones in the Floppy
 
 ## CD Version
 * Need to re-map FILE_BLOCKS.
 	* Attempting to consolidate/finalize the list of blocks in original ORFIELD first.
 	* Also, this could just be set to all the FD blocks plus a certain offset?
+		* Yep.
 * Need to re-map POINTER_TABLES.
-	* ORBTL is done.
+	* Done.
 * Need to see if there are any new strings in ORBTL and ORFIELD.
 * Need to re-hack ORFIELD and ORBTL, with the text code as well as control codes.
 * Need to find the locations of every string. See find_cd_diffs.py
 	* They can probably be stored in a new column, "Offset (CD)".
 		* Done for ORFIELD and ORBTL.
+* What's with the crash during the first battle?
 
 ## Cheat saves
 * Some more equipment in the inventory than are valid equipments

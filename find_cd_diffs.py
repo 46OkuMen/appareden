@@ -3,7 +3,8 @@
 """
 
 import os
-from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
+import filecmp
+from rominfo import FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, MSGS, SRC_DISK, DEST_DISK, CONTROL_CODES, POSTPROCESSING_CONTROL_CODES
 from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, POINTER_TABLES
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
@@ -56,3 +57,9 @@ for i, pt in enumerate(cd_rominfo.POINTER_TABLES['ORBTL.EXE']):
     print(hex(cd_start), hex(pt[0]), cd_start - pt[0])
     print(hex(cd_stop),  hex(pt[1]), cd_stop - pt[1])
 
+print("CD ORFIELD:")
+for fb in cd_rominfo.FILE_BLOCKS['ORFIELD.EXE']:
+    print(hex(fb[0]), hex(fb[1]))
+
+for m in MSGS:
+    print(filecmp.cmp(os.path.join('original', 'OR', m), os.path.join('original', 'CD', m), shallow=False))

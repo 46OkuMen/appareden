@@ -18,7 +18,6 @@ def effective_length(s):
 def typeset(s, width=37):
 
     # SJIS lines, like Haley's, must be split by SJIS spaces
-
     sjis = s.encode('shift-jis')
 
     if effective_length(sjis) <= width:
@@ -30,7 +29,7 @@ def typeset(s, width=37):
         width = 40
     else:
         space = b' '
-        
+
     words = sjis.split(space)
 
     #words = s.split(' ')
@@ -52,7 +51,7 @@ def typeset(s, width=37):
                 print("That line is the same as the last one. Continuing onward")
                 break
         lines.append(line)
-        
+
 
     lines = [l.decode('shift-jis') for l in lines]
 
@@ -96,24 +95,33 @@ def shadoff_compress(s):
     # TODO: Remove the continuous-spaces processing
 
     continuous_spaces = 0
-    
-    # TODO: Need to check isdigit() and add another space before it??
+    first_number = True
 
     while chars:
         c = chars.pop(0)
         if c == ' ':
+            first_number = True
             continuous_spaces += 1
             if not chars:
                 compressed += c
         elif c.isupper():
             #if continuous_spaces > 2:
             #    compressed += '_' + chr(continuous_spaces)
+            first_number = True
             if continuous_spaces > 0:
                 compressed += ' '*(continuous_spaces)
             continuous_spaces = 0
             compressed += '^'
             compressed += c
+        elif c.isdigit():
+            if first_number:
+                compressed += ' '
+                compressed += c
+                first_number = False
+            else:
+                compressed += c
         else:
+            first_number = True
             if continuous_spaces > 0:
                 compressed += ' '*(continuous_spaces-1)
                 c = c.upper()
