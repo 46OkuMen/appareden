@@ -115,9 +115,15 @@ def shadoff_compress(s):
             compressed += c
         elif c.isdigit():
             if first_number:
-                compressed += ' '
-                compressed += c
-                first_number = False
+                if len(compressed) > 0:
+                    if compressed[-1] != '&':
+                        compressed += ' '
+                        compressed += c
+                        first_number = False
+                    else:
+                        compressed += c
+                else:
+                    compressed += c
             else:
                 compressed += c
         else:

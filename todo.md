@@ -50,12 +50,6 @@
 ## MSGs
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
 	* Example: SCN3100.MSG, border crossing after getting Tamamo
-* When a message starts with ( instead of ", the ( glows red
-	* Is an old SJIS thing being left in there?? Might be an issue that I always split before SJIS quotes...
-	* ( appears to be one of the "cursed" punctuation, along with curly braces and tick mark and overline. I will use SJIS spaces for now.
-* Numbers usually lack a space in front. Should I add another one?
-	* It's probably due to the Shadoff compression, any alterations I should make to that?
-	* This should be fixed in the typesetter now.
 * Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
 
 ## ORFIELD
@@ -64,20 +58,17 @@
 	* Character Status Select
 		* OK
 	* Status Screen
-	* Equipment Screen
 		* OK
+	* Equipment Screen
+		* Buffer issues when equipping something 17 bytes long (Fingerless Gloves)
+			* (But those gloves are fine on the char status screen.)
 	* Item SCreen
 		* OK
 	* Zen Screen
 		* OK
 	* Settings
-		* Auto-Battle ON/OFF is super broken still
-			* Now it's really, really broken
-			* I should try just leaving it as the SJIS all caps versions, since those are supported now.
-				* Well uh, that looks great but it crashes upon going back to the previous screen now.
-			* It crashes when leaving the menu...
-				* Has something to do with a string in the 114 - 163 block in ORFIELD??
-					* Some kind of overlfow thing? It also eats the "Auto-Battle" header string.
+		* Auto-Battle
+			* OK (Needed a few extra strings)
 		* Order Change
 			* OK (Finally...)
 		* Exit
@@ -157,9 +148,11 @@
 * Can't finish a battle, Harry just levels up forever
 	* Whoops, it's not forever, just a lot of times (up to lv72)
 	* Lv72 Harry file now in Journal Go
+
 ## Determined to be non-issues
 * Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
 	* It does so in the Japanese version too
+	* Ocean Dragon Pill might be an unused item. You never use a non-airship from your inventory
 * The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
 	* Workaround, changed to "OK"
 

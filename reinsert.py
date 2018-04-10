@@ -16,16 +16,11 @@ from appareden.utils import shadoff_compress, replace_control_codes
 from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel
 
-#update_google_sheets(DUMP_XLS_PATH, SYS_DUMP_GOOGLE_SHEET)
-#update_google_sheets(MSG_XLS_PATH, MSG_DUMP_GOOGLE_SHEET)
-# The current method won't work for the MSG dump; too many requests.
-# Need to condense it into one sheet after draft is done.
-
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 25,
                  'ORMAIN.EXE': 204,
                  'ORFIELD.EXE': 1205,
-                 'ORBTL.EXE': 785,
+                 'ORBTL.EXE': 782,
                  'NEKORUN.EXE': 3,
                  'SFIGHT.EXE': 15,
                  'Dialogue': 5592,
@@ -47,9 +42,6 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
-
-
-#FILES_TO_REINSERT = ['ORFIELD.EXE', ]
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 

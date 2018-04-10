@@ -41,6 +41,7 @@ POINTER_DISAMBIGUATION = {
   0x2ea20: 0x23064,
   0x2ea14: 0x2308a,   # Spirit2 HP pointer bug
   0x2ea1f: 0x230c0,   # Spirit2 HP pointer bug, part 2
+  0x271b3: 0x16d60,
 
   # ORBTL
   0x27359: 0x13bfd,

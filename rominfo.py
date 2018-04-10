@@ -66,6 +66,10 @@ MSGS = ['ENDING.MSG', 'SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.
         'SCN12803.MSG'
         ]
 
+
+
+#MSGS = []
+
 SHADOFF_COMPRESSED_EXES = ['ORFIELD.EXE',]
 
 # First bytes in SJIS Japanese strings.
