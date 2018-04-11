@@ -46,6 +46,7 @@
 ## Typesetting
 * Fix the wait spaces
 * Indent non-first lines after quotes
+* Extra-long names like Sacrosanct Dragon might need additional (4) spaces in front of each line.
 
 ## MSGs
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
@@ -66,6 +67,8 @@
 		* OK
 	* Zen Screen
 		* OK
+	* Zen Target Screen
+		* Status is " Acc Good"
 	* Settings
 		* Auto-Battle
 			* OK (Needed a few extra strings)
@@ -81,7 +84,12 @@
 		* Max description length: 36?
 		* Window is at maximum width
 	* Sell Items
-		* Weird spacing, and that ` thing too
+		* Spacing will be tricky.
+			* Issue: Rest of row gets pushed back 1 for every word (^) in the string.
+			* Issue: Rest of row gets pushed back 1 for every compressed letter in the string.
+				* Can I solve this by just not compressing any item/equipment name in ORFIELD?
+					* Descriptions (where the bulk of the text would be) can still be compressed. (No text after it)
+					* I can do this with the "Category" column.
 	* Sell Equipment
 
 

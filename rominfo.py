@@ -113,7 +113,7 @@ FILE_BLOCKS = {
                     (0x26e16, 0x26f1d),            # TODO: Armor shop slots can go here
                     (0x2718d, 0x27557),
                     (0x275f0, 0x275fe),  # death msg
-                    (0x2760e, 0x27626),  # ship msg
+                    (0x2760e, 0x27627),  # ship msg
                     (0x28044, 0x28761),  # Equip screen         # TODO: Equipment slots can go after this
                     (0x2894e, 0x29021), # Equipment and such
                     (0x29021, 0x290be),  # menu msgs
@@ -236,7 +236,7 @@ CONTROL_CODES = {
 }
 
 # (??)
-POSTPROCESSING_CONTROL_CODES = {
+COMPRESSION_DICTIONARY = {
 
 'ORFIELD.EXE': OrderedDict([
     (b'~', b' '),
@@ -358,3 +358,9 @@ MAX_LENGTH = {
 
     'Dictionary': 1000,
 }
+
+ITEM_NAME_CATEGORIES = [
+    'Item Name',
+    'Equipment (Left) Name',
+    'Equipment (Right) Name'
+]

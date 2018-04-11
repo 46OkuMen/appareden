@@ -7,6 +7,7 @@ import os
 from collections import OrderedDict
 from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SHADOFF_COMPRESSED_EXES
 from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH
+from rominfo import ITEM_NAME_CATEGORIES
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
@@ -15,8 +16,6 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
 TargetAp = Disk(DEST_DISK)
-
-
 
 DICTIONARY_FILES = ['ORFIELD.EXE', 'ORBTL.EXE']
 
@@ -45,6 +44,8 @@ for filename in DICTIONARY_FILES:
             # Ignore the dictionary slot itself
             if t.location == 0x2a2ba:
                 continue 
+            if t.category in ITEM_NAME_CATEGORIES:
+                continue
             for w in t.english.split():
                 if len(w) > 2:
                     if w in words:

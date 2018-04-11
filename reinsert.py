@@ -8,8 +8,8 @@ import re
 from math import floor
 
 from appareden import asm
-from appareden.rominfo import PROGRESS_ROWS, MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, POSTPROCESSING_CONTROL_CODES
-from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, DICT_LOCATION
+from appareden.rominfo import PROGRESS_ROWS, MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, COMPRESSION_DICTIONARY
+from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, DICT_LOCATION, ITEM_NAME_CATEGORIES
 from appareden.pointer_info import POINTERS_TO_REASSIGN
 from appareden.utils import shadoff_compress, replace_control_codes
 
@@ -119,8 +119,8 @@ def final_overflow_length(o, translations):
 
         if filename in SHADOFF_COMPRESSED_EXES:
             en = shadoff_compress(en)
-        for cc in POSTPROCESSING_CONTROL_CODES[filename]:
-            en = en.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
+        for cc in COMPRESSION_DICTIONARY[filename]:
+            en = en.replace(cc, COMPRESSION_DICTIONARY[filename][cc])
 
         this_diff = len(en) - len(jp)
         final_overflow_len += this_diff
@@ -256,9 +256,15 @@ def reinsert():
 
                     if filename in SHADOFF_COMPRESSED_EXES:
                         t.english = shadoff_compress(t.english)
-                    if t.location !=  DICT_LOCATION[filename]:
-                        for cc in POSTPROCESSING_CONTROL_CODES[filename]:
-                            t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
+                    if t.location != DICT_LOCATION[filename]:
+                        print(filename, t.category, t.category in ITEM_NAME_CATEGORIES)
+                        if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
+                            print("Not compressing %s" % t.location)
+                            #input()
+                            pass
+                        else:
+                            for cc in COMPRESSION_DICTIONARY[filename]:
+                                t.english = t.english.replace(cc, COMPRESSION_DICTIONARY[filename][cc])
 
 
                     loc_in_block = t.location - block.start + diff
@@ -281,11 +287,11 @@ def reinsert():
                         overflowing = True
                         overflow_start = i
                         #overflow_original_location = t.location
-                        print("It's overflowing starting with string %s" % t)
+                        #print("It's overflowing starting with string %s" % t)
 
                         overflowlets.append(t.location - block.start + diff)
                         overflowlet_original_locations.append(t.location)
-                        print("T location was %s" % hex(t.location))
+                        #print("T location was %s" % hex(t.location))
 
                         # Avoid adjusting pointers
                         continue
@@ -307,15 +313,15 @@ def reinsert():
 
                 if overflowing:
                     overflow_string = block.blockstring[overflow_start:]
-                    print("Overflow string: %s" % overflow_string, hex(overflow_start + block.start))
+                    #print("Overflow string: %s" % overflow_string, hex(overflow_start + block.start))
                     cursor = 0
 
                     #assert len(overflowlet_original_locations) == len(overflowlets)
                     #for ool in overflowlet_original_locations:
                     #    print(hex(ool))
 
-                    for o in overflowlets:
-                        print(o)
+                    #for o in overflowlets:
+                    #    print(o)
 
                     #if not overflowlets:
                     #    print("Need to append overflow start?")
@@ -324,11 +330,11 @@ def reinsert():
                     overflowlet_original_locations.append(block.stop)
 
                     for i, o in enumerate(overflowlets):
-                        print(o, overflow_start, o-overflow_start)
+                        #print(o, overflow_start, o-overflow_start)
 
                         this_overflowlet_length = overflowlet_original_locations[i+1] - overflowlet_original_locations[i]
                         overflowlet_string = overflow_string[cursor:cursor+this_overflowlet_length]
-                        print(overflowlet_string)
+                        #print(overflowlet_string)
                         
                         #overflowlet_string = overflow_string[cursor:o-overflow_start]
                         if len(overflowlet_string) < 1:
@@ -411,8 +417,15 @@ def reinsert():
 
                     if filename in SHADOFF_COMPRESSED_EXES:
                         t.english = shadoff_compress(t.english)
-                    for cc in POSTPROCESSING_CONTROL_CODES[filename]:
-                        t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
+
+                    # Don't dictionary compress item names in ORFIELD.EXE.
+                    print(t.category)
+                    if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
+                        print("Not compressing %s" % t.english)
+                        pass
+                    else:
+                        for cc in COMPRESSION_DICTIONARY[filename]:
+                            t.english = t.english.replace(cc, COMPRESSION_DICTIONARY[filename][cc])
 
                     this_diff = len(t.english) - len(t.japanese)
                     final_overflow_len = len(o[1]) + this_diff

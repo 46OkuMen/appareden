@@ -92,7 +92,7 @@ for m in msgs_to_typeset:
 
             #if portrait_window_counter > 0:
             if portrait:
-                english = typeset(english, 37)
+                english = typeset(english, 36)
             else:
                 english = typeset(english, 57)
 
