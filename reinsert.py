@@ -17,12 +17,9 @@ from romtools.disk import Disk, Gamefile, Block, Overflow
 from romtools.dump import DumpExcel, PointerExcel
 
 # TODO: Calculate these, don't hardcode them
-STRING_COUNTS = {'ORTITLE.EXE': 25,
-                 'ORMAIN.EXE': 204,
-                 'ORFIELD.EXE': 1205,
+STRING_COUNTS = {'ORTITLE.EXE': 18,
+                 'ORFIELD.EXE': 1230,
                  'ORBTL.EXE': 782,
-                 'NEKORUN.EXE': 3,
-                 'SFIGHT.EXE': 15,
                  'Dialogue': 5592,
                  'Images': 37,
                  }
@@ -46,6 +43,7 @@ TargetAp = Disk(DEST_DISK)
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 gems_to_reinsert = ['ORTITLE.GEM']
+other_files_to_reinsert = ['SCN12307.COD',]
 
 FILES_TO_REINSERT += MSGS
 
@@ -189,15 +187,17 @@ def reinsert():
 
         if filename.endswith('.MSG'):
             # First, gotta replace all the control codes.
-            gamefile.filestring = replace_control_codes(gamefile.filestring)
+            if filename != 'ENDING.MSG':
+                gamefile.filestring = replace_control_codes(gamefile.filestring)
 
             last_i = 0
 
             for t in Dump.get_translations(filename, sheet_name='MSG'):
 
-                for cc in CONTROL_CODES:
-                    t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
-                    t.english = t.english.replace(cc, CONTROL_CODES[cc])
+                if filename != 'ENDING.MSG':
+                    for cc in CONTROL_CODES:
+                        t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
+                        t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
@@ -496,6 +496,9 @@ def reinsert():
         # This doesn't encode any of them, just inserts what's already there
         TargetAp.insert(os.path.join('patched', g), path_in_disk='TGL/OR')
         REINSERTED_STRING_COUNTS['Images'] += 1
+
+    for o in other_files_to_reinsert:
+        TargetAp.insert(os.path.join('patched', o), path_in_disk='TGL/OR')
 
 if __name__ == '__main__':
     reinsert()

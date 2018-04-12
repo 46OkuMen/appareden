@@ -12,7 +12,7 @@ DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
 
 # Rows to be displayed in the progress section of the README.
-PROGRESS_ROWS = ['ORTITLE.EXE', 'ORMAIN.EXE', 'ORFIELD.EXE', 'ORBTL.EXE', 'SFIGHT.EXE', 'Dialogue', 'Images']
+PROGRESS_ROWS = ['ORTITLE.EXE','ORFIELD.EXE', 'ORBTL.EXE', 'Dialogue', 'Images']
 
 MSGS = ['ENDING.MSG', 'SCN02400.MSG', 'SCN02401.MSG', 'SCN02402.MSG', 'SCN02403.MSG',
         'SCN02404.MSG', 'SCN02500.MSG', 'SCN02501.MSG', 'SCN02502.MSG',
@@ -93,7 +93,7 @@ FILE_BLOCKS = {
     'NEKORUN.EXE': [(0xa840, 0xa8aa),   # error text + scene text
                     (0xacc0, 0xacda),   # memory error text
                     (0xaecc, 0xaf00), ],  # ems driver version text"
-    'ORBTL.EXE': [(0x251d2, 0x2524c),  # battle commands
+    'ORBTL.EXE': [(0x251d2, 0x25265),  # battle commands
                   (0x252dd, 0x252fe),  # run/surprise
                   (0x25330, 0x253d3),  # after battle
                   (0x2715a, 0x271ac),  # ems driver version texts

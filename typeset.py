@@ -11,7 +11,7 @@ from romtools.dump import DumpExcel
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 
-filenames = ['ORFIELD.EXE',]
+filenames = ['ORFIELD.EXE', 'ORBTL.EXE']
 for f in filenames:
     rownum = 0
     worksheet = Dump.workbook.get_sheet_by_name(f)

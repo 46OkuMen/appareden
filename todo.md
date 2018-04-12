@@ -1,6 +1,8 @@
 # Appareden Todo
 
 ## Crashes
+* Crash during screen-shake effect between Okitsugu and Orochi battles.
+	* Doesn't appear to be related to SCN12307 since it happens with the original patched & unpatched FD-HDIs swapped in and the original dialogue occurring...
 * Visiting the weapon shop in Dragonia before talking to Tiamat soft locks the game??
 
 ## Reinserter
@@ -45,6 +47,7 @@
 
 ## Typesetting
 * Fix the wait spaces
+	* Ah, these are broken again
 * Indent non-first lines after quotes
 * Extra-long names like Sacrosanct Dragon might need additional (4) spaces in front of each line.
 
