@@ -6,7 +6,9 @@ import os
 from collections import OrderedDict
 
 SRC_DISK = os.path.join('original', 'Appareden (UPDATED).HDI')
+#SRC_CD_DISK = os.path.join('original_cd', 'Appareden (CD-UPDATED).hdi')
 DEST_DISK = os.path.join('patched', 'Appareden (UPDATED).HDI')
+#DEST_CD_DISK = os.path.join('patched_cd', 'Appareden (CD-UPDATED).hdi')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
