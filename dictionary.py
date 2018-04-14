@@ -6,7 +6,7 @@ import os
 from collections import OrderedDict
 from rominfo import FILE_BLOCKS, SRC_DISK, DEST_DISK, SHADOFF_COMPRESSED_EXES
 from rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH
-from rominfo import ITEM_NAME_CATEGORIES
+from rominfo import ITEM_NAME_CATEGORIES, DICTIONARY_LOCATION
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
@@ -41,10 +41,11 @@ for filename in DICTIONARY_FILES:
         last_string_original_location = 0
         for t in Dump.get_translations(block):
             # Ignore the dictionary slot itself
-            if t.location == 0x2a2ba:
+            if t.location == DICTIONARY_LOCATION[filename]:
                 continue 
-            if t.category in ITEM_NAME_CATEGORIES:
-                continue
+            if filename == 'ORFIELD.EXE':
+                if t.category in ITEM_NAME_CATEGORIES:
+                    continue
             for w in t.english.split():
                 if len(w) > 2:
                     if w in words:
@@ -63,7 +64,7 @@ for filename in DICTIONARY_FILES:
     candidates = list(reversed(sorted(words, key=lambda x: x[1])))
     #print(candidates)
     if filename in SHADOFF_COMPRESSED_EXES:
-        dictstring = b'^Restore^Pill[00]'
+        dictstring = b'^Restore ^Pill[00]'
         cursor = 14
     else:
         dictstring = b'Restore Pill[00]'
@@ -73,16 +74,12 @@ for filename in DICTIONARY_FILES:
         if c[0].capitalize() in ctrl_codes and filename in SHADOFF_COMPRESSED_EXES:
             continue
         if c[0] != b'[BLANK]' and c[0].strip(b'~') != b'':
-            if len(dictstring.replace(b'[ff]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 255:
+            if len(dictstring.replace(b'[ff]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 3893:
                 print("Couldn't fit %s next" % c[0])
                 break
 
             # TODO: Also need to include if a capitalized version is in a substring somewhere.
             # IE battle -> Auto-Battle, for -> Forged
-
-            # TODO: Skip item names in ORFIELD!
-
-            # TODO: The dict doesn't need to be 255 bytes or less, it just needs to start at offset 255 or less...
 
             if filename in SHADOFF_COMPRESSED_EXES:
                 if c[0].capitalize() in [w[0] for w in words]:
@@ -90,19 +87,19 @@ for filename in DICTIONARY_FILES:
 
                 if upper_present:
                     dictstring += b'^'
-                    ctrl_codes[b'^' + c[0].capitalize()] = b'\xfe' + cursor.to_bytes(1, byteorder='little')
+                    ctrl_codes[b'^' + c[0].capitalize()] = (cursor + 0xf000).to_bytes(2, byteorder='big')
                     cursor += 1
                     
                 dictstring += c[0].capitalize()
                 dictstring += b'[ff]'
 
-                ctrl_codes[c[0].capitalize()] = b'\xfe' + cursor.to_bytes(1, byteorder='little')
+                ctrl_codes[c[0].capitalize()] = (cursor + 0xf000).to_bytes(2, byteorder='big')
                 cursor += len(c[0])
                 cursor += 1
 
             # If we're not doing Shadoff compression, just ignore caps
             else:
-                ctrl_codes[c[0]] = b'\xfe' + cursor.to_bytes(1, byteorder='little')
+                ctrl_codes[c[0]] = (cursor + 0xf000).to_bytes(2, byteorder='big')
                 cursor += len(c[0])
                 cursor += 1
                 print(cursor)

@@ -3,6 +3,7 @@
 """
 
 import os
+from collections import OrderedDict
 import rominfo
 import pointer_info
 from appareden.asm import CD_EDITS
@@ -129,12 +130,14 @@ DICT_LOCATION = {
 }
 
 COMPRESSION_DICTIONARY = {
-    'ORFIELD.EXE': {
-
-    },
-    'ORBTL.EXE': {
-
-    },
+    'ORFIELD.EXE': OrderedDict([
+        (b'~', b' '),
+        (b'[BLANK]', b''),
+    ]),
+    'ORBTL.EXE': OrderedDict([
+        (b'~', b' '),
+        (b'[BLANK]', b''),
+    ]),
 
     'ORTITLE.EXE': {},
 }
