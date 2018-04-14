@@ -1,6 +1,5 @@
 """
-    Text reinserter for Appareden.
-    Replaces text, adjusts pointers, and implements manual assembly hacks.
+    Compression dictionary generator for the Appareden English translation.
 """
 
 import os
@@ -80,6 +79,10 @@ for filename in DICTIONARY_FILES:
 
             # TODO: Also need to include if a capitalized version is in a substring somewhere.
             # IE battle -> Auto-Battle, for -> Forged
+
+            # TODO: Skip item names in ORFIELD!
+
+            # TODO: The dict doesn't need to be 255 bytes or less, it just needs to start at offset 255 or less...
 
             if filename in SHADOFF_COMPRESSED_EXES:
                 if c[0].capitalize() in [w[0] for w in words]:

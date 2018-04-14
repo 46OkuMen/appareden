@@ -5,7 +5,7 @@ from romtools.dump import BorlandPointer, DumpExcel, PointerExcel
 from romtools.disk import Gamefile, Block, Disk
 
 strings_to_skip = ['ポインタが使われました', '      体', '       心', 'ＥＭＳ']
-garbage_pointer_values = [0x0, 0xff, 0x8, 0x4, 0x100, 0x200, 0x400, 0x800, 0xd00, 0x900, 0x1, 0x2, 0x3]
+garbage_pointer_values = [0x0, 0xff, 0x8, 0x4, 0x200, 0x400, 0x800, 0xd00, 0x900, 0x1, 0x2, 0x3]
 
 def find_all(a_str, sub):
     start = 0
@@ -105,7 +105,11 @@ for version in ['FD', 'CD']:
         # Now look in the code blocks.
         for block in file_blocks:
             blk = Block(GF, block)
-            for t in Dump.get_translations(blk, include_blank=True):
+            if version == 'FD':
+                translations = Dump.get_translations(blk, include_blank=True)
+            else:
+                translations = Dump.get_translations(blk, include_blank=True, use_cd_location=True)
+            for t in translations:
                 #print(t)
                 if version == 'CD':
                     t.location = t.cd_location

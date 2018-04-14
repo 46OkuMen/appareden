@@ -7,8 +7,11 @@ import rominfo
 import pointer_info
 from appareden.asm import CD_EDITS
 
-CD_SRC_DISK = os.path.join('original_CD', 'Appareden (CD-UPDATED).HDI')
-CD_DEST_DISK = os.path.join('patched_CD', 'Appareden (CD-UPDATED).HDI')
+CD_SRC_DIR = 'original_CD'
+CD_DEST_DIR = 'patched_CD'
+
+CD_SRC_DISK = os.path.join(CD_SRC_DIR, 'Appareden (CD-UPDATED).HDI')
+CD_DEST_DISK = os.path.join(CD_DEST_DIR, 'Appareden (CD-UPDATED).HDI')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
@@ -131,7 +134,9 @@ COMPRESSION_DICTIONARY = {
     },
     'ORBTL.EXE': {
 
-    }
+    },
+
+    'ORTITLE.EXE': {},
 }
 
 POINTER_DISAMBIGUATION  = {
@@ -151,6 +156,15 @@ POINTER_DISAMBIGUATION  = {
     0x2f028: 0x23595,
     0x2f041: 0x23602,
     0x2f2ea: 0x23b7d,
+    0x269de: 0xc147,
+    0x269ef: 0xc163,
+    0x26a18: 0xc1a3,
+    0x26cad: 0x12ffc,
+    0x26eaf: 0x13691,
+    0x26eee: 0x138d0,
+    0x26ef9: 0x138f1,
+    0x28d35: 0x1c93a,
+    0x2f532: 0x2421e
 }
 
 POINTERS_TO_REASSIGN = {

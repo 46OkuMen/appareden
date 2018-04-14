@@ -7,9 +7,12 @@ from collections import OrderedDict
 from pointer_info import POINTER_DISAMBIGUATION, POINTERS_TO_REASSIGN
 from appareden.asm import FD_EDITS
 
-SRC_DISK = os.path.join('original', 'Appareden (UPDATED).HDI')
+SRC_DIR = 'original'
+DEST_DIR = 'patched'
+
+SRC_DISK = os.path.join(SRC_DIR, 'Appareden (UPDATED).HDI')
 #SRC_CD_DISK = os.path.join('original_cd', 'Appareden (CD-UPDATED).hdi')
-DEST_DISK = os.path.join('patched', 'Appareden (UPDATED).HDI')
+DEST_DISK = os.path.join(DEST_DIR, 'Appareden (UPDATED).HDI')
 #DEST_CD_DISK = os.path.join('patched_cd', 'Appareden (CD-UPDATED).hdi')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
@@ -154,10 +157,8 @@ FILE_BLOCKS = {
 # The constant added to a pointer's value to get its dereference.
 POINTER_CONSTANT = {
     'ORTITLE.EXE': 0x3eb0,
-    'ORMAIN.EXE': 0x1570,
     'ORFIELD.EXE': 0x25f10,
     'ORBTL.EXE': 0x25120,
-    'SFIGHT.EXE': 0xd080,
 }
 
 # Location of the compression dictionary, where applicable.
@@ -169,11 +170,6 @@ DICT_LOCATION = {
 
 # Tables are (start, stop, stride) tuples.
 POINTER_TABLES = {
-    'ORMAIN.EXE': [
-        (0x15a6, 0x15ac, 2),
-        (0x20d4, 0x20e5, 2),
-        (0x2274, 0x3ebf, 0x28),
-    ],
     'ORTITLE.EXE': [
         (0x3ee4, 0x3f16, 2),
     ],
@@ -194,7 +190,6 @@ POINTER_TABLES = {
         (0x2b7c6, 0x2d2a9, 0x28),
 
     ],
-    'SFIGHT.EXE': [],
     'ORFIELD.EXE': [
         (0x260a8, 0x260bc, 2),
         (0x26362, 0x26368, 2),

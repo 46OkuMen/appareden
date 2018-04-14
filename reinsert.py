@@ -4,16 +4,15 @@
 """
 
 import os
-import re
 from math import floor
 
-from appareden import asm
-from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS
+from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SRC_DIR, DEST_DIR, CONTROL_CODES, B_CONTROL_CODES, WAITS
 from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, DICT_LOCATION, ITEM_NAME_CATEGORIES
 from appareden.rominfo import FdRom
+from appareden.cd_rominfo import CdRom, CD_SRC_DISK, CD_DEST_DISK, CD_SRC_DIR, CD_DEST_DIR
 from appareden.utils import shadoff_compress, replace_control_codes
 
-from romtools.disk import Disk, Gamefile, Block, Overflow
+from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
 # TODO: Calculate these, don't hardcode them
@@ -37,10 +36,9 @@ REINSERTED_STRING_COUNTS = {'ORTITLE.EXE': 0,
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
-OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
-TargetAp = Disk(DEST_DISK)
 
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+#FILES_TO_REINSERT = ['ORFIELD.EXE',]
 
 gems_to_reinsert = ['ORTITLE.GEM']
 other_files_to_reinsert = ['SCN12307.COD',]
@@ -122,46 +120,37 @@ def final_overflow_length(o, translations):
         final_overflow_len += this_diff
     return final_overflow_len
 
-def reinsert():
+def reinsert(version):
+
+    if version == 'FD':
+
+        OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
+        TargetAp = Disk(DEST_DISK)
+        src_dir = SRC_DIR
+        Rom = FdRom
+    elif version == 'CD':
+        OriginalAp = Disk(CD_SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
+        TargetAp = Disk(CD_DEST_DISK)
+        src_dir = CD_SRC_DIR
+        Rom = CdRom
+
     missing_string_count = 0
     for filename in FILES_TO_REINSERT:
-        gamefile_path = os.path.join('original', filename)
+        gamefile_path = os.path.join(src_dir, filename)
         if not os.path.isfile(gamefile_path):
-            OriginalAp.extract(filename, path_in_disk='TGL/OR', dest_path='original')
-        gamefile = Gamefile(gamefile_path, disk=OriginalAp, dest_disk=TargetAp)
+            OriginalAp.extract(filename, path_in_disk='TGL/OR', dest_path=src_dir)
 
-        """
-        if filename == 'ORFIELD.EXE':
+        if version == 'FD':
+            gamefile = Gamefile(gamefile_path, disk=OriginalAp, dest_disk=TargetAp)
+        elif version == 'CD':
+            gamefile = Gamefile(gamefile_path, disk=OriginalAp, dest_disk=TargetAp, pointer_sheet_name='CD ' + filename)
 
-            # Apply ORFIELD asm hacks
-            for loc, code in asm.ORFIELD_FD_EDITS:
+        if filename in Rom.asm_edits:
+            for loc, code in Rom.asm_edits[filename]:
                 gamefile.edit(loc, code)
 
-            # Longer, more complex text handling ASM
-            #asm_cursor = 0
-
-            #for code in asm.ORFIELD_CODE:
-            #    gamefile.edit(0x8c0b+asm_cursor, code)
-            #    asm_cursor += len(code)
-            #    print(hex(asm_cursor), "of ASM written")
-
-            # Expand space for status ailments in menu
-            # ac = limit of 6, and we want 12 for Petrified
-            # gamefile.edit(0x1ab14, b'\xb2')
-
-        elif filename == 'ORBTL.EXE':
-            # Text handling ASM
-            asm_cursor = 0
-            for code in asm.ORBTL_CODE:
-                gamefile.edit(0x3647+asm_cursor, code)
-                asm_cursor += len(code)
-        """
-        if filename in FdRom.asm_edits:
-            for loc, code in FdRom.asm_edits[filename]:
-                gamefile.edit(loc, code)
-
-        if filename in FdRom.pointers_to_reassign:
-            reassignments = FdRom.pointers_to_reassign[filename]
+        if filename in Rom.pointers_to_reassign:
+            reassignments = Rom.pointers_to_reassign[filename]
             for src, dest in reassignments:
                 #print(hex(src), hex(dest))
                 assert src in gamefile.pointers
@@ -208,11 +197,12 @@ def reinsert():
 
 
         if filename.endswith('.EXE'):
-            block_objects = [Block(gamefile, block) for block in FdRom.file_blocks[filename]]
+            block_objects = [Block(gamefile, block) for block in Rom.file_blocks[filename]]
             overflow_strings = []
             spares = []
 
             for block in block_objects:
+                print(block)
                 previous_text_offset = block.start
                 overflowing = False
                 overflow_start = 0
@@ -223,7 +213,16 @@ def reinsert():
                 last_i = -1
                 last_len = 1
                 last_string_original_location = 0
-                for t in Dump.get_translations(block):
+
+                if version == 'FD':
+                    translations = Dump.get_translations(block)
+                elif version == 'CD':
+                    translations = Dump.get_translations(block, use_cd_location=True)
+                for t in translations:
+
+                    if version == 'CD':
+                        t.location = t.cd_location
+                    print(t)
 
                     if overflowing:
                         # each overflowlet is a location in the blockstring where a new string begins.
@@ -242,14 +241,13 @@ def reinsert():
                     if filename in SHADOFF_COMPRESSED_EXES:
                         t.english = shadoff_compress(t.english)
                     if t.location != DICT_LOCATION[filename]:
-                        print(filename, t.category, t.category in ITEM_NAME_CATEGORIES)
                         if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
                             print("Not compressing %s" % t.location)
                             #input()
                             pass
                         else:
-                            for cc in FdRom.compression_dictionary[filename]:
-                                t.english = t.english.replace(cc, FdRom.compression_dictionary[filename][cc])
+                            for cc in Rom.compression_dictionary[filename]:
+                                t.english = t.english.replace(cc, Rom.compression_dictionary[filename][cc])
 
 
                     loc_in_block = t.location - block.start + diff
@@ -319,17 +317,14 @@ def reinsert():
 
                         this_overflowlet_length = overflowlet_original_locations[i+1] - overflowlet_original_locations[i]
                         overflowlet_string = overflow_string[cursor:cursor+this_overflowlet_length]
-                        #print(overflowlet_string)
-                        
-                        #overflowlet_string = overflow_string[cursor:o-overflow_start]
+
                         if len(overflowlet_string) < 1:
                             print("That overflowlet is empty")
                             continue
                         #cursor = o-overflow_start
                         cursor += this_overflowlet_length
                         absolute_overflowlet_start = o + block.start
-                        #print("Here's an overflow string that was part of that:")
-                        #print((absolute_overflowlet_start, overflowlet_string, block, hex(overflowlet_original_locations[i])))
+ 
                         overflow_strings.append((absolute_overflowlet_start, overflowlet_string, block, overflowlet_original_locations[i]))
 
                     # Remove the overflow string from the block entirely
@@ -363,17 +358,23 @@ def reinsert():
                 spare_to_use = spares[0]
 
                 # s[0] is the start, s[1] is the end, s[2] is the parent block
-                translations = [t for t in Dump.get_translations(o[2]) if t.location == o[3]]
+                if version == 'FD':
+                    translations = [t for t in Dump.get_translations(o[2]) if t.location == o[3]]
+                elif version == 'CD':
+                    translations = [t for t in Dump.get_translations(o[2], use_cd_location=True) if t.cd_location == o[3]]
 
                 assert translations[0].japanese in o[1]
-                assert o[3] == translations[0].location
+                if version == 'CD':
+                    assert o[3] == translations[0].cd_location
+                else:
+                    assert o[3] == translations[0].location
 
                 final_overflow_len = final_overflow_length(o, translations)
 
                 spare_to_use = None
                 for s in spares:
                     spare_len = s[1] - s[0]
-                    if spare_len > final_overflow_len:
+                    if spare_len > final_overflow_len + 3:
                         spare_to_use = s
                 assert spare_to_use is not None
                 print(hex(spare_to_use[0]), hex(spare_to_use[1]), spare_to_use[2], " is the snuggest fit, with size", spare_to_use[1]-spare_to_use[0], "for overflow size", final_overflow_len)
@@ -407,8 +408,8 @@ def reinsert():
                     if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
                         pass
                     else:
-                        for cc in FdRom.compression_dictionary[filename]:
-                            t.english = t.english.replace(cc, FdRom.compression_dictionary[filename][cc])
+                        for cc in Rom.compression_dictionary[filename]:
+                            t.english = t.english.replace(cc, Rom.compression_dictionary[filename][cc])
 
                     this_diff = len(t.english) - len(t.japanese)
                     final_overflow_len = len(o[1]) + this_diff
@@ -473,17 +474,19 @@ def reinsert():
 
         gamefile.write(path_in_disk='TGL\\OR')
 
-    print("Strings missing in MSGs: %s" % missing_string_count)
+    if missing_string_count > 0:
+        print("Strings missing in MSGs: %s" % missing_string_count)
 
     for g in gems_to_reinsert:
         # This doesn't encode any of them, just inserts what's already there
-        TargetAp.insert(os.path.join('patched', g), path_in_disk='TGL/OR')
+        TargetAp.insert(os.path.join(DEST_DIR, g), path_in_disk='TGL/OR')
         REINSERTED_STRING_COUNTS['Images'] += 1
 
     for o in other_files_to_reinsert:
-        TargetAp.insert(os.path.join('patched', o), path_in_disk='TGL/OR')
+        TargetAp.insert(os.path.join(DEST_DIR, o), path_in_disk='TGL/OR')
 
 if __name__ == '__main__':
-    reinsert()
+    reinsert('FD')
+    reinsert('CD')
     table = results_table()
     write_table_to_readme(table)
