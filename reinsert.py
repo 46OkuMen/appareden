@@ -8,9 +8,9 @@ import re
 from math import floor
 
 from appareden import asm
-from appareden.rominfo import PROGRESS_ROWS, MSGS, FILE_BLOCKS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS, COMPRESSION_DICTIONARY
+from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, CONTROL_CODES, B_CONTROL_CODES, WAITS
 from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, DICT_LOCATION, ITEM_NAME_CATEGORIES
-from appareden.pointer_info import POINTERS_TO_REASSIGN
+from appareden.rominfo import FdRom
 from appareden.utils import shadoff_compress, replace_control_codes
 
 from romtools.disk import Disk, Gamefile, Block, Overflow
@@ -55,10 +55,8 @@ def results_table():
     | Segment      | %    |  Strings            | 
     | -------------|-----:|:-------------------:|
     | Title        | 100% |    (18 / 18)        |
-    | Main         |   0% |     (0 / 202)       |
     | Field        | 100% |  (1194 / 1194)      |
     | Battle       | 100% |   (786 / 786)       |
-    | Cat Minigame |   0% |     (0 / 7)         |
     | Dialogue     |  83% |  (4653 / 5594)      |
     | Images       |   2% |     (1 / 44?)       |
     | Total        |  85% |  (6662 / 7845)      |
@@ -117,8 +115,8 @@ def final_overflow_length(o, translations):
 
         if filename in SHADOFF_COMPRESSED_EXES:
             en = shadoff_compress(en)
-        for cc in COMPRESSION_DICTIONARY[filename]:
-            en = en.replace(cc, COMPRESSION_DICTIONARY[filename][cc])
+        for cc in FdRom.compression_dictionary[filename]:
+            en = en.replace(cc, FdRom.compression_dictionary[filename][cc])
 
         this_diff = len(en) - len(jp)
         final_overflow_len += this_diff
@@ -132,37 +130,24 @@ def reinsert():
             OriginalAp.extract(filename, path_in_disk='TGL/OR', dest_path='original')
         gamefile = Gamefile(gamefile_path, disk=OriginalAp, dest_disk=TargetAp)
 
+        """
         if filename == 'ORFIELD.EXE':
 
             # Apply ORFIELD asm hacks
-
-            # TODO: Spin this off into asm.py.
-            gamefile.edit(0x151b7, B_CONTROL_CODES[b'w'])         # w = "{"
-            gamefile.edit(0x15b0f, B_CONTROL_CODES[b'w'])         # w = "{"
-            gamefile.edit(0x15b99, B_CONTROL_CODES[b'w'])         # w = "{"
-
-            gamefile.edit(0x15519, B_CONTROL_CODES[b'n'])         # n = "/"
-            gamefile.edit(0x15528, B_CONTROL_CODES[b'n'])         # n = "/"
-            gamefile.edit(0x155df, B_CONTROL_CODES[b'n'])         # n = "/"
-            gamefile.edit(0x155ee, B_CONTROL_CODES[b'n'])         # n = "/"
-            gamefile.edit(0x15b1d, B_CONTROL_CODES[b'n'])         # n = "/"
-            gamefile.edit(0x15b5f, B_CONTROL_CODES[b'n'])         # n = "/"
-
-            gamefile.edit(0x15b16, B_CONTROL_CODES[b'c'])         # c = "$"
-            gamefile.edit(0x15b6c, B_CONTROL_CODES[b'c'])         # c = "$"
-            gamefile.edit(0x2551b, B_CONTROL_CODES[b'c'])         # c = "$"
+            for loc, code in asm.ORFIELD_FD_EDITS:
+                gamefile.edit(loc, code)
 
             # Longer, more complex text handling ASM
-            asm_cursor = 0
+            #asm_cursor = 0
 
-            for code in asm.ORFIELD_CODE:
-                gamefile.edit(0x8c0b+asm_cursor, code)
-                asm_cursor += len(code)
-                print(hex(asm_cursor), "of ASM written")
+            #for code in asm.ORFIELD_CODE:
+            #    gamefile.edit(0x8c0b+asm_cursor, code)
+            #    asm_cursor += len(code)
+            #    print(hex(asm_cursor), "of ASM written")
 
             # Expand space for status ailments in menu
             # ac = limit of 6, and we want 12 for Petrified
-            gamefile.edit(0x1ab14, b'\xb2')
+            # gamefile.edit(0x1ab14, b'\xb2')
 
         elif filename == 'ORBTL.EXE':
             # Text handling ASM
@@ -170,10 +155,13 @@ def reinsert():
             for code in asm.ORBTL_CODE:
                 gamefile.edit(0x3647+asm_cursor, code)
                 asm_cursor += len(code)
+        """
+        if filename in FdRom.asm_edits:
+            for loc, code in FdRom.asm_edits[filename]:
+                gamefile.edit(loc, code)
 
-
-        if filename in POINTERS_TO_REASSIGN:
-            reassignments = POINTERS_TO_REASSIGN[filename]
+        if filename in FdRom.pointers_to_reassign:
+            reassignments = FdRom.pointers_to_reassign[filename]
             for src, dest in reassignments:
                 #print(hex(src), hex(dest))
                 assert src in gamefile.pointers
@@ -220,7 +208,7 @@ def reinsert():
 
 
         if filename.endswith('.EXE'):
-            block_objects = [Block(gamefile, block) for block in FILE_BLOCKS[filename]]
+            block_objects = [Block(gamefile, block) for block in FdRom.file_blocks[filename]]
             overflow_strings = []
             spares = []
 
@@ -236,9 +224,6 @@ def reinsert():
                 last_len = 1
                 last_string_original_location = 0
                 for t in Dump.get_translations(block):
-
-                    if t.location == 0x252f3:
-                        print("It's happening")
 
                     if overflowing:
                         # each overflowlet is a location in the blockstring where a new string begins.
@@ -263,8 +248,8 @@ def reinsert():
                             #input()
                             pass
                         else:
-                            for cc in COMPRESSION_DICTIONARY[filename]:
-                                t.english = t.english.replace(cc, COMPRESSION_DICTIONARY[filename][cc])
+                            for cc in FdRom.compression_dictionary[filename]:
+                                t.english = t.english.replace(cc, FdRom.compression_dictionary[filename][cc])
 
 
                     loc_in_block = t.location - block.start + diff
@@ -419,13 +404,11 @@ def reinsert():
                         t.english = shadoff_compress(t.english)
 
                     # Don't dictionary compress item names in ORFIELD.EXE.
-                    print(t.category)
                     if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
-                        print("Not compressing %s" % t.english)
                         pass
                     else:
-                        for cc in COMPRESSION_DICTIONARY[filename]:
-                            t.english = t.english.replace(cc, COMPRESSION_DICTIONARY[filename][cc])
+                        for cc in FdRom.compression_dictionary[filename]:
+                            t.english = t.english.replace(cc, FdRom.compression_dictionary[filename][cc])
 
                     this_diff = len(t.english) - len(t.japanese)
                     final_overflow_len = len(o[1]) + this_diff

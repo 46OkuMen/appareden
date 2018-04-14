@@ -1,7 +1,6 @@
 import os
-from rominfo import FILE_BLOCKS, POINTER_CONSTANT, SRC_DISK, POINTER_TABLES
-import cd_rominfo
-from pointer_info import POINTER_DISAMBIGUATION
+from rominfo import FdRom, SRC_DISK
+from cd_rominfo import CdRom, CD_SRC_DISK
 from romtools.dump import BorlandPointer, DumpExcel, PointerExcel
 from romtools.disk import Gamefile, Block, Disk
 
@@ -24,11 +23,12 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 
 
 OriginalAp = Disk(SRC_DISK, dump_excel=Dump)
-OriginalCdAp = Disk(cd_rominfo.SRC_DISK, dump_excel=Dump)
+OriginalCdAp = Disk(CD_SRC_DISK, dump_excel=Dump)
 
 #files_to_search = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
-files_to_search = ['ORFIELD.EXE', 'ORBTL.EXE']
+# TODO: Add ORITTLE back in once I've mapped the CD version.
+files_to_search = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 
 problem_count = 0
 
@@ -43,16 +43,18 @@ for version in ['FD', 'CD']:
     for f in files_to_search:
         if version == 'FD':
             GF = Gamefile(os.path.join('original', f), disk=OriginalAp)
-            file_blocks = FILE_BLOCKS[f]
-            pointer_constant = POINTER_CONSTANT[f]
-            pointer_tables = POINTER_TABLES[f]
-            pointer_disambiguation = POINTER_DISAMBIGUATION
+            file_blocks = FdRom.file_blocks[f]
+            pointer_constant = FdRom.pointer_constant[f]
+            pointer_tables = FdRom.pointer_tables[f]
+            pointer_disambiguation = FdRom.pointer_disambiguation
+            worksheet_name = GF.filename
         else:
             GF = Gamefile(os.path.join('original_cd', f), disk=OriginalCdAp)
-            file_blocks = cd_rominfo.FILE_BLOCKS[f]
-            pointer_constant = cd_rominfo.POINTER_CONSTANT[f]
-            pointer_tables = cd_rominfo.POINTER_TABLES[f]
-            pointer_disambiguation = cd_rominfo.POINTER_DISAMBIGUATION
+            file_blocks = CdRom.file_blocks[f]
+            pointer_constant = CdRom.pointer_constant[f]
+            pointer_tables = CdRom.pointer_tables[f]
+            pointer_disambiguation = CdRom.pointer_disambiguation
+            worksheet_name = 'CD ' + GF.filename
 
         found_text_locations = []
         print(f)
@@ -60,9 +62,10 @@ for version in ['FD', 'CD']:
         previous_pointer_locations = []
 
         try:
-            worksheet = PtrXl.get_worksheet_by_namet(version + " " + GF.filename)
-        except:
-            worksheet = PtrXl.add_worksheet(version + " " + GF.filename)
+            worksheet = PtrXl.add_worksheet(worksheet_name)
+        except AttributeError:
+            print("You have the worksheet open. Close it and try again")
+            worksheet = PtrXl.add_worksheet(worksheet_name)
         row = 1
 
         for table in pointer_tables:

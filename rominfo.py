@@ -4,6 +4,8 @@
 
 import os
 from collections import OrderedDict
+from pointer_info import POINTER_DISAMBIGUATION, POINTERS_TO_REASSIGN
+from appareden.asm import FD_EDITS
 
 SRC_DISK = os.path.join('original', 'Appareden (UPDATED).HDI')
 #SRC_CD_DISK = os.path.join('original_cd', 'Appareden (CD-UPDATED).hdi')
@@ -90,6 +92,19 @@ portrait_characters = ['幻斗', 'ベニマル', 'ゴエモン', '宿屋の主�
                        ]
 """
 
+class Rominfo:
+    def __init__(self, file_blocks, pointer_constant, dict_location, pointer_tables,
+                 compression_dictionary, pointer_disambiguation, pointers_to_reassign,
+                 asm_edits):
+        self.file_blocks = file_blocks
+        self.pointer_constant = pointer_constant
+        self.dict_location = dict_location
+        self.pointer_tables = pointer_tables
+        self.compression_dictionary = compression_dictionary
+        self.pointer_disambiguation = pointer_disambiguation
+        self.pointers_to_reassign = pointers_to_reassign
+        self.asm_edits = asm_edits
+
 FILE_BLOCKS = {
     'ENDING.EXE': [(0x64bb, 0x6512), ],  # memory error texts
     'NEKORUN.EXE': [(0xa840, 0xa8aa),   # error text + scene text
@@ -129,7 +144,7 @@ FILE_BLOCKS = {
                    (0x3ee4, 0x4547), ],   # names, menus, things"
     'ORTITLE.EXE': [(0x3ec0, 0x3ee0),   # null pointer msgs
                     (0x3f48, 0x407b),   # main menus
-                    (0x407b, 0x4104),   # release dates?
+                    (0x407b, 0x4105),   # release dates?
                     (0x5000, 0x501a), ],   # memory error"
     'SFIGHT.EXE': [(0xd090, 0xd135),   # null pointer msgs
                    (0xd4ea, 0xd586),   # names and things
@@ -366,3 +381,7 @@ ITEM_NAME_CATEGORIES = [
     'Equipment (Left) Name',
     'Equipment (Right) Name'
 ]
+
+FdRom = Rominfo(FILE_BLOCKS, POINTER_CONSTANT, DICT_LOCATION, POINTER_TABLES,
+                COMPRESSION_DICTIONARY, POINTER_DISAMBIGUATION,
+                POINTERS_TO_REASSIGN, FD_EDITS)

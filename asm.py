@@ -166,3 +166,61 @@ ORBTL_CODE = [BTL_DICT_END_CHECK, BTL_DICT_START_CHECK, BTL_OVERLINE_CODE,
   
   Yep. They are just different enough that it'll need some debugging.  
 """
+
+# Those control codes as bytes.
+B_CONTROL_CODES = {
+  b'w': b'}',
+  b'c': b'$',
+  b'n': b'/'
+}
+
+FD_EDITS = {
+    # ORFIELD
+    'ORFIELD.EXE': [
+        (0x151b7, B_CONTROL_CODES[b'w']),         # w = "}"
+        (0x15b0f, B_CONTROL_CODES[b'w']),         # w = "}"
+        (0x15b99, B_CONTROL_CODES[b'w']),         # w = "}"
+
+        (0x15519, B_CONTROL_CODES[b'n']),         # n = "/"
+        (0x15528, B_CONTROL_CODES[b'n']),         # n = "/"
+        (0x155df, B_CONTROL_CODES[b'n']),         # n = "/"
+        (0x155ee, B_CONTROL_CODES[b'n']),         # n = "/"
+        (0x15b1d, B_CONTROL_CODES[b'n']),         # n = "/"
+        (0x15b5f, B_CONTROL_CODES[b'n']),         # n = "/"
+
+        (0x15b16, B_CONTROL_CODES[b'c']),         # c = "$"
+        (0x15b6c, B_CONTROL_CODES[b'c']),         # c = "$"
+        (0x2551b, B_CONTROL_CODES[b'c']),         # c = "$"
+
+        (0x1ab14, b'\xb2'),                       # Ailment buffer fix
+
+        (0x8c0b, b''.join(ORFIELD_CODE))          # Text handling code
+    ],
+
+    'ORBTL.EXE': [
+       (0x3647, b''.join(ORBTL_CODE)),
+    ]
+}
+
+CD_EDITS = {
+    'ORFIELD.EXE': [
+        (0x157c9, B_CONTROL_CODES[b'w']),
+        (0x1612b, B_CONTROL_CODES[b'w']),
+        (0x161b5, B_CONTROL_CODES[b'w']),
+
+        (0x15b2b, B_CONTROL_CODES[b'n']),
+        (0x15b3a, B_CONTROL_CODES[b'n']),
+        (0x15bf1, B_CONTROL_CODES[b'n']),
+        (0x15c00, B_CONTROL_CODES[b'n']),
+        (0x16139, B_CONTROL_CODES[b'n']),
+        (0x1617b, B_CONTROL_CODES[b'n']),
+
+        (0x16132, B_CONTROL_CODES[b'c']),
+        (0x16188, B_CONTROL_CODES[b'c']),
+        (0x25b49, B_CONTROL_CODES[b'c']),
+
+        (0x1b141, b'\xb2'),
+    ],
+
+
+}

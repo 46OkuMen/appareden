@@ -5,9 +5,10 @@
 import os
 import rominfo
 import pointer_info
+from appareden.asm import CD_EDITS
 
-SRC_DISK = os.path.join('original_CD', 'Appareden (CD-UPDATED).HDI')
-DEST_DISK = os.path.join('patched_CD', 'Appareden (CD-UPDATED).HDI')
+CD_SRC_DISK = os.path.join('original_CD', 'Appareden (CD-UPDATED).HDI')
+CD_DEST_DISK = os.path.join('patched_CD', 'Appareden (CD-UPDATED).HDI')
 
 DUMP_XLS_PATH = 'appareden_sys_dump.xlsx'
 POINTER_XLS_PATH = 'appareden_pointer_dump.xlsx'
@@ -35,25 +36,31 @@ def orbtl_fd_to_cd(n):
         return n - 1442
 
 FILE_BLOCKS = {
-    'ORFIELD.EXE': [(0x26740, 0x267b6),
-                    (0x26988, 0x26a64),
-                    (0x26c84, 0x26dbd),
-                    (0x26e35, 0x26e45),
-                    (0x26e9b, 0x26f95),
-                    (0x27051, 0x270d6),
-                    (0x2716e, 0x27204),
-                    (0x2745c, 0x27563),
-                    (0x277d3, 0x27b9e),
-                    (0x27c33, 0x27c45),
-                    (0x27c54, 0x27c6d),
-                    (0x2868a, 0x28da7),
-                    (0x28f94, 0x29667),
-                    (0x29667, 0x29704),
-                    (0x2a900, 0x2d28c),
-                    (0x2d668, 0x2da0c),
-                    (0x2e0ba, 0x2ecd8),
-                    (0x2eff8, 0x2f0cb),
-                    (0x2f193, 0x2f55a)],
+    'ORFIELD.EXE': [
+        (0x26740, 0x267b6),
+        (0x26988, 0x26a64),
+        (0x26c84, 0x26dbd),
+        (0x26e35, 0x26e45),
+        (0x26e9b, 0x26f95),
+        (0x27051, 0x270d6),
+        (0x2716e, 0x27204),
+        (0x2745c, 0x27563),
+        (0x277d3, 0x27b9e),
+        (0x27c33, 0x27c45),
+        (0x27c54, 0x27c6d),
+        (0x2868a, 0x28da7),
+        (0x28f94, 0x29667),
+        (0x29667, 0x29704),
+        (0x2a900, 0x2d28c),
+        (0x2d668, 0x2da0c),
+        (0x2e0ba, 0x2ecd8),
+        (0x2eff8, 0x2f0cb),
+        (0x2f193, 0x2f55a)
+    ],
+    'ORTITLE.EXE': [
+        (0x414c, 0x4294),
+        (0x4294, 0x431e),
+    ],
     'ORBTL.EXE': [],
 }
 
@@ -72,9 +79,9 @@ POINTER_CONSTANT = {
 
 # Tables are (start, stop, stride) tuples.
 POINTER_TABLES = {
-    #'ORTITLE.EXE': [
-    #    (0x3ee4, 0x3f16, 2),
-    #],
+    'ORTITLE.EXE': [
+        (0x40e4, 0x4116, 2),
+    ],
     'ORBTL.EXE': [
         (0x25364, 0x25388, 2),    # done
         (0x2619e, 0x261a2, 2),    # done
@@ -91,7 +98,6 @@ POINTER_TABLES = {
         (0x2b0bc, 0x2b1fe, 0x28), # done
         (0x2b224, 0x2cd07, 0x28), # done
     ],
-    'SFIGHT.EXE': [],
     'ORFIELD.EXE': [
         (0x266c8, 0x266dc, 2),    # done
         (0x26982, 0x26988, 2),    # done
@@ -114,7 +120,22 @@ POINTER_TABLES = {
     ]
 }
 
+DICT_LOCATION = {
+    'ORFIELD.EXE': None,
+    'ORBTL.EXE': None
+}
+
+COMPRESSION_DICTIONARY = {
+    'ORFIELD.EXE': {
+
+    },
+    'ORBTL.EXE': {
+
+    }
+}
+
 POINTER_DISAMBIGUATION  = {
+    # ORFIELD.EXE
     0x27527: 0x16ef7,
     0x2752c: 0x16f06,
     0x27818: 0x176a0,
@@ -143,3 +164,7 @@ for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORFIELD.EXE']:
 
 for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORBTL.EXE']:
     POINTERS_TO_REASSIGN = (orbtl_fd_to_cd(src), orbtl_fd_to_cd(dest))
+
+CdRom = rominfo.Rominfo(FILE_BLOCKS, POINTER_CONSTANT, DICT_LOCATION, POINTER_TABLES,
+                        COMPRESSION_DICTIONARY, POINTER_DISAMBIGUATION,
+                        POINTERS_TO_REASSIGN, CD_EDITS)
