@@ -178,6 +178,7 @@ def reinsert(version):
                     for cc in CONTROL_CODES:
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
+                    t.english = t.english.replace(b'[o]', b'o\x7e')
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
@@ -487,7 +488,7 @@ def reinsert(version):
         TargetAp.insert(os.path.join(DEST_DIR, o), path_in_disk='TGL/OR')
 
 if __name__ == '__main__':
-    #reinsert('FD')
+    reinsert('FD')
     reinsert('CD')
     table = results_table()
     write_table_to_readme(table)
