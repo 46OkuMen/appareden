@@ -163,6 +163,10 @@ def properly_space_waits(s):
         Need to add (n-1) spaces after or before every WAIT,
         where n = the number of lowercase words that preceded it on the same line.
     """
+    # No longer necessary after removing Shadoff compression
+    return s
+
+    """
     result = ''
     wait_segments = s.split('[WAIT')
     if len(wait_segments) <= 1:
@@ -181,3 +185,4 @@ def properly_space_waits(s):
                 else:
                     result += l + '[LN]'
     return result
+    """

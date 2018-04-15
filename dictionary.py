@@ -55,6 +55,7 @@ for filename in DICTIONARY_FILES:
 
     ctrl_codes = OrderedDict()
 
+
     # Tertiary sort to get consistent results: alphabetical sort
     words = list((sorted(words.items(), key=lambda x: x[0])))
     # Secondary sort, sort it by the length of the word
@@ -62,19 +63,22 @@ for filename in DICTIONARY_FILES:
     #print(words)
     # Primary sort, sort by frequency
     candidates = list(reversed(sorted(words, key=lambda x: x[1])))
-    #print(candidates)
-    if filename in SHADOFF_COMPRESSED_EXES:
-        dictstring = b'^Restore ^Pill[00]'
-        cursor = 14
-    else:
-        dictstring = b'Restore Pill[00]'
-        cursor = 13
-    for c in candidates[:100]:
+    candidates = [c for c in candidates if c[1] > 1]
+    print(candidates)
+    dictstring = b'Restore Pill[00]'
+    cursor = 13
+    for c in candidates[:1000]:
         upper_present, lower_present = False, False
         if c[0].capitalize() in ctrl_codes and filename in SHADOFF_COMPRESSED_EXES:
             continue
-        if c[0] != b'[BLANK]' and c[0].strip(b'~') != b'':
-            if len(dictstring.replace(b'[ff]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 3893:
+        if b'\x82n' in c[0]:
+            continue
+        if b'.' in c[0]:
+            continue
+        if b'[00]' in c[0]:
+            continue
+        if c[0] != b'[BLANK]' and c[0].strip(b'~').strip(b'[00]') != b'':
+            if len(dictstring.replace(b'[ee]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 3500:
                 print("Couldn't fit %s next" % c[0])
                 break
 
@@ -91,7 +95,7 @@ for filename in DICTIONARY_FILES:
                     cursor += 1
                     
                 dictstring += c[0].capitalize()
-                dictstring += b'[ff]'
+                dictstring += b'[ee]'
 
                 ctrl_codes[c[0].capitalize()] = (cursor + 0xf000).to_bytes(2, byteorder='big')
                 cursor += len(c[0])
@@ -105,7 +109,7 @@ for filename in DICTIONARY_FILES:
                 print(cursor)
 
                 dictstring += c[0]
-                dictstring += b'[ff]'
+                dictstring += b'[ee]'
 
 
 

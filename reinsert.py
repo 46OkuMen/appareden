@@ -7,7 +7,7 @@ import os
 from math import floor
 
 from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SRC_DIR, DEST_DIR, CONTROL_CODES, B_CONTROL_CODES, WAITS
-from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, DICT_LOCATION, ITEM_NAME_CATEGORIES
+from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, ITEM_NAME_CATEGORIES
 from appareden.rominfo import FdRom
 from appareden.cd_rominfo import CdRom, CD_SRC_DISK, CD_DEST_DISK, CD_SRC_DIR, CD_DEST_DIR
 from appareden.utils import shadoff_compress, replace_control_codes
@@ -111,8 +111,8 @@ def final_overflow_length(o, translations):
             jp = jp.replace(cc, CONTROL_CODES[cc])
             en = en.replace(cc, CONTROL_CODES[cc])
 
-        if filename in SHADOFF_COMPRESSED_EXES:
-            en = shadoff_compress(en)
+        #if filename in SHADOFF_COMPRESSED_EXES:
+        #    en = shadoff_compress(en)
         for cc in FdRom.compression_dictionary[filename]:
             en = en.replace(cc, FdRom.compression_dictionary[filename][cc])
 
@@ -153,6 +153,9 @@ def reinsert(version):
             reassignments = Rom.pointers_to_reassign[filename]
             for src, dest in reassignments:
                 #print(hex(src), hex(dest))
+                if src not in gamefile.pointers or dest not in gamefile.pointers:
+                    print("Skipping this one: %s, %s" % (hex(src), hex(dest)))
+                    continue
                 assert src in gamefile.pointers
                 assert dest in gamefile.pointers
                 diff = dest - src
@@ -178,8 +181,8 @@ def reinsert(version):
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
-                if filename != 'ENDING.MSG':
-                    t.english = shadoff_compress(t.english)
+                #if filename != 'ENDING.MSG':
+                #    t.english = shadoff_compress(t.english)
 
                 try:
                     i = gamefile.filestring.index(t.japanese)
@@ -238,12 +241,12 @@ def reinsert(version):
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-                    if filename in SHADOFF_COMPRESSED_EXES:
-                        t.english = shadoff_compress(t.english)
-                    if t.location != DICT_LOCATION[filename]:
+                    #if filename in SHADOFF_COMPRESSED_EXES:
+                    #    t.english = shadoff_compress(t.english)
+                    if t.location != Rom.dictionary_location[filename]:
+                        if t.category == "Don't Compress":
+                            pass
                         if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
-                            print("Not compressing %s" % t.location)
-                            #input()
                             pass
                         else:
                             for cc in Rom.compression_dictionary[filename]:
@@ -269,8 +272,6 @@ def reinsert(version):
                     if this_string_end >= block.stop and not overflowing:
                         overflowing = True
                         overflow_start = i
-                        #overflow_original_location = t.location
-                        #print("It's overflowing starting with string %s" % t)
 
                         overflowlets.append(t.location - block.start + diff)
                         overflowlet_original_locations.append(t.location)
@@ -401,8 +402,8 @@ def reinsert(version):
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
-                    if filename in SHADOFF_COMPRESSED_EXES:
-                        t.english = shadoff_compress(t.english)
+                    #if filename in SHADOFF_COMPRESSED_EXES:
+                    #    t.english = shadoff_compress(t.english)
 
                     # Don't dictionary compress item names in ORFIELD.EXE.
                     if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
@@ -486,7 +487,7 @@ def reinsert(version):
         TargetAp.insert(os.path.join(DEST_DIR, o), path_in_disk='TGL/OR')
 
 if __name__ == '__main__':
-    reinsert('FD')
+    #reinsert('FD')
     reinsert('CD')
     table = results_table()
     write_table_to_readme(table)

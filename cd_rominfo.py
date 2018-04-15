@@ -124,23 +124,17 @@ POINTER_TABLES = {
     ]
 }
 
-DICT_LOCATION = {
-    'ORFIELD.EXE': None,
-    'ORBTL.EXE': None
+DICTIONARY_LOCATION = {
+    'ORFIELD.EXE': 0x2a900,
+    'ORBTL.EXE': 0x29796,
+    'ORTITLE.EXE': None
 }
 
-COMPRESSION_DICTIONARY = {
-    'ORFIELD.EXE': OrderedDict([
-        (b'~', b' '),
-        (b'[BLANK]', b''),
-    ]),
-    'ORBTL.EXE': OrderedDict([
-        (b'~', b' '),
-        (b'[BLANK]', b''),
-    ]),
+# "  What will you do?" is at ESI=77c,  (0x26ce9).
+# ESI = 0 at 0x2656d.
+# So, dictionary at 0x2a900 is ESI=4393.
 
-    'ORTITLE.EXE': {},
-}
+COMPRESSION_DICTIONARY = rominfo.COMPRESSION_DICTIONARY
 
 POINTER_DISAMBIGUATION  = {
     # ORFIELD.EXE
@@ -167,7 +161,14 @@ POINTER_DISAMBIGUATION  = {
     0x26eee: 0x138d0,
     0x26ef9: 0x138f1,
     0x28d35: 0x1c93a,
-    0x2f532: 0x2421e
+    0x2f532: 0x2421e,
+
+    # ORBTL
+    0x25540: 0xcf2a,
+    0x2555c: 0xcf77,
+    0x25586: 0xd26e,
+    0x255ac: 0xd53a,
+    0x255b7: 0xd655,
 }
 
 POINTERS_TO_REASSIGN = {
@@ -177,11 +178,11 @@ POINTERS_TO_REASSIGN = {
 
 
 for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORFIELD.EXE']:
-    POINTERS_TO_REASSIGN = (orfield_fd_to_cd(src), orfield_fd_to_cd(dest))
+    POINTERS_TO_REASSIGN['ORFIELD.EXE'].append((orfield_fd_to_cd(src), orfield_fd_to_cd(dest)))
 
 for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORBTL.EXE']:
-    POINTERS_TO_REASSIGN = (orbtl_fd_to_cd(src), orbtl_fd_to_cd(dest))
+    POINTERS_TO_REASSIGN['ORBTL.EXE'].append((orbtl_fd_to_cd(src), orbtl_fd_to_cd(dest)))
 
-CdRom = rominfo.Rominfo(FILE_BLOCKS, POINTER_CONSTANT, DICT_LOCATION, POINTER_TABLES,
+CdRom = rominfo.Rominfo(FILE_BLOCKS, POINTER_CONSTANT, DICTIONARY_LOCATION, POINTER_TABLES,
                         COMPRESSION_DICTIONARY, POINTER_DISAMBIGUATION,
                         POINTERS_TO_REASSIGN, CD_EDITS)
