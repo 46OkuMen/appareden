@@ -124,7 +124,7 @@ FILE_BLOCKS = {
                     (0x2718d, 0x27557),
                     (0x275f0, 0x275fe),  # death msg
                     (0x2760e, 0x27627),  # ship msg
-                    (0x28044, 0x28761),  # Equip screen         # TODO: Equipment slots can go after this
+                    (0x28044, 0x28851),  # Equip screen
                     (0x2894e, 0x29021), # Equipment and such
                     (0x29021, 0x290be),  # menu msgs
                     (0x2a2ba, 0x2cc46),  # items and weapons
@@ -733,11 +733,11 @@ COMPRESSION_DICTIONARY = {
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
 
 MAX_LENGTH = {
-    'Item Name': 21,
+    'Item Name': 20,
     'Item Description': 43,
     'Equipment (Left) Name': 18,
     'Equipment (Right) Name': 17,
-    'Equipment Description': 43,   # Not verified
+    'Equipment Description': 33,   # Not verified
     'Zen Name': 19,
     'Zen Description': 36,   # 40 in battle screen
 

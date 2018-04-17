@@ -5,47 +5,10 @@
 
 ## Reinserter
 * Can't reinsert ō yet, complains about illegal multibyte sequence.
-* Better typesetting accounting for control codes.
-* [WAIT] control codes sometimes overwrite a few characters ago.
-	* What's the pattern? It's only some of them...
-		* Not related to the WAIT number. Is it an even/odd positioning thing?
-		* "A hot bath,[WAIT2]ya know?"     -> "A hot bathya know?"
-		* "A hot bath,[WAIT3]ya know?"     -> "A hot bathya know?"
-		* "A hot bath, [WAIT2]ya know?"    -> "A hot bathya know?"
-		* "A hot bath,  [WAIT2]ya know?"   -> "A hot bath,ya konw?"
-		* "A hot bath,  [WAIT2]Ya know?"   -> "A hot bath,Ya know?"
-		* "A hot bath,[WAIT2] ya know?"    -> "A hot bath,ya know?"
-		* "A hot bath, [WAIT2] ya know?"   -> "A hot bath,ya know?"
-		* "A hot bath,[WAIT2]  ya know?"   -> "A hot bath, ya know?" (correct)
-		* "A hot bath,  [WAIT2]ya know?"   -> "A hot bath, ya know?" (correct)
-		* "A hot bath,  [WAIT2]  ya know?" -> "A hot bath,   ya know?"
-		* "A hot bath, [WAIT2]  ya know?"  -> "A hot bath, ya know?"
-		* "A hot bath, [WAIT2][WAIT2]ya know?" -> "A hot bath, ya know?" (correct)
-		* "Khh.... [WAIT6]Orochi!! Strike." -> "Khh.... Orochi! Strike."
-		* "Khh....[WAIT2]orochi!! Strike."  -> "Khh.... orochi! Strike."
-		* "Khh....[WAIT2]  Orochi!! Strike." -> "Khh....   Orochi! Strike."
-		* "Khh....  [WAIT2]Orochi!! Strike." -> "Khh....   Orochi! Strike."
-		* "Khh.... [WAIT2] Orochi!! Strike." -> "Khh....   Orochi! Strike."
-		* "A hot bath can't be beat, [WAIT2] Orochi!! Strike." -> "A hot bath can't be beOrochi!! Strike."
-		* "A hot bath can't be beat,[WAIT2]Orochi!! Strike."   -> "A hot bath can't be bOrochi!! Strike."
-		* "A hot bath bath can't be beat,[WAIT2]Orochi!! Strike." -> "A hot bath bath can't be Orochi!! Strike."
-		* "A beat,[WAIT2]Orochi!! Strike." -> "A beat,Orochi!! Strike."
-		* "A[WAIT2]Orochi!! Strike." -> "A Orochi!! Strike."
-		* "a[WAIT2]Orochi!! Strike." -> "aOrochi!! Strike."
-		* "a[WAIT2]a[WAIT2]a[WAIT2]" -> "aaa"
-
-
-	* First theory: [WAIT2] should always have two spaces at the end of it, and other spaces should be removed?
-		* Non-initial ones don't need any more spaces.
-	* Second theory: [WAIT] has an internal counter of 1 space, which decreases by 1 for every (lowercase?) word before it.
-		* So, need to count the lowercase-starting words preceding the WAIT and on the same line, then add n-1 spaces before/after the WAIT.
-	* Whatever I'm doing now, it has one too many spaces usually?
 
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## Typesetting
-* Fix the wait spaces
-	* Ah, these are broken again
 * Indent non-first lines after quotes
 * Extra-long names like Sacrosanct Dragon might need additional (4) spaces in front of each line.
 
@@ -57,13 +20,13 @@
 ## ORFIELD
 * State of the menus:
 	* Menu
+		* OK
 	* Character Status Select
 		* OK
 	* Status Screen
 		* OK
 	* Equipment Screen
-		* Buffer issues when equipping something 17 bytes long (Fingerless Gloves)
-			* (But those gloves are fine on the char status screen.)
+		* OK
 	* Item SCreen
 		* OK
 	* Zen Screen
@@ -77,35 +40,23 @@
 			* OK (Finally...)
 		* Exit
 	* Item Shop
-		* Max name length: ?
+		* Max name length: 20
 		* Max description length: 33
 			* Window expands in both directions when you lengthen the header. There must be some value of a center location, it'd be nice to adjust that
 	* Equipment Shop
 		* Max name length: 17
 		* Max description length: 36?
-		* Window is at maximum width
 	* Sell Items
-		* Spacing will be tricky.
-			* Issue: Rest of row gets pushed back 1 for every word (^) in the string.
-			* Issue: Rest of row gets pushed back 1 for every compressed letter in the string.
-				* Can I solve this by just not compressing any item/equipment name in ORFIELD?
-					* Descriptions (where the bulk of the text would be) can still be compressed. (No text after it)
-					* I can do this with the "Category" column.
+		* 
 	* Sell Equipment
+		* Alignment is a bit messed up with the "Gale" and "Moonlight" items. Try not compressing them? Or adding a space after them?
+			* Yeah, let's try not compressing them.
 
-
-* Equipment names need to be padded out to the max with spaces, or they'll leave garbage when you equip a shorter thing afterwards
-	* Item names too; alignment of the shop menus depends on it
-	* Won't be a terrible loss of space, since this can be done with the underscore control code and not the ~
-	* This needs to account for ^s too
+* Attack/Recovery/etc need to have the same length in the item shop, but should be different lengths in the Zen menu.
+	* Decouple the 
 
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
-
-* Where do the town names appear ingame? No sign of them so far
-	* Also, that's probably not all the locations in the game. Which points to them not being used
-
-* "Can't use that zen art" text is bugged, reads "tectionH"
 
 ## ORBTL
 
@@ -116,54 +67,9 @@
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
 	* Or just do those problem files manually.
 
-## Update Patch
-* See what was updated in the MSGs.
-	* Floppy:
-		* SCN05000
-			* Fixing some control codes
-		* SCN05103
-			* da -> de
-		* SCN06003
-			* Remove the random "7"
-		* SCN10502
-			* ?? (This file is just #e)
-		* SCN10900
-			* Some change to the demo text?
-		* ENDING
-			* Shi -> to
-	* CD:
-		* SCN12306
-			* Portrait 71011 -> 71001
-		* And all the ones in the Floppy
-
 ## CD Version
-* Need to re-map FILE_BLOCKS.
-	* Attempting to consolidate/finalize the list of blocks in original ORFIELD first.
-	* Also, this could just be set to all the FD blocks plus a certain offset?
-		* Yep.
-* Need to re-map POINTER_TABLES.
-	* Done.
-* Need to see if there are any new strings in ORBTL and ORFIELD.
-* Need to re-hack ORFIELD and ORBTL, with the text code as well as control codes.
-* Need to find the locations of every string. See find_cd_diffs.py
-	* They can probably be stored in a new column, "Offset (CD)".
-		* Done for ORFIELD and ORBTL.
-* What's with the crash during the first battle?
+* ORFIELD missing pointers for "Buy Items/Sell Items".
 
-## Cheat saves
-* Some more equipment in the inventory than are valid equipments
-* Some more items than are valid items
-	* The items "Heals10-20", "Revive dead", and "Sandals?" have glitched status windows
-* Can't finish a battle, Harry just levels up forever
-	* Whoops, it's not forever, just a lot of times (up to lv72)
-	* Lv72 Harry file now in Journal Go
-
-## Determined to be non-issues
-* Ship item displays "Ocean Dragon Pill" as its error message when you're in a town
-	* It does so in the Japanese version too
-	* Ocean Dragon Pill might be an unused item. You never use a non-airship from your inventory
-* The "Good" string that's used everywhere is accidentally lowercase, so the pointer is probably off by one.
-	* Workaround, changed to "OK"
 
 ## How to fix things
 * Window bleeding

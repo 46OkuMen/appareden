@@ -233,11 +233,11 @@ POINTERS_TO_REASSIGN = {
             (0x28c7e, 0x2894e),
             (0x28c97, 0x2894e),
 
-            (0x29033, 0x28caf),   # Attack
-            (0x2903a, 0x28ca8),   # Recovery
-            (0x29041, 0x28cc4),   # Special
-            (0x2904a, 0x28cb6),   # Support
-            (0x29051, 0x28cbd),   # Movement
+            #(0x29033, 0x28caf),   # Attack
+            #(0x2903a, 0x28ca8),   # Recovery
+            #(0x29041, 0x28cc4),   # Special
+            #(0x2904a, 0x28cb6),   # Support
+            #(0x29051, 0x28cbd),   # Movement
 
             (0x28fea, 0x26ee1),   # &f
             (0x2907c, 0x26ee1),
