@@ -247,7 +247,10 @@ COMPRESSION_DICTIONARY = {
 'ORFIELD.EXE': OrderedDict([
     (b'~', b' '),
     (b'[BLANK]', b''),
-    (b'[o]', b'o\x7e\x7c'),
+    (b'[O]', b'O\x7e'),
+    (b'[o]', b'o\x7e'),
+    (b'[U]', b'U\x7e'),
+    (b'[u]', b'u\x7e'),
 
     (b'the', b'\xf0\r'),
     (b'with', b'\xf0\x11'),
@@ -543,7 +546,10 @@ COMPRESSION_DICTIONARY = {
 'ORBTL.EXE': OrderedDict([
     (b'~', b' '),
     (b'[BLANK]', b''),
+    (b'[O]', b'O\x7e'),
     (b'[o]', b'o\x7e'),
+    (b'[U]', b'U\x7e'),
+    (b'[u]', b'u\x7e'),
 
     (b'the', b'\xf0\r'),
     (b'with', b'\xf0\x11'),
@@ -734,10 +740,10 @@ WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
 
 MAX_LENGTH = {
     'Item Name': 20,
-    'Item Description': 43,
-    'Equipment (Left) Name': 18,
-    'Equipment (Right) Name': 17,
-    'Equipment Description': 33,   # Not verified
+    'Item Description': 43,          # Not finalized. Can be longer if I can move the window
+    'Equipment (Left) Name': 18,     # hand, head, boot
+    'Equipment (Right) Name': 17,    # body, arms, acc
+    'Equipment Description': 33,     # Not finalized. Can be longer if I can move the window
     'Zen Name': 19,
     'Zen Description': 36,   # 40 in battle screen
 
