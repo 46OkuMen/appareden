@@ -25,11 +25,13 @@ for f in filenames:
             continue
 
         english =row[en_col].value
+        display_english = english
+        # TDOO: Account for control codes [o], [|], etc. in display_english.
         category = row[category_col].value
 
         if category:
             maxlen = MAX_LENGTH[category]
-            if len(english) > maxlen:
+            if len(display_english) > maxlen:
                 print(english, "is too long")
                 while len(english) >= maxlen:
                     english = english[:-1]

@@ -108,7 +108,7 @@ POINTER_TABLES = {
         (0x26c34, 0x26c84, 2),    # done
         (0x27028, 0x27040, 2),    # done
         (0x270d6, 0x270dc, 2),    # done
-        (0x270e6, 0x270f0, 2),    # done
+        (0x270e6, 0x27113, 2),    # done     # other problems
         (0x27116, 0x27140, 2),    # done
         (0x2714a, 0x2716c, 2),    # done
         (0x28546, 0x285d6, 2),    # done
@@ -162,6 +162,9 @@ POINTER_DISAMBIGUATION  = {
     0x26ef9: 0x138f1,
     0x28d35: 0x1c93a,
     0x2f532: 0x2421e,
+    0x2d970: 0x22acc,
+    0x2d9a4: 0x22ca9,
+    0x2f408: 0x23d39,
 
     # ORBTL
     0x25540: 0xcf2a,

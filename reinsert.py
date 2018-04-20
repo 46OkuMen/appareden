@@ -6,7 +6,7 @@
 import os
 from math import floor
 
-from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SRC_DIR, DEST_DIR, CONTROL_CODES, B_CONTROL_CODES, WAITS
+from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SRC_DIR, DEST_DIR, CONTROL_CODES, B_CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, WAITS
 from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, ITEM_NAME_CATEGORIES
 from appareden.rominfo import FdRom
 from appareden.cd_rominfo import CdRom, CD_SRC_DISK, CD_DEST_DISK, CD_SRC_DIR, CD_DEST_DIR
@@ -244,6 +244,9 @@ def reinsert(version):
 
                     #if filename in SHADOFF_COMPRESSED_EXES:
                     #    t.english = shadoff_compress(t.english)
+                    for cc in POSTPROCESSING_CONTROL_CODES[filename]:
+                        t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
+
                     if t.location != Rom.dictionary_location[filename]:
                         if t.category == "Don't Compress":
                             pass

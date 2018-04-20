@@ -47,4 +47,4 @@ python gem.py
 Now, `patched/Appareden.hdi` should be playable in English as far as you've translated.
 
 ### License
-This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.s.s.
+This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.s.s.s.

@@ -232,8 +232,31 @@ CONTROL_CODES = {
   b'[BLANK]': b'',
   b'[ee]': bytes([0xee]),
   b'[sysLN]': b'\r\n',
-  #b'(': b'\x81\x69',
-  #b')': b'\x81\x6a',
+}
+
+# Convert these after all text processing.
+POSTPROCESSING_CONTROL_CODES = {
+
+    'ORFIELD.EXE': OrderedDict([
+        (b'~', b' '),
+        (b'[BLANK]', b''),
+        (b'[O]', b'O\x7e'),
+        (b'[o]', b'o\x7e'),
+        (b'[U]', b'U\x7e'),
+        (b'[u]', b'u\x7e'),
+        (b'[|]', b'\x7c'),
+    ]),
+
+    'ORBTL.EXE': OrderedDict([
+        (b'~', b' '),
+        (b'[BLANK]', b''),
+        (b'[O]', b'O\x7e'),
+        (b'[o]', b'o\x7e'),
+        (b'[U]', b'U\x7e'),
+        (b'[u]', b'u\x7e'),
+    ]),
+
+    'ORTITLE.EXE': [],
 }
 
 DICTIONARY_LOCATION = {
@@ -734,13 +757,14 @@ COMPRESSION_DICTIONARY = {
 
 'ORTITLE.EXE': [],
 }
-# TODO: Caps are a little tricky here... ^ always breaks the compressed word since it adds 20 to ef.
 
 WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
 
 MAX_LENGTH = {
-    'Item Name': 20,
-    'Item Description': 43,          # Not finalized. Can be longer if I can move the window
+    'Item Name': 19,
+    'Item Description': 28,          # Not finalized. Can be longer if I can move the window
+    # TODO: Item and Equipment descriptions can be longer if they are not in any shops.
+        # Need to figure out what's in every shop...
     'Equipment (Left) Name': 18,     # hand, head, boot
     'Equipment (Right) Name': 17,    # body, arms, acc
     'Equipment Description': 33,     # Not finalized. Can be longer if I can move the window
