@@ -119,7 +119,7 @@ FILE_BLOCKS = {
                     (0x267ef, 0x267ff),
                     (0x26855, 0x2694f),  # ui texts
                     (0x26a0b, 0x26a8f),  # places
-                    (0x26b28, 0x26bbd),            # TODO: Item shop slots can go here
+                    (0x26b28, 0x26bbe),            # TODO: Item shop slots can go here
                     (0x26e16, 0x26f1d),            # TODO: Armor shop slots can go here
                     (0x2718d, 0x27557),
                     (0x275f0, 0x275fe),  # death msg

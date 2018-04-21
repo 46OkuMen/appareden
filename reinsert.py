@@ -250,7 +250,7 @@ def reinsert(version):
                     if t.location != Rom.dictionary_location[filename]:
                         if t.category == "Don't Compress":
                             pass
-                        if filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
+                        elif filename == 'ORFIELD.EXE' and t.category in ITEM_NAME_CATEGORIES:
                             pass
                         else:
                             for cc in Rom.compression_dictionary[filename]:
