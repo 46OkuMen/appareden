@@ -6,10 +6,9 @@
 
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
-* "Don't Compress" category still compresses.
-
 ## ASM
 * Any way to get the outlines/shadows back for fullwidth text? I wondeer what important thing I got rid of.
+	* Ah, it was the two 5717/512d calls I assumed were duplicates. Added to FD, still need it in CD.
 * Clean up and split up the CD code, and write everything into an ASM file for easy reference.
 
 ## Typesetting
@@ -44,18 +43,15 @@
 		* Auto-Battle
 			* OK
 		* Order Change
-			* Buffer problems again
+			* OK (Permanently)
 		* Exit
 			* OK
-	* Item Shop
-		* Max name length: 20
-		* Max description length: 33
-			* Window expands in both directions when you lengthen the header. There must be some value of a center location, it'd be nice to adjust that
-	* Equipment Shop
-		* Max name length: 17
-		* Max description length: 36?
+	* Buy Items
+		* Window a bit too small for my tastes
+	* Buy Equipment
+		* OK
 	* Sell Items
-		* ?
+		* OK
 	* Sell Equipment
 		* Alignment is a bit messed up with the "Gale" and "Moonlight" items. Try not compressing them? Or adding a space after them?
 			* Yeah, let's try not compressing them.

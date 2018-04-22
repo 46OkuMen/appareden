@@ -2,19 +2,13 @@
     Per-file ASM edits for Appareden.
 """
 
-# Let's store the dictionary at 0x4b2ea, which is at seg 46f4:43aa.
-# So, put 43aa in ESI
-# mov si, 43aa = be aa 43
-
-# Dict is going to be stuff like The[ff]as[ff]
-
-FULLWIDTH_CHECK = b'\x81\x74\x34\x3C\x82\x74\x30'
+FULLWIDTH_CHECK = b'\x81\x74\x2b\x3C\x82\x74\x27'
 """
 fullwidthCheck:
     cmp al, 82     ; just the 82 part of the instruction
-    jz 5842        ; fullwidthOriginal
+    jz 5839        ; fullwidthOriginal
     cmp al, 81
-    jz 5842
+    jz 5839
 """
 
 """
@@ -73,36 +67,9 @@ overlineEndCode:
 
 """
 
-NOPS = b'\x90'*9
+#NOPS = b'\x90'*9
 
-
-
-#SKIP_SHADOFF =     b'\x3C\x5E\x75\x03\xAC\x74\x30'
-#BTL_SKIP_SHADOFF = b'\x90\x90\x90\x90\x90\x90\x90'
-"""
-skipCompression:
-    cmp al, 5e
-    jnz 5824       ; shadoffCompression
-    lodsb
-    jz 5865        ; halfwidthOriginal
-"""
-
-#SHADOFF_COMPRESSION =     b'\x3C\x5A\x7F\x2c\x3C\x40\x7C\x28\x47\x04\x20\xEB\x23'
-#BTL_SHADOFF_COMPRESSION = b'\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\xeb\x14'
-"""
-shadoffCompression:
-    cmp al, 5a
-    jg 5865        ; halfwidthOriginal
-    cmp al, 40
-    jl 5865        ; halfwidthOriginal
-    inc di
-    add al, 20
-    jmp 5865       ; halfwidthOriginal
-"""
-
-# 8a e0 ac e8 af fe 8b d0 e8 11 ff 56 e8 4a fe e8 c7 fe be 14 04 e8 d7 fe a1 d6 03 e8 bb fe be d8 03 e8 cb fe 5e 47 47 eb 24
-#                                                                                  v Begins to be overwritten
-FULLWIDTH_ORIGINAL = b'\x8A\xE0\xAC\xE8\xAB\xFE\x8B\xD0\xE8\x0D\xFF\x56\xE8\x46\xFE\x90\xB4\x09\xA1\xD6\x03\xE8\xBd\xFE\xBE\xD8\x03\xE8\xCd\xFE\x5E\x47\x47\xEB\x26'
+FULLWIDTH_ORIGINAL = b'\x8a\xe0\xac\xe8\xb4\xfe\x8b\xd0\xe8\x16\xff\x56\xe8\x4f\xfe\xe8\xcc\xfe\xbe\x14\x04\xe8\xdc\xfe\x90\x90\x90\xa1\xd6\x03\xe8\xbd\xfe\xbe\xd8\x03\xe8\xcd\xfe\x5e\x47\x47\xeb\x26'
 """
 fullwidthOriginal:
     mov ah, al
@@ -113,12 +80,12 @@ fullwidthOriginal:
     push si
     call 5697
     call 5717
-    mov si, 0414
-    call 572d
+    mov si, 0414      <- Makes shadows look good
+    call 572d         <- in charge of outlines/shadows
     mov ax, [03d6]
     call 5717
     mov si, 03d8
-    call 572d
+    call 572d        <- Makes text appear on top of shadows
     pop si
     inc di
     inc di
@@ -152,7 +119,7 @@ halfwidthOriginal:
 #                HALFWIDTH_ORIGINAL]
 
 ORFIELD_CODE = [FULLWIDTH_CHECK, DICT_END_CHECK, DICT_START_CHECK, OVERLINE_CODE, OVERLINE_END_CODE,
-                NOPS, FULLWIDTH_ORIGINAL, HALFWIDTH_ORIGINAL]
+                FULLWIDTH_ORIGINAL, HALFWIDTH_ORIGINAL]
 
 #ORBTL_CODE = [BTL_DICT_END_CHECK, BTL_DICT_START_CHECK, BTL_OVERLINE_CODE,
 #              BTL_SKIP_SHADOFF, BTL_SHADOFF_COMPRESSION]
