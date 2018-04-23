@@ -762,12 +762,14 @@ WAITS = [b'}01', b'}02', b'}03', b'}04', b'}05', b'}06',]
 
 MAX_LENGTH = {
     'Item Name': 19,
-    'Item Description': 28,          # Not finalized. Can be longer if I can move the window
-    # TODO: Item and Equipment descriptions can be longer if they are not in any shops.
-        # Need to figure out what's in every shop...
+    'Item Description (Buyable)': 28,          # Not finalized. Can be longer if I can move the window (28)
+    'Item Description': 28,                    # (Going to assume every item is buyable until I determine otherwise)
+    'Item Description (Non-Buyable)': 43,       # ??
     'Equipment (Left) Name': 18,     # hand, head, boot
     'Equipment (Right) Name': 17,    # body, arms, acc
-    'Equipment Description': 33,     # Not finalized. Can be longer if I can move the window
+    'Equipment Description (Buyable)': 33,     # Not finalized. Can be longer if I can move the window (33)
+    'Equipment Description (Non-Buyable)': 46,  # ??
+    'Equipment Description': 33,
     'Zen Name': 19,
     'Zen Description': 36,   # 40 in battle screen
 

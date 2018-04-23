@@ -16,8 +16,8 @@ from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
 # TODO: Calculate these, don't hardcode them
-STRING_COUNTS = {'ORTITLE.EXE': 18,
-                 'ORFIELD.EXE': 1230,
+STRING_COUNTS = {'ORTITLE.EXE': 19,
+                 'ORFIELD.EXE': 1248,
                  'ORBTL.EXE': 782,
                  'Dialogue': 5592,
                  'Images': 37,
@@ -191,7 +191,8 @@ def reinsert(version):
                         print("That was before the previous one")
                     last_i = i
                     gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
-                    REINSERTED_STRING_COUNTS['Dialogue'] += 1
+                    if Rom == FdRom:
+                        REINSERTED_STRING_COUNTS['Dialogue'] += 1
                 except ValueError:
                     print()
                     print("Couldn't find this one:", t.japanese, t.english)
@@ -287,7 +288,8 @@ def reinsert(version):
                     # Can't do translations if it's overflowing, Those will come later
                     if not not_translated:
                         block.blockstring = block.blockstring[:i] + t.english + block.blockstring[i+len(t.japanese):]
-                        REINSERTED_STRING_COUNTS[filename] += 1
+                        if Rom == FdRom:
+                            REINSERTED_STRING_COUNTS[filename] += 1
 
                     gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
                     previous_text_offset = t.location
