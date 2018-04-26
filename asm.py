@@ -21,7 +21,6 @@ dictEndCheck
 """
 
 DICT_END_CHECK =     b'\x3C\xee\x75\x04\x5E\xAC\xEB\xC4'
-#BTL_DICT_END_CHECK = b'\x3c\xff\x75\x04\x5e\xac\xeb\xcc'
 
 """
 dictStartCheck:
@@ -37,20 +36,6 @@ dictStartCheck:
 """
 
 DICT_START_CHECK =     b'\x3C\xef\x76\x0d\x56\x88\xc4\xac\x80\xe4\x0f\xbe\xaa\x43\x01\xc6\xac'
-#BTL_DICT_START_CHECK = b'\x3c\xfe\x75\x0a\x56\xac\xbe\x18\x4c\x30\xe4\x01\xc6\xac'
-
-
-#SPACE_COMPRESSION = b'\x3c\x5f\x75\x06\xac\x30\xe4\x01\xc7\xac'
-"""
-spaceCompression:
-    cmp al, 5f
-    jnz 5818      ; overlineCode
-    lodsb
-    xor ah, ah
-    add di, ax
-    lodsb
-
-"""
 
 OVERLINE_CODE =     b'\x3C\x7E\x75\x01\x4F'
 #BTL_OVERLINE_CODE = b'\x3c\x7e\x75\x01\x4f'
@@ -64,7 +49,12 @@ overlineCode:
 OVERLINE_END_CODE = b'\x3c\x7c\x75\x31\x47\x30\xc0\xeb\x2c'
 """
 overlineEndCode:
-
+    cmp al, 7c
+    jnz 585f       ; halfwidthOriginal
+    inc di
+    xor al, al
+    jmp 585f       ; halfwidthOriginal
+    nop
 """
 
 #NOPS = b'\x90'*9
@@ -114,39 +104,68 @@ halfwidthOriginal:
     jmp 57da
 """
 
-#ORFIELD_CODE = [FULLWIDTH_CHECK, SPACE_COMPRESSION, OVERLINE_CODE, 
-#                SKIP_COMPRESSION, SHADOFF_COMPRESSION, NOPS, FULLWIDTH_ORIGINAL, 
-#                HALFWIDTH_ORIGINAL]
-
 ORFIELD_CODE = [FULLWIDTH_CHECK, DICT_END_CHECK, DICT_START_CHECK, OVERLINE_CODE, OVERLINE_END_CODE,
                 FULLWIDTH_ORIGINAL, HALFWIDTH_ORIGINAL]
 
-#ORBTL_CODE = [BTL_DICT_END_CHECK, BTL_DICT_START_CHECK, BTL_OVERLINE_CODE,
-#              BTL_SKIP_SHADOFF, BTL_SHADOFF_COMPRESSION]
 
-# ORBTL dictionary should go at offset 0x29d38, which is at seg 2443:5908?
-    # Nope. Ingame it's at 4b568.
-    # Oh right, it loads from DS. It's at seg 4695:4c18.
+CD_FULLWIDTH_CHECK = b"\x3C\x81\x74\x2C\x3C\x82\x74\x28"
+"""
+cd_fullwidthCheck:
+    cmp al, 81
+    jz 5834      ; cd_fullwidthOriginal
+    cmp al, 82
+    jz 5834      ; cd_fullwidthOriginal
+"""
 
-
+CD_DICT_END_CHECK = b'\x3C\xEE\x75\x04\x5E\xAC\xEB\xc4'
 
 """
-    ORFIELD FD: 0x8c0b. 81 72 3f 3c a0 72 08 3c e0 72 37 3c fe 73 33 8a e0 ac e8 d3 fe 3c 09 72 04 3c 0b 76 30 8b d0 e8 2d ff 56 e8 66 fe 33 c0 e8 e1 fe be 14 04 e8 f1 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d b4 09 3c a0 72 03 05 80 00 86 e0 8b d0 e8 fd fe 56 be d8 03 b9 14 00 46 80 24 80 46 c6 04 00 46 e2 f5 e8 25 fe 33 c0 e8 a0 fe be 14 04 e8 c6 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d b4 09 3c a0 72 03 05 80 00 86 e0 8b d0 e8 fd fe 56 be d8
-    ORFIELD CD: 0x8e05. 81 72 3f 3c a0 72 08 3c e0 72 37 3c fe 73 33 8a e0 ac e8 d3 fe 3c 09 72 04 3c 0b 76 30 8b d0 e8 2d ff 56 e8 66 fe 33 c0 e8 e1 fe be 14 04 e8 f1 fe a1 d6 03 e8 d5 fe be d8 03 e8 e5 fe 5e 47 47 eb 8d b4 09 3c a0 72 03 05 80 00 86 e0 8b d0 e8 fd fe 56 be d8 03 b9 14 00 46 80 24 80 46 c6 04 00 46 e2 f5 e8 25 fe 33 c0 e8 a0 fe be 14 04 e8 c6 fe a1 d6 03 e8 94 fe be d8 03 e8 ba fe 5e 47 e9 4c ff 32 c0 e6 7c 1f 5f 5e 5d
-  
-  Yep. They are just different enough that it'll need some debugging.  
+cd_dictEndCheck:
+    cmp al, ee
+    jnz 5814      ; dict_start_check
+    pop si
+    lodsb
+    jmp 57d8      ; beginning of text handling loop, 'lodsb'
 """
-#                  b'\x3C\x81\x74\x2C\x3C\x82\x74\x28\x3C\xEE\x75\x04\x5E\xAC\xEB\xD1\x3C\xEF\x76\x0D\x56\x88\xC4\xAC\x80\xE4\x0F\xBE\xD0\x43\x01\xC6\xAC\x3C\x7E\x75\x01\x4F\xEB\x33\x90\x90\x90\x90\x90\x90\x90\x90\x8A\xE0\xAC\xE8\xB3\xFE\x8B\xD0\xE8\x15\xFF\x56\xE8\x4E\xFE\x33\xC0\xE8\xC9\xFE\xBE\x14\x04\xE8\xD9\xFE\xA1\xD6\x03\xE8\xBD\xFE\xBE\xD8\x03\xE8\xCD\xFE\x5E\x47\x47\xEB\x26\xB4\x09\x86\xE0\x8B\xD0\xE8\xEC\xFE\x56\xE8\x25\xFE\x33\xC0\xE8\xA0\xFE\xBE\x14\x04\xE8\xC6\xFE\xA1\xD6\x03\xE8\x94\xFE\xBE\xD8\x03\xE8\xBA\xFE\x5E\x47\xE9\x4c'
-CD_ORFIELD_CODE = b'\x3C\x81\x74\x2C\x3C\x82\x74\x28\x3C\xEE\x75\x04\x5E\xAC\xEB\xc4\x3C\xEF\x76\x0D\x56\x88\xC4\xAC\x80\xE4\x0F\xBE\xD0\x43\x01\xC6\xAC\x3C\x7E\x75\x01\x4F\x3c\x7c\x75\x31\x47\x30\xc0\xeb\x2c\x90\x8A\xE0\xAC\xE8\xB3\xFE\x8B\xD0\xE8\x15\xFF\x56\xE8\x4E\xFE\x33\xC0\xE8\xC9\xFE\xBE\x14\x04\xE8\xD9\xFE\xA1\xD6\x03\xE8\xBD\xFE\xBE\xD8\x03\xE8\xCD\xFE\x5E\x47\x47\xEB\x26\xB4\x09\x86\xE0\x8B\xD0\xE8\xEC\xFE\x56\xE8\x25\xFE\x33\xC0\xE8\xA0\xFE\xBE\x14\x04\xE8\xC6\xFE\xA1\xD6\x03\xE8\x94\xFE\xBE\xD8\x03\xE8\xBA\xFE\x5E\x47\xE9\x4c'
-CD_ORBTL_CODE = b'\x3C\xEE\x75\x04\x5E\xAC\xEB\xCC\x3C\xEF\x76\x0d\x56\x88\xc4\xAC\x80\xE4\x0F\xBE\x66\x44\x01\xC6\xAC\x3C\x7E\x75\x01\x4F\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\xEB\x14'
 
-ORBTL_CODE = CD_ORBTL_CODE.replace(b'\xBE\x66\x44', b'\xBE\x18\x4c')
+CD_DICT_START_CHECK = b'\x3C\xEF\x76\x0D\x56\x88\xC4\xAC\x80\xE4\x0F\xBE\xD0\x43\x01\xC6\xAC'
 
 """
-    cd_fullwidthOriginal = 5834
-    cd_halfwidthOriginal = 585f
+cd_dictStartCheck:
+    cmp al, ef
+    jbe 5825
+    push si
+    mov ah, al
+    lodsb
+    and ah, 0f
+    mov si, 43d0
+    add si, ax
+    lodsb
 """
-#29796 - 25330 = 4466
+
+CD_OVERLINE_CODE = b'\x3C\x7E\x75\x01\x4F'
+
+"""
+cd_overlineCode:
+    cmp al, 7e
+    jnz 582a
+    dec di
+"""
+
+CD_OVERLINE_END_CODE = b'\x3c\x7c\x75\x31\x47\x30\xc0\xeb\x2c\x90'
+
+"""
+cd_overlineEndCode:
+    cmp al, 7c
+    jnz 585f       ; cd_halfwidthOriginal
+    inc di
+    xor al, al
+    jmp 585f       ; cd_halfwidthOriginal
+    nop
+"""
+
+CD_FULLWIDTH_ORIGINAL = b'\x8A\xE0\xAC\xE8\xB3\xFE\x8B\xD0\xE8\x15\xFF\x56\xE8\x4E\xFE\x33\xC0\xE8\xC9\xFE\xBE\x14\x04\xE8\xD9\xFE\xA1\xD6\x03\xE8\xBD\xFE\xBE\xD8\x03\xE8\xCD\xFE\x5E\x47\x47\xEB\x26'
+
 """
 cd_fullwidthOriginal:
     mov ah, al
@@ -167,8 +186,10 @@ cd_fullwidthOriginal:
     pop si
     inc di
     inc di
-    jmp 57d4     ; actually 5885, which is 'jmp 57d4' in halfwidth original
+    jmp 5885
 """
+
+CD_HALFWIDTH_ORIGINAL = b'\xB4\x09\x86\xE0\x8B\xD0\xE8\xEC\xFE\x56\xE8\x25\xFE\x33\xC0\xE8\xA0\xFE\xBE\x14\x04\xE8\xC6\xFE\xA1\xD6\x03\xE8\x94\xFE\xBE\xD8\x03\xE8\xBA\xFE\x5E\x47\xE9\x4c'
 
 """
 cd_halfwidthOriginal:
@@ -188,8 +209,16 @@ cd_halfwidthOriginal:
     call 573d
     pop si
     inc di
-    jmp 57d4
+    jmp 57d4    ; actually 5885, which is 'jmp 57d4'
 """
+
+CD_ORFIELD_CODE = [CD_FULLWIDTH_CHECK, CD_DICT_END_CHECK, CD_DICT_START_CHECK, CD_OVERLINE_CODE,
+                   CD_OVERLINE_END_CODE, CD_FULLWIDTH_ORIGINAL, CD_HALFWIDTH_ORIGINAL]
+
+CD_ORBTL_CODE = b'\x3C\xEE\x75\x04\x5E\xAC\xEB\xCC\x3C\xEF\x76\x0d\x56\x88\xc4\xAC\x80\xE4\x0F\xBE\x66\x44\x01\xC6\xAC\x3C\x7E\x75\x01\x4F\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\xEB\x14'
+
+ORBTL_CODE = CD_ORBTL_CODE.replace(b'\xBE\x66\x44', b'\xBE\x18\x4c')
+
 
 # Those control codes as bytes.
 B_CONTROL_CODES = {
@@ -246,7 +275,7 @@ CD_EDITS = {
 
         (0x1b141, b'\xb2'),
 
-        (0x8e04, CD_ORFIELD_CODE)
+        (0x8e04, b''.join(CD_ORFIELD_CODE))
     ],
 
     'ORBTL.EXE': [

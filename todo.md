@@ -7,9 +7,7 @@
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## ASM
-* Any way to get the outlines/shadows back for fullwidth text? I wondeer what important thing I got rid of.
-	* Ah, it was the two 5717/512d calls I assumed were duplicates. Added to FD, still need it in CD.
-* Clean up and split up the CD code, and write everything into an ASM file for easy reference.
+* Clean up and split FD/CD ORBTL ASM.
 
 ## Typesetting
 * Indent non-first lines after quotes
@@ -61,16 +59,6 @@
 
 * Need to figure out what's in every shop so I can give some item descriptions more room.
 	* See docs/shops.md.
-
-* Item shop menu is acting differently in FD and CD versions.
-	* String in FD: 0x4c long
-	* String in CD: 0x4d long
-	* FD: 620 pixels wide
-	* CD: 573 pixels wide
-	* FD with empty header: 239 pixels wide
-	* CD with empty header: 254 pixels wide
-	* Compare the code around FD-ORFIELD "900b" and CD-ORFIELD "b60b", which are referneces to the item shop header pointer.
-		* Any mentions of values around 239-254?
 
 ## ORBTL
 * Zen art types are too long, use shorter ones from ORFIELD
