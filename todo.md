@@ -1,9 +1,6 @@
 # Appareden TODOs
 
 ## Reinserter
-* Can't reinsert ō yet, complains about illegal multibyte sequence.
-	* Workaround for now is replacing them with [o], [O], [u], and [U]...
-
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## ASM
