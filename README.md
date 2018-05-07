@@ -8,12 +8,12 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 
 | Segment      | %    |  Strings            |
 | -------------|-----:|:-------------------:|
-| ORTITLE.EXE  | 94%   | (18 / 19)           |
-| ORFIELD.EXE  | 107%  | (1336 / 1248)       |
-| ORBTL.EXE    | 101%  | (797 / 782)         |
+| ORTITLE.EXE  | 100%  | (18 / 18)           |
+| ORFIELD.EXE  | 99%   | (1325 / 1336)       |
+| ORBTL.EXE    | 98%   | (784 / 797)         |
 | Dialogue     | 100%  | (5592 / 5592)       |
-| Images       | 5%    | (2 / 37)            |
-| **Total**    |**100%**|  **(7745 / 7678)**  |
+| Images       | 2%    | (1 / 37)            |
+| **Total**    |**99%**|  **(7720 / 7780)**  |
 
 ### Requirements
 * A working hard-disk dump of *Appareden*
@@ -47,4 +47,4 @@ python gem.py
 Now, `patched/Appareden.hdi` should be playable in English as far as you've translated.
 
 ### License
-This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.s.s.s..
+This project is licensed under the Creative Commons A-NC License - see the [LICENSE.md](LICENSE.md) file for details.s.s.s...

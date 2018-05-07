@@ -12,6 +12,12 @@ from romtools.dump import DumpExcel
 Dump = DumpExcel(DUMP_XLS_PATH)
 
 filenames = ['ORFIELD.EXE', 'ORBTL.EXE']
+
+def safe_print(s):
+    if '\u014d' in s:
+        s = s.replace('\u014d', '[o]')
+    print(s)
+
 for f in filenames:
     rownum = 0
     worksheet = Dump.workbook.get_sheet_by_name(f)
@@ -32,13 +38,16 @@ for f in filenames:
         if category:
             maxlen = MAX_LENGTH[category]
             if len(display_english) > maxlen:
-                print(english, "is too long")
+                try:
+                    print(english, "is too long")
+                except UnicodeEncodeError:
+                    print("Something with an overline in it is too long")
                 while len(english) >= maxlen:
                     english = english[:-1]
                 english += "."
-                print(english)
+                #print(english)
                 row[en_col].value = english
-                print()
+                #print()
 
 
 # More experimental: Typesetting MSG strings
@@ -54,6 +63,8 @@ jp_col = header_values.index('Japanese')
 portrait_col = header_values.index('Portrait')
 en_typeset_col = header_values.index('English (Typeset)')
 file_col = header_values.index('File')
+
+overflows = 0
 
 for m in msgs_to_typeset:
     #portrait_window_counter = 0
@@ -78,16 +89,8 @@ for m in msgs_to_typeset:
             # the next line needs to be typeset more aggressively due to less screen space.
 
             if english.count('"') == 0 and english.count("(") == 0:
-                # Nametag
                 nametag = True
                 #print("-"*57)
-
-            #for name in portrait_characters:
-            #    #if name.encode('shift-jis') in t.japanese:
-            #    if name == japanese.replace('[LN]', '').replace('　', ''):
-            #        portrait_window_counter = 2
-            #        break
-
 
             # For Haley's lines
             english = sjis_punctuate(english)
@@ -108,9 +111,9 @@ for m in msgs_to_typeset:
                     e = e.replace(w, '')
 
                 if portrait:
-                    print ("%s%s" % (" "*20, e))
+                    safe_print ("%s%s" % (" "*20, e))
                 else:
-                    print(e)
+                    safe_print(e)
                 line_count -= 1
 
             if not nametag:
@@ -123,6 +126,7 @@ for m in msgs_to_typeset:
 
                 if line_count < 0:
                     print("^ This window overflows")
+                    overflows += 1
 
     
             english = properly_space_waits(english)
@@ -130,3 +134,5 @@ for m in msgs_to_typeset:
             row[en_typeset_col].value = english
 
 Dump.workbook.save(DUMP_XLS_PATH)
+
+print("%s windows overflow" % overflows)

@@ -5,6 +5,7 @@
 
 ## Typesetting
 * Indent non-first lines after quotes?
+	* Mostly working, fix the stragglers now.
 * Extra-long names like Sacrosanct Dragon might need additional (4) spaces in front of each line.
 * Need to split windows that overflow using [SPLIT].
 

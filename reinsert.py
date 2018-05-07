@@ -16,9 +16,9 @@ from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
 # TODO: Calculate these, don't hardcode them
-STRING_COUNTS = {'ORTITLE.EXE': 19,
-                 'ORFIELD.EXE': 1248,
-                 'ORBTL.EXE': 782,
+STRING_COUNTS = {'ORTITLE.EXE': 18,
+                 'ORFIELD.EXE': 1336,
+                 'ORBTL.EXE': 797,
                  'Dialogue': 5592,
                  'Images': 37,
                  }
@@ -500,7 +500,8 @@ def reinsert(version):
     for g in gems_to_reinsert:
         # This doesn't encode any of them, just inserts what's already there
         TargetAp.insert(os.path.join(DEST_DIR, g), path_in_disk='TGL/OR')
-        REINSERTED_STRING_COUNTS['Images'] += 1
+        if version == 'FD':
+            REINSERTED_STRING_COUNTS['Images'] += 1
 
     for o in other_files_to_reinsert:
         TargetAp.insert(os.path.join(DEST_DIR, o), path_in_disk='TGL/OR')

@@ -17,8 +17,10 @@ def effective_length(s):
 
 def typeset(s, width=37):
 
+    s_safe = s.replace('\u014d', '[o]')
+
     # SJIS lines, like Haley's, must be split by SJIS spaces
-    sjis = s.encode('shift-jis')
+    sjis = s_safe.encode('shift-jis')
 
     if effective_length(sjis) <= width:
         return s
@@ -32,20 +34,27 @@ def typeset(s, width=37):
 
     words = sjis.split(space)
 
-    #words = s.split(' ')
-
     lines = []
 
     #print(words)
     while words:
         #print(words)
-        line = b''
+        if len(lines) > 0:
+            line = b' '
+        else:
+            line = b''
         while effective_length(line) <= width and words:
             if effective_length(line + words[0] + space) > width:
                 break
             line += words.pop(0) + space
 
         line = line.rstrip()
+
+        # Remove initial spaces from first line.
+        # Not sure if a good idea?
+        if len(lines) == 0:
+            line = line.lstrip()
+
         if len(lines) > 0:
             if line == lines[-1]:
                 print("That line is the same as the last one. Continuing onward")
@@ -54,11 +63,14 @@ def typeset(s, width=37):
 
 
     lines = [l.decode('shift-jis') for l in lines]
+    lines = [l.replace('[o]', '\u014d') for l in lines]
 
     return '[LN]'.join(lines)
 
 def sjis_punctuate(s):
-    sjis = s.encode('shift-jis')
+    s_safe = s.replace('\u014d', '[o]')
+
+    sjis = s_safe.encode('shift-jis')
     if b'\x82' not in sjis:
         return s
 
@@ -66,7 +78,9 @@ def sjis_punctuate(s):
     sjis = sjis.replace(b' ', b'\x81\x40')
     #s = s.replace(b'"', b'\x81\x56')
 
-    s = sjis.decode('shift-jis')
+    s_safe = sjis.decode('shift-jis')
+
+    s = s_safe.replace('[o]', '\u014d')
 
     return s
 
