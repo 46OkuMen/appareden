@@ -185,13 +185,12 @@ def reinsert(version):
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
-                #if filename != 'ENDING.MSG':
-                #    t.english = shadoff_compress(t.english)
                 # Update the last nametag
                 if is_nametag(t.english):
-                    print(t.english.strip(b"/"))
+                    #print(t.english.strip(b"/"))
                     last_nametag = t.english.strip(b'/')
 
+                # Handle the SPLIT control coddes
                 if b'[SPLIT]' in t.english:
                     t.english = t.english.replace(b'[SPLIT]', b'/>k@%s/' % last_nametag, 1)
                     #print(t.english)
