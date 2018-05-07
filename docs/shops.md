@@ -15,7 +15,7 @@
 * Unsigned Katana
 * Tanegashima
 
-# Asahibari (?)
+# Abashiri
 ## Item
 * Restore Pill
 * Six Recovery Pill
@@ -148,11 +148,79 @@
 * Michizane's Talisman
 * Mirror of Evil
 
-# Shrine Maiden city
+# Naniwa
+## Weapons
+* Ralba Claws
+* Saint Bell
+* Gatling Tanegashima
+
+## Items
+* Life Pill
+* Six Recovery Pill
+* Onikoroshi Sake
+* Idaten Sandals
+* Moonlight Flute
+* Ushimitsu's Flute
+
+## Armor
+* Sakura Kimono
+* Bamboo Happi
+* Marishiten Charm
+
+## Weapons 2
+* Dotaniki
+* Bizen Osafune
+* Tanegashima Govt
+
+## Armor 2
+* Face Mask
+* Pierce
+* Gontoretto
+
+## Rarities
+* Silver Silk
+* Poisonous Powder
+* Frog Oil
+* Kasumi's Perfume
+* SPirit Charm
+* Gold Dragon Fang
+* Black Dragon Fang
+
+# Kobe?
+## Weapons
+* Gatling Tanegashima
+* Tanegashima Magnum
+* 3-Section Staff
+* Ivory Ring
+
+## Items
+* Life Pill
+* Blue Dragon Fang
+* Kasumi's Perfume
+* Seal Removal Pill
+
+## Equipment
+* Face Mask
+* Gontoretto
+* Leather Tabi
+* Chinese Dress
+* Bamboo Happi
+* Peony Kimono
+
+# Izumo Grand Shrine
 * No shops
 
 # Dragonian Village
 * No shops
+
+# Echigo
+* No shops
+
+# Dragonia
+* ???
+
+# Haley's Christian city (Nagasaki?)
+* ??? (Probably rosaries/Bibles and stuff)
 
 # List of Cities
 * Hokkaido
@@ -162,11 +230,21 @@
 * Honshuu
 	* Hirosaki (Port where you arrive)
 	* Shikai Village
+	* Town to the south of Shikai village
+		* People complain about bureaucrats
+		* One guy came from Mito
+		* "All of the tradesmen in Hida are amazingly skilled. Wonder if they've got some sort of secret?"
 	* Edo
 	* Mito
+	* Echigo
+	* Nikkou
+	* Naniwa
 	* Owari (?)
 	* Kishuuu (?)
 	* Hida (?)
-	* Nikko
+	* Kobe? (West of Naniwa)
+	* Shrine Maiden Village = Izumo Grand Shrine?
 	* Majin (Hidden village)
 * Nagasaki
+
+* Three Mobile Fortresses: Mito, Kishuu, and Owari

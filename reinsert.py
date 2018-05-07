@@ -120,10 +120,12 @@ def final_overflow_length(o, translations):
         final_overflow_len += this_diff
     return final_overflow_len
 
+def is_nametag(s):
+    return s.count(b"/") == 1 and s.strip(b"/") == s.split(b'/')[0]
+
 def reinsert(version):
 
     if version == 'FD':
-
         OriginalAp = Disk(SRC_DISK, dump_excel=Dump, pointer_excel=PtrDump)
         TargetAp = Disk(DEST_DISK)
         src_dir = SRC_DIR
@@ -171,6 +173,7 @@ def reinsert(version):
                 gamefile.filestring = replace_control_codes(gamefile.filestring)
 
             last_i = 0
+            last_nametag = b''
 
             for t in Dump.get_translations(filename, sheet_name='MSG'):
 
@@ -178,12 +181,21 @@ def reinsert(version):
                     for cc in CONTROL_CODES:
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
-                    t.english = t.english.replace(b'[o]', b'o\x7e')
+                    #t.english = t.english.replace(b'[o]', b'o\x7e')
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
                 #if filename != 'ENDING.MSG':
                 #    t.english = shadoff_compress(t.english)
+                # Update the last nametag
+                if is_nametag(t.english):
+                    print(t.english.strip(b"/"))
+                    last_nametag = t.english.strip(b'/')
+
+                if b'[SPLIT]' in t.english:
+                    t.english = t.english.replace(b'[SPLIT]', b'/>k@%s/' % last_nametag, 1)
+                    #print(t.english)
+                    #input()
 
                 try:
                     i = gamefile.filestring.index(t.japanese)
@@ -191,6 +203,8 @@ def reinsert(version):
                         print("That was before the previous one")
                     last_i = i
                     gamefile.filestring = gamefile.filestring.replace(t.japanese, t.english, 1)
+
+
                     if Rom == FdRom:
                         REINSERTED_STRING_COUNTS['Dialogue'] += 1
                 except ValueError:
