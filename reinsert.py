@@ -17,8 +17,8 @@ from romtools.dump import DumpExcel, PointerExcel
 
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
-                 'ORFIELD.EXE': 1336,
-                 'ORBTL.EXE': 797,
+                 'ORFIELD.EXE': 1325,
+                 'ORBTL.EXE': 784,
                  'Dialogue': 5592,
                  'Images': 37,
                  }
@@ -40,7 +40,8 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 #FILES_TO_REINSERT = ['ORFIELD.EXE',]
 
-gems_to_reinsert = ['ORTITLE.GEM']
+gems_to_reinsert = ['ORTITLE.GEM', 'GENTO.GEM', 'BENIMARU.GEM', 'GOEMON.GEM', 'TAMAMO.GEM',
+                    'HEILEE.GEM', 'SHIROU.GEM', 'HANZOU.GEM', 'GENNAI.GEM', 'OUGI.GEM']
 other_files_to_reinsert = ['SCN12307.COD',]
 
 FILES_TO_REINSERT += MSGS

@@ -55,5 +55,10 @@
 
 ## Graphics
 * Get some placeholder graphics for the highest priority ones - nametags and Ougi?
+* Which MAP tileset goes to which place?
+	* 00 - Sapporo? (This has a severe palette issue, only some colors are rendering)
+	* 03A - Hakodate/Hirosaki (whichever one is in Hokkaido)
+	* 01A/01B - Ashabari
+	* 
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
 	* Or just do those problem files manually.
