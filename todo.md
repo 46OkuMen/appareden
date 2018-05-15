@@ -53,6 +53,9 @@
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
 
+## ORBTL
+* Overline characters not showing up correctly?
+
 ## Graphics
 * Get some placeholder graphics for the highest priority ones - nametags and Ougi?
 * Which MAP tileset goes to which place?

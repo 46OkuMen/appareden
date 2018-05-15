@@ -254,6 +254,7 @@ POSTPROCESSING_CONTROL_CODES = {
         (b'[o]', b'o\x7e'),
         (b'[U]', b'U\x7e'),
         (b'[u]', b'u\x7e'),
+        #(b'[|]', b'\x7c'),
     ]),
 
     'ORTITLE.EXE': [],

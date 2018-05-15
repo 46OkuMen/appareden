@@ -2,12 +2,13 @@
     Text typesetter for Appareden.
     Truncates ORFIELD text that exceeds limits.
 """
-from appareden.rominfo import CONTROL_CODES, B_CONTROL_CODES, WAITS, MSGS
+from appareden.rominfo import WAITS, MSGS
 from appareden.rominfo import DUMP_XLS_PATH, MAX_LENGTH
-from appareden.utils import typeset, replace_control_codes, sjis_punctuate, properly_space_waits, WAITS
-from appareden.reinsert import MSGS
+from appareden.utils import typeset, sjis_punctuate, properly_space_waits, WAITS
+#from appareden.reinsert import MSGS
 
 from romtools.dump import DumpExcel
+from openpyxl.styles import PatternFill
 
 Dump = DumpExcel(DUMP_XLS_PATH)
 
@@ -126,6 +127,7 @@ for m in msgs_to_typeset:
 
                 if line_count < 0:
                     print("^ This window overflows")
+                    row[en_col].fill = PatternFill(fgColor="c6ffe2", fill_type='solid')
                     overflows += 1
 
     

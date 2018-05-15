@@ -6,11 +6,11 @@
 import os
 from math import floor
 
-from appareden.rominfo import PROGRESS_ROWS, MSGS, SHADOFF_COMPRESSED_EXES, SRC_DISK, DEST_DISK, SRC_DIR, DEST_DIR, CONTROL_CODES, B_CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, WAITS
+from appareden.rominfo import PROGRESS_ROWS, MSGS, SRC_DISK, DEST_DISK, SRC_DIR, DEST_DIR, CONTROL_CODES, B_CONTROL_CODES, POSTPROCESSING_CONTROL_CODES, WAITS
 from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, ITEM_NAME_CATEGORIES
 from appareden.rominfo import FdRom
 from appareden.cd_rominfo import CdRom, CD_SRC_DISK, CD_DEST_DISK, CD_SRC_DIR, CD_DEST_DIR
-from appareden.utils import shadoff_compress, replace_control_codes
+from appareden.utils import replace_control_codes
 
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
