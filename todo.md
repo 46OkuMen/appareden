@@ -41,20 +41,16 @@
 		* Exit
 			* OK
 	* Buy Items
-		* Window a bit too small for my tastes
+		* Window a bit too small for my tastes, but basically OK
 	* Buy Equipment
 		* OK
 	* Sell Items
 		* OK
 	* Sell Equipment
-		* Alignment is a bit messed up with the "Gale" and "Moonlight" items. Try not compressing them? Or adding a space after them?
-			* Yeah, let's try not compressing them.
+		* OK
 
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
-
-## ORBTL
-* Overline characters not showing up correctly?
 
 ## Graphics
 * Get some placeholder graphics for the highest priority ones - nametags and Ougi?
