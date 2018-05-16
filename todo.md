@@ -1,7 +1,6 @@
 # Appareden TODOs
 
 ## Last TODOs before beta testing
-* Shorten Zen names and descriptions
 * Split overflowing dialogue windows
 * Translate the poems
 * Whatever placeholder images we want to put in there
@@ -86,6 +85,12 @@
 	* Or just do those problem files manually.
 * Might be worth some attempt at optimizing the GEM encoder a little more.
 	* Control code for alternating chains? 10101 etc
+
+## Voice Scenes
+* What to do??
+	* Don't dub them, please
+	* Put all the script text on the images?
+	* Also sub them for Youtube and link them in the readme??
 
 ## Pachy98 settings
 * Is the user going to use np2 FMGEN? If not sure, choose YES.
