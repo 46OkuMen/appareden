@@ -1,5 +1,11 @@
 # Appareden TODOs
 
+## Last TODOs before beta testing
+* Shorten Zen names and descriptions
+* Split overflowing dialogue windows
+* Translate the poems
+* Whatever placeholder images we want to put in there
+
 ## ASM
 * Clean up and split FD/CD ORBTL ASM.
 
@@ -52,12 +58,38 @@
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
 
+## ORBTL
+* Last party member's menu is a little wider than the rest?
+
 ## Graphics
 * Get some placeholder graphics for the highest priority ones - nametags and Ougi?
 * Which MAP tileset goes to which place?
-	* 00 - Sapporo? (This has a severe palette issue, only some colors are rendering)
-	* 03A - Hakodate/Hirosaki (whichever one is in Hokkaido)
+	* 00 - not sure where
+	* 00A - Sapporo, has palette issues
+		* Not palette, the palette is the same.
+		* The image renders properly when it's the title screen, is it interacting weirdly with some other image?
+		* Is it too large KB-wise? It's 89 KB, the rest are around 49-ish
+			* That looks like it.
+			* It loads properly in NP21/W with memory set to 16.6MB+. This can be a Pachy option.
 	* 01A/01B - Ashabari
-	* 
+	* 03A - Hakodate
+	* 06A - Hirosaki
+	* 10B - The unnamed city, memory issues (67kb)
+	* 11A - Mito?
+	* 12B - Hidden village and Dragonian Village, memory issues (70kb)
+	* 14A - Naniwa and Kobe?
+	* 16B - Nikkou and Izumo Grand Shrine
+	* 27A - ?
+	* 29B - Edo
+	* 32A - Ships
 * Need to figure out how larger SPZ files point to tiles beyond the 255th one.
 	* Or just do those problem files manually.
+* Might be worth some attempt at optimizing the GEM encoder a little more.
+	* Control code for alternating chains? 10101 etc
+
+## Pachy98 settings
+* Is the user going to use np2 FMGEN? If not sure, choose YES.
+	* If YES, insert SCN12307.COD. (Averts final boss crash)
+* Is the user going to have 16.6MB+? If not sure, choose NO.
+	* If YES, insert TMAP_00A.GEM. (Image edits in Sapporo, which is too big for standard np2 FMGEN builds)
+	* If YES, insert TMAP_12B.GEM. (Image edits in the hidden village)

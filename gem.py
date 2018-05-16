@@ -10,6 +10,7 @@ from bitstring import BitArray
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
+SHIP_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\xda\xcf\xff\x00'
 TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57\xE1\x76\x87\x29\xBC\x7C\xFF\xFF\xFF\x00'
 TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xa6\xaf\xff\x32\x33\x00'
                   # TODO: Why is this longer than the others??
@@ -48,6 +49,26 @@ MAP_PALETTE_RGB =    [(0x00, 0x00, 0x00),
                       (0x66, 0xcc, 0xdd),
                       (0xaa, 0x77, 0x55),
                       (0xff, 0xff, 0xff),]
+
+# TMAP_32A
+SHIP_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x33, 0x33),
+    (0x88, 0x44, 0x33),
+    (0xff, 0x44, 0x00),
+    (0xdd, 0x99, 0x44),
+    (0xff, 0xbb, 0x44),
+    (0xcc, 0xbb, 0xaa),
+    (0xff, 0xdd, 0x99),
+    (0x00, 0x33, 0x66),
+    (0x77, 0x77, 0x11),
+    (0x00, 0x77, 0xbb),
+    (0x88, 0x77, 0x66),
+    (0xcc, 0xcc, 0x33),
+    (0x66, 0xcc, 0xdd),
+    (0xaa, 0xcc, 0xdd),
+    (0xff, 0xff, 0xff)
+]
 
 TITLE_PALETTE_RGB = [(0x00, 0x00, 0x00),
                (0x11, 0x11, 0x11),
@@ -95,7 +116,9 @@ def get_closest_color_index(palette, rgb):
 
 
 NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE', 'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU']
-MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B', 'TMAP_03A', 'TMAP_06A',]
+MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B', 'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
+                      'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A', 'TMAP_29B', ]
+SHIP_PALETTE_IMAGES = ['TMAP_32A',]
 TITLE_PALETTE_IMAGES = ['ORTITLE',]
 TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A', 'TEFF_03A', 'TEFF_04A', 'TEFF_05A',
                        'TEFF_06A', 'TEFF_07A', 'TEF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_14A', 'TEFF_15A',
@@ -126,6 +149,10 @@ def encode(filename, dest_disk=DEST_DISK):
         print("Using map palette")
         palette_bytes = MAP_PALETTE
         palette_rgb = NAMETAG_PALETTE_RGB
+    elif just_filename in SHIP_PALETTE_IMAGES:
+        print("Using ship palette")
+        palette_bytes = SHIP_PALETTE
+        palette_rgb = SHIP_PALETTE_RGB
     elif just_filename in TITLE_PALETTE_IMAGES:
         print("Using title palette")
         palette_bytes = TITLE_PALETTE
@@ -375,6 +402,8 @@ def decode_spz(filename, image):
 
 if __name__ == '__main__':
     FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
+                       'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
+                       'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
                         'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png']
     for f in FILES_TO_ENCODE:
