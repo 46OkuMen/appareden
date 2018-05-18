@@ -61,7 +61,6 @@
 * Last party member's menu is a little wider than the rest?
 
 ## Graphics
-* Get some placeholder graphics for the highest priority ones - nametags and Ougi?
 * Which MAP tileset goes to which place?
 	* 00 - not sure where
 	* 00A - Sapporo, has palette issues
@@ -97,4 +96,5 @@
 	* If YES, insert SCN12307.COD. (Averts final boss crash)
 * Is the user going to have 16.6MB+? If not sure, choose NO.
 	* If YES, insert TMAP_00A.GEM. (Image edits in Sapporo, which is too big for standard np2 FMGEN builds)
+	* If YES, insert TMAP_10B.GEM. (Image edits in that one city I can't find the name of)
 	* If YES, insert TMAP_12B.GEM. (Image edits in the hidden village)

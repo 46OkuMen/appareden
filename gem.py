@@ -335,7 +335,7 @@ def write_spz(filename, n):
 
             f.write(b'\x14\x48')
             f.write(bottom_cursor.to_bytes(1, byteorder='little'))
-            bottom_cursor += 1
+            bottom_cursor += 1*8 # TODO: ????
 
     d = Disk(DEST_DISK)
     d.insert(spz_filename, path_in_disk='TGL/OR')
@@ -350,9 +350,18 @@ def get_tile(img, n):
     y = ((n*16) // width) * 16
 
     assert x < width
+    if y >= height:
+         y = 0
     assert y < height
 
-    print(n, x, y)
+    #$print(n, x, y)
+
+    rect = (x, y, x+16, y+16)
+
+    region = img.crop(rect)
+
+    return region
+
 
 
 def decode_spz(filename, image):
@@ -366,6 +375,8 @@ def decode_spz(filename, image):
 
     img = Image.open(image)
 
+    dest_img = Image.new("RGB", (5000, 5000), "white")
+
     sprite_offsets = []
     cursor = 0x20
     for x in range(n):
@@ -376,28 +387,69 @@ def decode_spz(filename, image):
 
     sprite_offsets.append(len(file_contents))
 
+    # Starting points of the output sprite in the output image
+    dest_x, dest_y = 0, 0
+
+    # Trying to understand how high/low these can go
+    tile_xs = []
+    tile_ys = []
+
     for i, s in enumerate(sprite_offsets):
-        print('')
+        dest_x = (i * 256) % 1280
+        dest_y = 256 + (i // 5) * 256
+        #print('')
+
+        #tile_constant = 0
+
         try:
             next_s = sprite_offsets[i+1]
         except IndexError:
             break
-        print(s, next_s)
+        #print(s, next_s)
         sprite_spec = file_contents[s:next_s]
         tile_n = sprite_spec[0]
         assert sprite_spec[1] == 0x14
         assert sprite_spec[2] == 0x13
         sprite_cursor = 3
+        print()
+        #previous_tile = 0
         for n in range(tile_n):
+
             this_tile = sprite_spec[sprite_cursor:sprite_cursor+3]
             sprite_cursor += 3
 
+            x_marker = int(this_tile[0])
+            y_marker = int(this_tile[1])
+            tile_marker = int(this_tile[2])
+
             for t in this_tile:
                 print(hex(t) + ' ', end='')
-            print()
 
-            # TODO: Do stuff with the tile.
-            get_tile(img, this_tile[2])
+            if y_marker % 4 == 0:
+                tile_constant = 0
+            elif y_marker % 4 == 1:
+                tile_constant = 256
+                y_marker -= 1
+            elif y_marker % 4 == 2:
+                tile_constant = 512
+                y_marker -= 2
+            else:
+                print("Weird tile Y here:", y_marker)
+
+            tile = get_tile(img, tile_marker + tile_constant)
+
+            print(tile_marker)
+
+            tile_xs.append(x_marker)
+            tile_ys.append(y_marker)
+
+            tile_x = (x_marker - 9) * 16
+            tile_y = (y_marker - 0x44) * 4
+
+            dest_img.paste(tile, (tile_x + dest_x, tile_y + dest_y))
+
+    dest_img.show()
+    dest_img.save(image_output_filename)
 
 
 if __name__ == '__main__':
@@ -406,13 +458,15 @@ if __name__ == '__main__':
                        'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
                         'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png']
-    for f in FILES_TO_ENCODE:
-        encode(f)
+    #for f in FILES_TO_ENCODE:
+    #    encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
     #write_spz('TEFF_00A.png', 6)
-    #decode_spz('SFCHR_99.SPZ', 'SFCHR_99.png')    # Much more complex
+    #decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
     #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
+    decode_spz('SFCHR_99.SPZ', 'SFCHR_99.png' )    # Much more complex
+    #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
 
 # TMAP00 is used: ??
