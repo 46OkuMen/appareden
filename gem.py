@@ -119,12 +119,10 @@ NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE', 'ME
 MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B', 'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
                       'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A', 'TMAP_29B', ]
 SHIP_PALETTE_IMAGES = ['TMAP_32A',]
-TITLE_PALETTE_IMAGES = ['ORTITLE',]
+TITLE_PALETTE_IMAGES = ['ORTITLE', 'GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ']
 TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A', 'TEFF_03A', 'TEFF_04A', 'TEFF_05A',
                        'TEFF_06A', 'TEFF_07A', 'TEF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_14A', 'TEFF_15A',
                        'TEFF_16A', 'TEFF_17A',]
-UNCLASSIFIED = ['GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ', 'CHAR_32A', 'NRCHR_99', 'SFCHR_99', 'SFFONT',
-                'SFMAP_A', 'SFMAP_B', 'TMAP_01B', 'TMAP_32A', 'XMAP_19']
 
 
 # Plane activation for each color in the palette.
@@ -375,28 +373,31 @@ def decode_spz(filename, image):
 
     img = Image.open(image)
 
-    dest_img = Image.new("RGB", (5000, 5000), "white")
+    SPRITESHEET_MAX_X = 1280
+    SPRITESHEET_MAX_Y = 4000
+
+    dest_img = Image.new("RGB", (SPRITESHEET_MAX_X, SPRITESHEET_MAX_Y), "white")
 
     sprite_offsets = []
     cursor = 0x20
     for x in range(n):
         loc = int.from_bytes(file_contents[cursor:cursor+2], byteorder='little')
         cursor += 2
-        print(loc)
+        #print(loc)
         sprite_offsets.append(loc)
 
     sprite_offsets.append(len(file_contents))
 
     # Starting points of the output sprite in the output image
-    dest_x, dest_y = 0, 0
+    dest_x, dest_y = 0, 64
 
     # Trying to understand how high/low these can go
     tile_xs = []
     tile_ys = []
 
     for i, s in enumerate(sprite_offsets):
-        dest_x = (i * 256) % 1280
-        dest_y = 256 + (i // 5) * 256
+        #dest_x = (i * 256) % 1280
+        #dest_y = 256 + (i // 5) * 256
         #print('')
 
         #tile_constant = 0
@@ -412,6 +413,7 @@ def decode_spz(filename, image):
         assert sprite_spec[2] == 0x13
         sprite_cursor = 3
         print()
+        sprite_width = 16
         #previous_tile = 0
         for n in range(tile_n):
 
@@ -422,8 +424,8 @@ def decode_spz(filename, image):
             y_marker = int(this_tile[1])
             tile_marker = int(this_tile[2])
 
-            for t in this_tile:
-                print(hex(t) + ' ', end='')
+            #for t in this_tile:
+            #    print(hex(t) + ' ', end='')
 
             if y_marker % 4 == 0:
                 tile_constant = 0
@@ -438,15 +440,28 @@ def decode_spz(filename, image):
 
             tile = get_tile(img, tile_marker + tile_constant)
 
-            print(tile_marker)
+            #print(tile_marker)
 
-            tile_xs.append(x_marker)
-            tile_ys.append(y_marker)
+            #tile_xs.append(x_marker)
+            #tile_ys.append(y_marker)
 
             tile_x = (x_marker - 9) * 16
             tile_y = (y_marker - 0x44) * 4
 
+            print(tile_x)
+
+            if sprite_width < tile_x:
+                sprite_Width = tile_x
+
             dest_img.paste(tile, (tile_x + dest_x, tile_y + dest_y))
+
+        print(i, "width", sprite_width)
+        print(i, "tile x", tile_x)
+        dest_x += tile_x + 64
+        #dest_y += 32
+        if dest_x > 1000:
+            dest_y += 128
+            dest_x = 0
 
     dest_img.show()
     dest_img.save(image_output_filename)
@@ -457,16 +472,17 @@ if __name__ == '__main__':
                        'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
                        'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
                         'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
-                       'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png']
-    #for f in FILES_TO_ENCODE:
-    #    encode(f)
+                       'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
+                       'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png']
+    for f in FILES_TO_ENCODE:
+        encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
     #write_spz('TEFF_00A.png', 6)
     #decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
     #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
-    decode_spz('SFCHR_99.SPZ', 'SFCHR_99.png' )    # Much more complex
+    #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
     #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
 
 # TMAP00 is used: ??

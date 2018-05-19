@@ -20,7 +20,7 @@ STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORFIELD.EXE': 1325,
                  'ORBTL.EXE': 784,
                  'Dialogue': 5592,
-                 'Images': 37,
+                 'Images': 55,
                  }
 
 TOTAL_STRING_COUNT = sum(list(STRING_COUNTS.values()))
