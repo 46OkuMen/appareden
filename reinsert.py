@@ -40,8 +40,12 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 #FILES_TO_REINSERT = ['ORFIELD.EXE',]
 
-gems_to_reinsert = ['ORTITLE.GEM', 'GENTO.GEM', 'BENIMARU.GEM', 'GOEMON.GEM', 'TAMAMO.GEM',
-                    'HEILEE.GEM', 'SHIROU.GEM', 'HANZOU.GEM', 'GENNAI.GEM', 'OUGI.GEM']
+gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.gem', 'TMAP_03A.gem', 'TMAP_06A.gem',
+                       'TMAP_10B.gem', 'TMAP_11A.gem', 'TMAP_12B.gem', 'TMAP_14A.gem', "TMAP_16B.gem",
+                       'TMAP_27A.gem', 'TMAP_29B.gem', 'TMAP_32A.gem',
+                       'ORTITLE.gem', 'GENTO.gem', 'BENIMARU.gem', 'HANZOU.gem', 'TAMAMO.gem', 'GOEMON.gem',
+                       'HEILEE.gem', 'SHIROU.gem', 'MEIRIN.gem', 'GENNAI.gem', 'OUGI.gem',
+                       'GENNAIJ.gem', 'GOEMONJ.gem', 'SHIROUJ.gem', 'HANZOJ.gem']
 other_files_to_reinsert = ['SCN12307.COD',]
 
 FILES_TO_REINSERT += MSGS
