@@ -18,12 +18,14 @@ if __name__ == '__main__':
     #gem_filename = os.path.join("original", "OR", gem_filename)
 
     # View an image from the CD game
-    gem_filename = os.path.join("original", "CD", gem_filename)
+    #gem_filename = os.path.join("original", "CD", gem_filename)
 
     # View an edited image
-    #gem_filename = os.path.join("patched", gem_filename)
+    gem_filename = os.path.join("patched", gem_filename)
 
     copyfile(gem_filename, "ORTITLE.GEM")
 
     d = Disk(DEST_DISK)
     d.insert("ORTITLE.GEM", path_in_disk='TGL/OR')
+
+   #d.insert(gem_filename, path_in_disk='TGL/OR')

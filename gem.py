@@ -137,6 +137,7 @@ def encode(filename, dest_disk=DEST_DISK):
     """Encode an image file as GEM and reinsert it."""
     just_filename = filename.split('.')[0]
     gem_filename = just_filename + '.GEM'
+    print("Encoding", gem_filename)
 
     # "Polymorphism"
     if just_filename in NAMETAG_PALETTE_IMAGES:
@@ -209,7 +210,7 @@ def encode(filename, dest_disk=DEST_DISK):
         f.write(b'\x00\x00') # not sure about these either
         f.write(palette_bytes)
         for p in unique_patterns:
-            print(p)
+            #print(p)
             f.write(p)
 
         row_cursor = 0
@@ -218,16 +219,74 @@ def encode(filename, dest_disk=DEST_DISK):
         for i, pattern in enumerate(unique_patterns):
             row_cursor = starting_row_cursor
             chain_count = 0
-            print("Start pattern %s. row_cursor: %s" % (pattern, row_cursor))
-            for loc in pattern_locations[pattern]:
+            skip_past = -1
+            #print("Start pattern %s. row_cursor: %s" % (pattern, row_cursor))
+
+            for i, loc in enumerate(pattern_locations[pattern]):
+                # First pattern gets placed in the upper left corner automatically
                 if pattern == unique_patterns[0] and loc == 0:
                     row_cursor += 1
                     row_cursor %= total_rows
                     continue
+                """
+                
+                if i <= skip_past:
+                    continue
 
+                # Look for patterns that alternate every two rows. i.e. two-chains
+                two_chain = 0
+                # Only one per pattern?
+                if skip_past == -1:
+                    #while pattern_locations[pattern][i+two_chain] == loc + (2 * two_chain):
+                    while loc + (two_chain*2) in pattern_locations[pattern] and loc + ((two_chain*2)-1) not in pattern_locations[pattern]:
+                        two_chain += 1
+                        skip_past = i + two_chain
+
+                        if i+two_chain >= len(pattern_locations[pattern]):
+                            break
+                    if two_chain > 1:
+                        two_chain_byte = 0x20 + two_chain
+                        f.write(two_chain_byte.to_bytes(1, byteorder='little'))
+                        row_cursor = pattern_locations[pattern][i+two_chain-1]
+                        continue
+                """
+                
+                """
+                if i <= skip_past:
+                    print("Skipping past", loc)
+
+                    #if i == len(pattern_locations[pattern])-1:
+                        #f.write(b'\x00')
+                        #starting_row_cursor += 1
+                        #starting_row_cursor %= total_rows
+                        #break
+                    continue
+
+                if skip_past == -1:
+                    if loc + 1 not in pattern_locations[pattern] and loc + 2 in pattern_locations[pattern] and loc + 3 not in pattern_locations[pattern]:
+                        print(pattern_locations[pattern])
+                        print("writing a 21")
+                        print("Chain count is", chain_count)
+                        f.write(b'\x82\x82')
+                        #f.write(b'\x21')
+                        skip_past = i + 1
+                        row_cursor = loc + 3
+                        continue
+                """
+
+                #print("Row cursor is now", row_cursor)
+                # Look for patterns that repeat every row.
                 if loc == row_cursor:
                     chain_count += 1
                 else:
+                    while chain_count > 255:
+                        repeat_byte = 0x18
+                        while chain_count > 255 and repeat_byte < 0x1f:
+                            repeat_byte += 1
+                            chain_count -= 256
+
+                        f.write(repeat_byte.to_bytes(1, 'little'))
+                        #print(gem_filename, "uses the 256x repeat byte", hex(repeat_byte))
                     while chain_count > 31:
                         f.write(b'\x5f')
                         chain_count -= 31
@@ -248,7 +307,7 @@ def encode(filename, dest_disk=DEST_DISK):
                         if loc == pattern_locations[pattern][0]:
                             starting_row_cursor = loc
                         row_cursor = loc
-                        print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor))
+                        #print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor))
 
                     elif loc - row_cursor >= 63:
                         first_byte = 0xc0 + ((loc - row_cursor) + 1) // 256
@@ -259,14 +318,14 @@ def encode(filename, dest_disk=DEST_DISK):
                         if loc == pattern_locations[pattern][0]:
                             starting_row_cursor = loc
                         row_cursor = loc
-                        print("Far skip: %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), row_cursor))
+                        #print("Far skip: %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), row_cursor))
                         assert row_cursor == loc
                     elif loc - row_cursor < 63:
                         skip_and_write_code = 0x81 + ((loc - row_cursor) % total_rows)
                         if loc == pattern_locations[pattern][0]:
                             starting_row_cursor = loc
                         f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
-                        print("Short skip: %s, row_cursor after: %s" % (hex(skip_and_write_code), row_cursor))
+                        #print("Short skip: %s, row_cursor after: %s" % (hex(skip_and_write_code), row_cursor))
                         row_cursor = loc
                     else:
                         raise Exception
@@ -283,6 +342,7 @@ def encode(filename, dest_disk=DEST_DISK):
                 f.write(chain.to_bytes(1, byteorder='little'))
                 chain_count = 0
 
+            #print("Writing 00")
             f.write(b'\x00')
             starting_row_cursor += 1
             starting_row_cursor %= total_rows

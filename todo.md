@@ -79,9 +79,34 @@
 	* 16B - Nikkou and Izumo Grand Shrine
 	* 27A - ?
 	* 29B - Edo
-	* 32A - Ships
-* Need to figure out how larger SPZ files point to tiles beyond the 255th one.
-	* Or just do those problem files manually.
+	* (32A - Ships)
+* Further improvements to the SPZ decoder.
+	* Any better way to arrange the output sprites?
+	* Any way to re-pack them into a GEM, or at least figure out which tiles go where?
+* What are the requirements for each TEFF image?
+	* Gento
+		* Come on! - individual letters
+		* Kiyahh!
+		* Do your best! - individual letters
+		* Chest!
+		* Careful!
+		* Raagghh! - monolithic
+	* Haley
+		* Holy Light - individual letters
+		* Deus X Machina
+		* Santa Lucia
+		* Judgment - monolithic
+		* Apocalypse - monolithic
+		* Apocalypse (2)
+			* (Where does this appear?)
+	* Gennai
+		* Eleheal
+		* Eleshot
+		* Elerecover
+		* Elespark
+		* Elestun
+		* Elebuster
+
 * Might be worth some attempt at optimizing the GEM encoder a little more.
 	* Control code for alternating chains? 10101 etc
 
@@ -89,6 +114,7 @@
 * What to do??
 	* Don't dub them, please
 	* Put all the script text on the images?
+		* Which images?
 	* Also sub them for Youtube and link them in the readme??
 
 ## Pachy98 settings
