@@ -33,22 +33,34 @@ NAMETAG_PALETTE_RGB = [(0x00, 0x00, 0x00),
                        (0xff, 0xff, 0xff),]
 
 
-MAP_PALETTE_RGB =    [(0x00, 0x00, 0x00),
-                      (0x33, 0x33, 0x33),
-                      (0x88, 0x44, 0x33),
-                      (0xff, 0x44, 0x00),
-                      (0xdd, 0x99, 0x44),
-                      (0xee, 0xbb, 0x44),
-                      (0xcc, 0xbb, 0xaa),
-                      (0xff, 0xdd, 0x99),
-                      (0x00, 0x33, 0x66),
-                      (0x77, 0x77, 0x11),
-                      (0x00, 0x77, 0xbb),
-                      (0x88, 0x77, 0x66),
-                      (0xcc, 0xcc, 0x33),
-                      (0x66, 0xcc, 0xdd),
-                      (0xaa, 0x77, 0x55),
-                      (0xff, 0xff, 0xff),]
+MAP_PALETTE_RGB =    [(0x00, 0x00, 0x00),   # black 10-11
+                      (0x33, 0x33, 0x33),   # darkGrey 11-12
+                      (0x88, 0x44, 0x33),   # darkBrown 13-14
+                      (0xff, 0x44, 0x00),   # orange 14-15
+                      (0xdd, 0x99, 0x44),   # lightBrown 16-17
+                      (0xee, 0xbb, 0x44),   # lighterBrown 17-18
+                      (0xcc, 0xbb, 0xaa),   # lightGrey 19-1a
+                      (0xff, 0xdd, 0x99),   # peach 1a-1b
+                      (0x00, 0x33, 0x66),   # darkBlue 1c-1d
+                      (0x77, 0x77, 0x11),   # olive 1d-1e
+                      (0x00, 0x77, 0xbb),   # blue 1f-20
+                      (0x88, 0x77, 0x66),   # midGrey 20-21
+                      (0xcc, 0xcc, 0x33),   # lightGreen 22-23
+                      (0x66, 0xcc, 0xdd),   # lightBlue 23-24
+                      (0xaa, 0x77, 0x66),   # redBrown 25-26
+                      (0xff, 0xff, 0xff)]   # white 26-27
+
+# Plane activation for each color in the palette.
+# Which bit is active there
+PLANE_COLORS = [(1, 3, 5, 7, 9, 0xb, 0xd, 0xf),
+                (2, 3, 6, 7, 0xa, 0xb, 0xe, 0xf),
+                (4, 5, 6, 7, 0xc, 0xd, 0xe, 0xf),
+                (8, 9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf)]
+
+MAP_PALETTE_COLORS = ['black', 'darkGrey', 'darkBrown', 'orange',
+                      'lightBrown', 'lighterBrown', 'lightGrey', 'peach',
+                      'darkBlue', 'olive', 'blue', 'midGrey',
+                      'lightGreen', 'lightBlue', 'redBrown', 'white']
 
 # TMAP_32A
 SHIP_PALETTE_RGB = [
@@ -125,12 +137,138 @@ TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A
                        'TEFF_16A', 'TEFF_17A',]
 
 
-# Plane activation for each color in the palette.
-# Which bit is active there
-PLANE_COLORS = [(1, 3, 5, 7, 9, 0xb, 0xd, 0xf),
-                (2, 3, 6, 7, 0xa, 0xb, 0xe, 0xf),
-                (4, 5, 6, 7, 0xc, 0xd, 0xe, 0xf),
-                (8, 9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf)]
+
+
+class Pattern:
+    def __init__(self, bytestring):
+        self.bytestring = bytestring
+        self.first = bytestring[0]
+        self.second = bytestring[1]
+        self.third = bytestring[2]
+        self.fourth = bytestring[3]
+
+    def color_sequence(self):
+        #print(self.first)
+        b1 = BitArray("0x{:02x}".format(self.first), length=8).bin
+        b2 = BitArray("0x{:02x}".format(self.second), length=8).bin
+        b3 = BitArray("0x{:02x}".format(self.third), length=8).bin
+        b4 = BitArray("0x{:02x}".format(self.fourth), length=8).bin
+
+        #print(self)
+        #print(b1, b2, b3, b4)
+
+        result = ''
+
+        for i in range(8):
+            #this_color = b1[i] + b2[i] + b3[i] + b4[i]
+            this_color = b4[i] + b3[i] + b2[i] + b1[i]
+            #print(this_color)
+            color = BitArray('0b' + this_color)
+
+            # Hmm. Can't just get the color with that index in MAP_PALETTE_COLORS.
+            # (More accurately, they're in reverse order. First plane is the ones place, 
+            # second plane is the twos place, third plane is the fours place, and fourth plane is the eights place.)
+            ##print(color.uint)
+            #result += '%s (%s) ' % (MAP_PALETTE_COLORS[color.uint], this_color)
+            result += '%s ' % (MAP_PALETTE_COLORS[color.uint])
+
+        return result
+
+    def has_sequence(self, colors):
+        return colors in self.color_sequence()
+
+    def __repr__(self):
+        return "%s %s %s %s" % (hex(self.first)[2:], hex(self.second)[2:], hex(self.third)[2:], hex(self.fourth)[2:])
+
+    def __eq__(self, other):
+        return self.bytestring == other.bytestring
+
+def decode(filename):
+    with open(filename, 'rb') as f:
+        gem = f.read()
+
+    start_writing = int.from_bytes(gem[0xc:0xe], 'little')
+    print(hex(start_writing))
+    pattern_bytes = gem[0x29:start_writing]
+    patterns = []
+    for i in range(0, len(pattern_bytes), 4):
+        patterns.append(pattern_bytes[i:i+4])
+    #print(patterns)
+
+    pattern_sequence = []
+    sequence = b''
+    sentinel = start_writing
+    while sentinel < len(gem):
+        while gem[sentinel] != 0:
+            sequence += gem[sentinel].to_bytes(1, 'little')
+            sentinel += 1
+        pat = Pattern(patterns[0])
+        pattern_sequence.append((pat, sequence))
+
+        #print(pat.color_sequence())
+
+        if pat.has_sequence('darkGrey darkGrey darkGrey darkGrey midGrey midGrey midGrey midGrey'):
+            # Not found...?
+            print(pat, sequence)
+
+        #print(pat, sequence)
+        #if sentinel < 0x9000:
+        #    print(pat.color_sequence())
+
+        sequence = b''
+        patterns.pop(0)
+        sentinel += 1
+
+    print(len(pattern_sequence), "unique patterns in GEM")
+
+    # Open TMAP_00A.PNG and get some regions to search for
+
+    #img = Image.open('TMAP_00A_shopsigns.PNG')
+    img = Image.open('TMAP_00A.PNG')
+    width, height = img.size
+    pix = img.load()
+    blocks = img.size[0]//8
+    png_patterns = []
+    for b in range(blocks):
+        for row in range(height):
+            rowdata =[pix[col, row][0:3] for col in range(b*8, (b*8)+8)]
+            pattern = []
+
+            for plane in range(4):
+                for p in rowdata:
+                    try:
+                        palette_index = MAP_PALETTE_RGB.index(p)
+                    except ValueError:
+                        palette_index = get_closest_color_index(MAP_PALETTE_RGB, p)
+                    pattern.append(palette_index in PLANE_COLORS[plane])
+            pattern = Pattern(BitArray(pattern).bytes)
+            #print(Pattern(pattern).color_sequence())
+            #print(Pattern(pattern).color_sequence())
+
+            if pattern not in png_patterns:
+                png_patterns.append(pattern)
+
+    print(len(png_patterns), "unique patterns in PNG")
+
+    # Looking for shop sign patterns in the .GEM pattern list.
+    # Not very many at all!
+    # Something is wrong.
+    #for u in png_patterns:
+    #    #print(Pattern(u).color_sequence())
+    ##    for i in pattern_sequence:
+     #       #print(i[0])
+     #       if i[0] == Pattern(u):
+     #           print(Pattern(u), Pattern(u).color_sequence(), i[1])
+
+    # Let's try looking for .GEM patterns in the entire image patterns list.
+    for p, q in pattern_sequence:
+        if p not in png_patterns:
+            print(p, q)
+    # They basically all show up.
+
+    # Hmm. 4402 unique patterns in GEM, 8637 unique patterns in PNG...
+    # What's going on here?
+
 
 
 def encode(filename, dest_disk=DEST_DISK):
@@ -534,8 +672,8 @@ if __name__ == '__main__':
                         'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
                        'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png']
-    for f in FILES_TO_ENCODE:
-        encode(f)
+    #for f in FILES_TO_ENCODE:
+    #    encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
@@ -545,4 +683,4 @@ if __name__ == '__main__':
     #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
     #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
 
-# TMAP00 is used: ??
+    decode('TMAP_00A.GEM')

@@ -91,7 +91,7 @@ Last few bytes are 00 09 00. Let's replace the 09
 1c: Writes 1024 (?) gold pixels
 1d: Writes 1280 (?) gold pixels
 1e: Writes 1572 (?) gold pixels
-1f: Writes some more gold pixels
+1f: Writes 1792 (?) gold pixels
 20: Gold line fill
 21: Writes a gold pixel, spaced down by 1 black pixel
 22: " " 2 gold pixels
