@@ -1,0 +1,21 @@
+SCN12307.MSG
+
+After battle with Okitsugu, he says a line of dialogue and the screen shakes and the game crashes.
+
+Each #00, #01, etc. control code signifies a "scene".
+
+#[00]: Pre-battle
+#[01]: Okitsugu "This... this can't be.... I can't be defeated by children such as theeesee..."
+Earthquake happens, crash
+#[02]: Gento "What's this? An earthquake?"
+
+I need it to skip the part having to do with #01 at all.
+
+SCN12307.COD
+
+Looking at all mentions of 01.
+
+0x7d - Switching it to 02 loads #02 instead, with earthquake afterward. Can load any scene in the MSG.
+
+18 01 1b 04 5d 5d 5d 5d 5d 5d 5d 5d 5d 5d 5d 5d 5d 5d 5d...
+There are 17 5ds. Seems like 17 screen shakes too.

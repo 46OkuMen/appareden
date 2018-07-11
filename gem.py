@@ -187,6 +187,7 @@ def decode(filename):
     with open(filename, 'rb') as f:
         gem = f.read()
 
+
     start_writing = int.from_bytes(gem[0xc:0xe], 'little')
     print(hex(start_writing))
     pattern_bytes = gem[0x29:start_writing]

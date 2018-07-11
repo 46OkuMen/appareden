@@ -81,8 +81,8 @@
 	* 29B - Edo
 	* (32A - Ships)
 * Further improvements to the SPZ decoder.
-	* Any better way to arrange the output sprites?
-	* Any way to re-pack them into a GEM, or at least figure out which tiles go where?
+	* At this point I mostly just need something to re-encode the SPZ decoder's output.
+		* I think the best thing to do would be to output separate sprites into their own image files. That way they can be edited and repacked more easily.
 * What are the requirements for each TEFF image?
 	* Gento
 		* Come on! - individual letters

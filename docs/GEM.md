@@ -3,7 +3,28 @@ A horribly organized set of notes produced during the reversing of the GEM forma
 Current understanding of the format:
 TODO update, I understand it now
 It's RGB tuples and some extra garbage I don't understand, separated by 00s. 
-Then at the location indicated in the pointer, it writes each pattern 
+Then at the location indicated in the pointer, it writes each pattern
+
+Unknown:
+00-10
+	02: Seems to 
+18
+40
+60-7f
+Repeating a byte twice in a row sometimes does weird stuff
+
+Known, but not known well enough to use in encoder:
+11-17: Repeat (x-10) times, every 4 rows
+21-2f: Repeat (x-20) times, every 2 rows
+30-3f: Repeat every 2 rows, but 16x or 256x maybe?
+
+Known and used in encoder:
+19-1f: Repeat (x-18) * 256 times
+41-5f: Repeat x-40 times
+80: "Ultra skip": Read two more bytes, skip that much
+81-bf: "Short skip": skip x-80 rows, write once
+c0-ff: "Long skip": read another byte, skip a lot of rows considering this byte and that byte
+
 
 ## Header
 Header: first 0x12 bytes?

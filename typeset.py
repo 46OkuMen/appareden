@@ -4,7 +4,7 @@
 """
 from appareden.rominfo import WAITS, MSGS
 from appareden.rominfo import DUMP_XLS_PATH, MAX_LENGTH
-from appareden.utils import typeset, sjis_punctuate, properly_space_waits, WAITS
+from appareden.utils import typeset, sjis_punctuate, WAITS
 #from appareden.reinsert import MSGS
 
 from romtools.dump import DumpExcel
@@ -72,6 +72,7 @@ for m in msgs_to_typeset:
     for row in worksheet.rows:
         nametag = False
         file = row[file_col].value
+        terminal_newline = False
         if file == m:
             japanese = row[jp_col].value
             english = row[en_col].value
@@ -104,6 +105,13 @@ for m in msgs_to_typeset:
 
 
             english_lines = english.split('[LN]')
+
+            # Terminal [LN] sometimes messes it up, so ignore those
+            if english_lines[-1] == '':
+                english_lines = english_lines[:-1]
+                terminal_newline = True
+            #print("Removed an extraneous line in row %s" % english)
+
             line_count = 5
             for e in english_lines:
 
@@ -112,7 +120,7 @@ for m in msgs_to_typeset:
                     e = e.replace(w, '')
 
                 if portrait:
-                    safe_print ("%s%s" % (" "*20, e))
+                    safe_print("%s%s" % (" "*20, e))
                 else:
                     safe_print(e)
                 line_count -= 1
@@ -126,12 +134,19 @@ for m in msgs_to_typeset:
                 print('-'*57)
 
                 if line_count < 0:
+                    # Mark the overflowing cells with a mint green background
                     print("^ This window overflows")
                     row[en_col].fill = PatternFill(fgColor="c6ffe2", fill_type='solid')
                     overflows += 1
+                else:
+                    # Need to re-whiten cells that aren't overflowing.
+                    # This removes the marking from ones that were fixed
+                    row[en_col].fill = PatternFill(fgColor='ffffff', fill_type='solid')
 
+            #if terminal_newline:
+            #    english += '[LN]'
     
-            english = properly_space_waits(english)
+            #english = properly_space_waits(english)
             #print(english)
             row[en_typeset_col].value = english
 

@@ -12,6 +12,7 @@ def effective_length(s):
     # TODO: Rough so far. Only removes stuff in brackets.
 
     pattern = rb'\[.*?\]'
+    #print (s, re.sub(pattern, b'', s))
     return len(re.sub(pattern, b'', s))
 
 
@@ -27,22 +28,27 @@ def typeset(s, width=37):
 
     if b'\x82' in sjis:
         space = b'\x81\x40'
-        #words = sjis.split(b'\x81\x40')
         width = 40
     else:
         space = b' '
+
+    # LNs are breaks too. Let's replace them with spaces and see what happens
+    sjis = sjis.replace(b'[LN]', space)
 
     words = sjis.split(space)
 
     lines = []
 
+    # TODO: Need a way to identify those Speaker[LN]"Text" type strings and
+    # split them into different cells/rows.
+
     #print(words)
     while words:
         #print(words)
-        if len(lines) > 0:
-            line = b' '
-        else:
-            line = b''
+        #if len(lines) > 0:
+        #    line = b' '
+        #else:
+        line = b''
         while effective_length(line) <= width and words:
             if effective_length(line + words[0] + space) > width:
                 break
@@ -160,7 +166,7 @@ def replace_control_codes(s):
             if s[cursor-1] != '>':
                 s = s[:cursor] + S_CONTROL_CODES['n'] + s[cursor+1:]
         if c == 'w':
-            # TODO: Why am I replacing the >w control codes here as well? Let's try not doin gthat
+            # TODO: Why am I replacing the >w control codes here as well? Let's try not doing that
             #if s[cursor-1] != '>':
             s = s[:cursor] + S_CONTROL_CODES['w'] + s[cursor+1:]
         if c == 'c':
@@ -170,7 +176,8 @@ def replace_control_codes(s):
     s = s.encode('shift-jis')
     return s
 
-def properly_space_waits(s):
+# Deprecated, no longer necessary
+#def properly_space_waits(s):
     """
         Every [WAIT*] control code interferes with the spacing a bit.
         (More accurately, Shadoff compression interferes with their spacing)
@@ -178,7 +185,7 @@ def properly_space_waits(s):
         where n = the number of lowercase words that preceded it on the same line.
     """
     # No longer necessary after removing Shadoff compression
-    return s
+#    return s
 
     """
     result = ''
