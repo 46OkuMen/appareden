@@ -5,6 +5,8 @@ import re
 from .rominfo import S_CONTROL_CODES
 
 WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
+NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Okitsugu', 'Masamune', 'Flame Dragon',
+         'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]']
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
@@ -17,11 +19,24 @@ def effective_length(s):
 
 
 def typeset(s, width=37):
+    s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')
 
-    s_safe = s.replace('\u014d', '[o]')
-
+    #print(s_safe)
     # SJIS lines, like Haley's, must be split by SJIS spaces
+    prefix = ''
+    #print(s_safe)
+    #print(s_safe.split('[LN]'))
+    for n in NAMES:
+
+        if s_safe.split('[LN]')[0] == n:
+            if s_safe.split('[LN]')[1] != '':
+                prefix = n
+                s_safe = s_safe.lstrip(n)
+                #print("Prefix")
+
     sjis = s_safe.encode('shift-jis')
+
+    #print(sjis.split(b'[LN]'))
 
     if effective_length(sjis) <= width:
         return s
@@ -33,7 +48,7 @@ def typeset(s, width=37):
         space = b' '
 
     # LNs are breaks too. Let's replace them with spaces and see what happens
-    sjis = sjis.replace(b'[LN]', space)
+    #sjis = sjis.replace(b'[LN]', space)
 
     words = sjis.split(space)
 
@@ -41,6 +56,8 @@ def typeset(s, width=37):
 
     # TODO: Need a way to identify those Speaker[LN]"Text" type strings and
     # split them into different cells/rows.
+
+    # TODO: Handle [SPLIT]s
 
     #print(words)
     while words:
@@ -71,10 +88,10 @@ def typeset(s, width=37):
     lines = [l.decode('shift-jis') for l in lines]
     lines = [l.replace('[o]', '\u014d') for l in lines]
 
-    return '[LN]'.join(lines)
+    return prefix + '[LN]'.join(lines)
 
 def sjis_punctuate(s):
-    s_safe = s.replace('\u014d', '[o]')
+    s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')
 
     sjis = s_safe.encode('shift-jis')
     if b'\x82' not in sjis:

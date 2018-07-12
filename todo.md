@@ -20,6 +20,7 @@
 	* (Is this still a problem?)
 * Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
+* Need to fix the overline 'O' names in the credits.
 
 ## ORFIELD
 * State of the menus:

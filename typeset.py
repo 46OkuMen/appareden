@@ -4,7 +4,7 @@
 """
 from appareden.rominfo import WAITS, MSGS
 from appareden.rominfo import DUMP_XLS_PATH, MAX_LENGTH
-from appareden.utils import typeset, sjis_punctuate, WAITS
+from appareden.utils import typeset, sjis_punctuate, WAITS, NAMES
 #from appareden.reinsert import MSGS
 
 from romtools.dump import DumpExcel
@@ -14,10 +14,21 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 
 filenames = ['ORFIELD.EXE', 'ORBTL.EXE']
 
+# TODO: If the Japanese string ends in [LN], English should end in [LN] too
+
 def safe_print(s):
     if '\u014d' in s:
         s = s.replace('\u014d', '[o]')
+    if '\u016b' in s:
+        s = s.replace('\u016b', '[u]')
     print(s)
+
+def starts_with_nametag(s):
+    for n in NAMES:
+        if s.split('[LN]')[0] == n:
+            if s.split('[LN]')[1] != '':
+                return True
+    return False
 
 for f in filenames:
     rownum = 0
@@ -132,6 +143,9 @@ for m in msgs_to_typeset:
                     line_count -= 1
 
                 print('-'*57)
+
+                if starts_with_nametag(english):
+                    line_count += 1
 
                 if line_count < 0:
                     # Mark the overflowing cells with a mint green background
