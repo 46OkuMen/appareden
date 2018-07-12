@@ -11,9 +11,9 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 | ORTITLE.EXE  | 100%  | (18 / 18)           |
 | ORFIELD.EXE  | 100%  | (1326 / 1326)       |
 | ORBTL.EXE    | 97%   | (791 / 810)         |
-| Dialogue     | 100%  | (5593 / 5592)       |
+| Dialogue     | 100%  | (5601 / 5592)       |
 | Images       | 52%   | (29 / 55)           |
-| **Total**    |**99%**|  **(7757 / 7801)**  |
+| **Total**    |**99%**|  **(7765 / 7801)**  |
 
 ### Requirements
 * A working hard-disk dump of *Appareden*

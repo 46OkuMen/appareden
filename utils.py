@@ -6,16 +6,23 @@ from .rominfo import S_CONTROL_CODES
 
 WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
 NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Okitsugu', 'Masamune', 'Flame Dragon',
-         'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]',]
+         'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]', 'Genpaku', 
+         'Izunokami', 'Gennai', 'Ginpei', 'King Shikai',]
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
 
     # TODO: Rough so far. Only removes stuff in brackets.
 
-    pattern = rb'\[.*?\]'
+    #pattern = rb'\[.*?\]'
     #print (s, re.sub(pattern, b'', s))
-    return len(re.sub(pattern, b'', s))
+    #return len(re.sub(pattern, b'', s))
+    original = s
+    s = s.replace(b'[LN]', b' ')
+    for w in WAITS:
+        s = s.replace(bytes(w, encoding='ascii'), b'')
+    #print(original, s)
+    return len(s)
 
 
 def typeset(s, width=37):
@@ -50,45 +57,47 @@ def typeset(s, width=37):
     # LNs are breaks too. Let's replace them with spaces and see what happens
     #sjis = sjis.replace(b'[LN]', space)
 
-    words = sjis.split(space)
+    manual_lines = sjis.split(b'[LN]')
 
-    lines = []
+    for i, manual_line in enumerate(manual_lines):
+        words = manual_line.split(space)
 
-    # TODO: Need a way to identify those Speaker[LN]"Text" type strings and
-    # split them into different cells/rows.
+        lines = []
 
-    # TODO: Handle [SPLIT]s
-
-    #print(words)
-    while words:
         #print(words)
-        #if len(lines) > 0:
-        #    line = b' '
-        #else:
-        line = b''
-        while effective_length(line) <= width and words:
-            if effective_length(line + words[0] + space) > width:
-                break
-            line += words.pop(0) + space
+        while words:
+            #print(words)
+            #if len(lines) > 0:
+            #    line = b' '
+            #else:
+            line = b''
+            while effective_length(line) <= width and words:
+                if effective_length(line + words[0] + space) > width:
+                    break
+                line += words.pop(0) + space
 
-        line = line.rstrip()
+            line = line.rstrip()
 
-        # Remove initial spaces from first line.
-        # Not sure if a good idea?
-        if len(lines) == 0:
-            line = line.lstrip()
+            # Remove initial spaces from first line.
+            # Not sure if a good idea?
+            if len(lines) == 0:
+                line = line.lstrip()
 
-        if len(lines) > 0:
-            if line == lines[-1]:
-                print("That line is the same as the last one. Continuing onward")
-                break
-        lines.append(line)
+            if len(lines) > 0:
+                if line == lines[-1]:
+                    print("That line is the same as the last one. Continuing onward")
+                    break
+            lines.append(line)
 
+        lines = [l.decode('shift-jis') for l in lines]
+        lines = [l.replace('[o]', '\u014d') for l in lines]
+        lines = [l.replace('[u]', '\u016b') for l in lines]
 
-    lines = [l.decode('shift-jis') for l in lines]
-    lines = [l.replace('[o]', '\u014d') for l in lines]
+        # Re-join the lines that weren't manually broken
+        manual_lines[i] = '[LN]'.join(lines)
 
-    return prefix + '[LN]'.join(lines)
+    # Join the segments of the string that were manually broken
+    return prefix + '[LN]'.join(manual_lines)
 
 def sjis_punctuate(s):
     s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')

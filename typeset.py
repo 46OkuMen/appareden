@@ -14,8 +14,6 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 
 filenames = ['ORFIELD.EXE', 'ORBTL.EXE']
 
-# TODO: If the Japanese string ends in [LN], English should end in [LN] too
-
 def safe_print(s):
     if '\u014d' in s:
         s = s.replace('\u014d', '[o]')
@@ -23,12 +21,14 @@ def safe_print(s):
         s = s.replace('\u016b', '[u]')
     print(s)
 
+
 def starts_with_nametag(s):
     for n in NAMES:
         if s.split('[LN]')[0] == n:
             if s.split('[LN]')[1] != '':
                 return True
     return False
+
 
 for f in filenames:
     rownum = 0
@@ -107,7 +107,9 @@ for m in msgs_to_typeset:
 
             for i, window in enumerate(windows):
 
-                if window.count('"') == 0 and window.count("(") == 0:
+                # If it's not "dialogue", (whispering), or *onomatopaeia*, 
+                # it's a nametag
+                if window.count('"') == 0 and window.count("(") == 0 and window.count("*") == 0:
                     nametag = True
                     most_recent_nametag = window.rstrip('[LN]')
                     #print("-"*57)
@@ -183,8 +185,9 @@ for m in msgs_to_typeset:
             english = '[SPLIT]'.join(windows)
 
             # Add a terminal newline if it's missing in English
-            if japanese.endswith('[LN]') and not english.endswith('[LN]'):
-                english += '[LN]'
+            if english is not None and japanese is not None:
+                if japanese.endswith('[LN]') and not english.endswith('[LN]'):
+                    english += '[LN]'
                 #print("There should be a terminal [LN] here")
 
             row[en_typeset_col].value = english
