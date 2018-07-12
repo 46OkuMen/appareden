@@ -6,7 +6,7 @@ from .rominfo import S_CONTROL_CODES
 
 WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
 NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Okitsugu', 'Masamune', 'Flame Dragon',
-         'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]']
+         'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]',]
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""

@@ -34,7 +34,9 @@ for f in filenames:
     rownum = 0
     worksheet = Dump.workbook.get_sheet_by_name(f)
     first_row = list(worksheet.rows)[0]
+
     header_values = [t.value for t in first_row]
+    #jp_col = header_values.index('Japanese')
     en_col = header_values.index('English (Ingame)')
     category_col = header_values.index('Category')
 
@@ -78,6 +80,8 @@ file_col = header_values.index('File')
 
 overflows = 0
 
+most_recent_nametag = None
+
 for m in msgs_to_typeset:
     #portrait_window_counter = 0
     for row in worksheet.rows:
@@ -92,76 +96,97 @@ for m in msgs_to_typeset:
             if english is None:
                 continue
 
-            #for cc in CONTROL_CODES:
-            #    # Skip this one
-            #    if cc == b'[ff]':
-            #        continue
-            #    english = english.replace(cc.decode('shift-jis'), CONTROL_CODES[cc].decode('shift-jis'))
-
             # If a character with a portrait is given a nametag in this line,
             # the next line needs to be typeset more aggressively due to less screen space.
 
-            if english.count('"') == 0 and english.count("(") == 0:
-                nametag = True
-                #print("-"*57)
-
-            # For Haley's lines
-            english = sjis_punctuate(english)
-
-            #if portrait_window_counter > 0:
-            if portrait:
-                english = typeset(english, 36)
+            windows = []
+            if '[SPLIT]' in english:
+                windows = english.split('[SPLIT]')
             else:
-                english = typeset(english, 57)
+                windows = [english,]
 
+            for i, window in enumerate(windows):
 
-            english_lines = english.split('[LN]')
+                if window.count('"') == 0 and window.count("(") == 0:
+                    nametag = True
+                    most_recent_nametag = window.rstrip('[LN]')
+                    #print("-"*57)
 
-            # Terminal [LN] sometimes messes it up, so ignore those
-            if english_lines[-1] == '':
-                english_lines = english_lines[:-1]
-                terminal_newline = True
-            #print("Removed an extraneous line in row %s" % english)
+                # For Haley's lines
+                window = sjis_punctuate(window)
 
-            line_count = 5
-            for e in english_lines:
-
-                # Remove WAIT control codes when printing here
-                for w in WAITS:
-                    e = e.replace(w, '')
-
+                #if portrait_window_counter > 0:
                 if portrait:
-                    safe_print("%s%s" % (" "*20, e))
+                    window = typeset(window, 36)
                 else:
-                    safe_print(e)
-                line_count -= 1
+                    window = typeset(window, 57)
 
-            if not nametag:
 
-                while line_count > 0:
-                    print()
+                window_lines = window.split('[LN]')
+
+                # Terminal [LN] sometimes messes it up, so ignore those
+                if window_lines[-1] == '':
+                    window_lines = window_lines[:-1]
+                    terminal_newline = True
+                #print("Removed an extraneous line in row %s" % window)
+
+                line_count = 5
+
+                if i > 0:
+                    safe_print("%s%s" % (" "*20, most_recent_nametag))
+
+                for e in window_lines:
+
+                    # Remove WAIT control codes when printing here
+                    for w in WAITS:
+                        e = e.replace(w, '')
+
+                    # TODO: looking for strings like Hanz[o][LN]Text which get displayed weirdly
+                    #if 'Hanz[o]' in e:
+                    #    print(e)
+                    #    input()
+
+                    if portrait:
+                        safe_print("%s%s" % (" "*20, e))
+                    else:
+                        safe_print(e)
                     line_count -= 1
 
-                print('-'*57)
+                if not nametag:
 
-                if starts_with_nametag(english):
-                    line_count += 1
+                    while line_count > 0:
+                        print()
+                        line_count -= 1
 
-                if line_count < 0:
-                    # Mark the overflowing cells with a mint green background
-                    print("^ This window overflows")
-                    row[en_col].fill = PatternFill(fgColor="c6ffe2", fill_type='solid')
-                    overflows += 1
-                else:
-                    # Need to re-whiten cells that aren't overflowing.
-                    # This removes the marking from ones that were fixed
-                    row[en_col].fill = PatternFill(fgColor='ffffff', fill_type='solid')
+                    print('-'*57)
+
+                    # Prevent windows with a nametag prefix from giving a false-positive "overflow"
+                    if starts_with_nametag(window):
+                        line_count += 1
+
+                    if line_count < 0:
+                        # Mark the overflowing cells with a mint green background
+                        print("^ This window overflows\n")
+                        row[en_col].fill = PatternFill(fgColor="c6ffe2", fill_type='solid')
+                        overflows += 1
+                    else:
+                        # Need to re-whiten cells that aren't overflowing.
+                        # This removes the marking from ones that were fixed
+                        row[en_col].fill = PatternFill(fgColor='ffffff', fill_type='solid')
+
+                # Save the changes to windows
+                windows[i] = '[LN]'.join(window_lines)
 
             #if terminal_newline:
             #    english += '[LN]'
-    
-            #english = properly_space_waits(english)
-            #print(english)
+
+            english = '[SPLIT]'.join(windows)
+
+            # Add a terminal newline if it's missing in English
+            if japanese.endswith('[LN]') and not english.endswith('[LN]'):
+                english += '[LN]'
+                #print("There should be a terminal [LN] here")
+
             row[en_typeset_col].value = english
 
 Dump.workbook.save(DUMP_XLS_PATH)
