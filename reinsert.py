@@ -186,7 +186,12 @@ def reinsert(version):
                     for cc in CONTROL_CODES:
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
-                    #t.english = t.english.replace(b'[o]', b'o\x7e')
+
+                # Replace overline characters too, which are not control codes
+                t.english = t.english.replace(b'[o]', b'o\x7e')
+                t.english = t.english.replace(b'[u]', b'u\x7e')
+                t.english = t.english.replace(b'[O]', b'O\x7e')
+                t.english = t.english.replace(b'[U]', b'U\x7e')
 
                 # All typesetting has been moved to typeset.py, which modifies the excel sheet.
 
@@ -264,7 +269,12 @@ def reinsert(version):
                     #if filename in SHADOFF_COMPRESSED_EXES:
                     #    t.english = shadoff_compress(t.english)
                     for cc in POSTPROCESSING_CONTROL_CODES[filename]:
+                        #if cc == b'[o]' and filename == 'ORBTL.EXE':
+                        #    if cc in t.english:
+                        #        print(cc, t.english)
+                        #        input()
                         t.english = t.english.replace(cc, POSTPROCESSING_CONTROL_CODES[filename][cc])
+                        #print(t.english)
 
                     if t.location != Rom.dictionary_location[filename]:
                         if t.category == "Don't Compress":
@@ -315,6 +325,8 @@ def reinsert(version):
                     last_len = len(t.english)
 
                     diff += this_diff
+
+                    print(t.english)
 
 
                 block_diff = len(block.blockstring) - len(block.original_blockstring)
@@ -504,6 +516,7 @@ def reinsert(version):
 
     for g in gems_to_reinsert:
         # This doesn't encode any of them, just inserts what's already there
+        print("Inserting", g)
         TargetAp.insert(os.path.join(DEST_DIR, g), path_in_disk='TGL/OR')
         if version == 'FD':
             REINSERTED_STRING_COUNTS['Images'] += 1

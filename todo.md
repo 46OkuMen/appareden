@@ -1,18 +1,14 @@
 # Appareden TODOs
 
 ## Last TODOs before beta testing
-* Split overflowing dialogue windows
-* Translate the poems
-* Whatever placeholder images we want to put in there
+* kuoushi's UI text updates
 
 ## ASM
 * Clean up and split FD/CD ORBTL ASM.
 
 ## Typesetting
-* Indent non-first lines after quotes?
-	* Mostly working, fix the stragglers now.
 * Extra-long names like Sacrosanct Dragon might need additional (4) spaces in front of each line.
-* Need to split windows that overflow using [SPLIT].
+* Indentations after 'clears throat' with asterisks are wrong. Only two, so easy to fix manually?
 
 ## MSGs
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
@@ -20,7 +16,6 @@
 	* (Is this still a problem?)
 * Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
-* Need to fix the overline 'O' names in the credits.
 
 ## ORFIELD
 * State of the menus:
@@ -64,6 +59,7 @@
 ## Graphics
 * Which MAP tileset goes to which place?
 	* 00 - not sure where
+		* Test map?
 	* 00A - Sapporo, has palette issues
 		* Not palette, the palette is the same.
 		* The image renders properly when it's the title screen, is it interacting weirdly with some other image?

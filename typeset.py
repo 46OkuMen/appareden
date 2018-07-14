@@ -29,7 +29,10 @@ def starts_with_nametag(s):
                 return True
     return False
 
+# Typesetting EXE strings.
+# Currently disabled, since it's eating some strings
 
+"""
 for f in filenames:
     rownum = 0
     worksheet = Dump.workbook.get_sheet_by_name(f)
@@ -62,9 +65,9 @@ for f in filenames:
                 #print(english)
                 row[en_col].value = english
                 #print()
+"""
 
-
-# More experimental: Typesetting MSG strings
+# Typesetting MSG strings
 
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_typeset = MSGS
@@ -142,11 +145,6 @@ for m in msgs_to_typeset:
                     # Remove WAIT control codes when printing here
                     for w in WAITS:
                         e = e.replace(w, '')
-
-                    # TODO: looking for strings like Hanz[o][LN]Text which get displayed weirdly
-                    #if 'Hanz[o]' in e:
-                    #    print(e)
-                    #    input()
 
                     if portrait:
                         safe_print("%s%s" % (" "*20, e))

@@ -21,6 +21,10 @@ def effective_length(s):
     s = s.replace(b'[LN]', b' ')
     for w in WAITS:
         s = s.replace(bytes(w, encoding='ascii'), b'')
+
+    for cc in (b'[o]', b'[O]', b'[u]', b'[U]'):
+        # Overlined vowels are just one character, not [3]
+        s = s.replace(cc, b'x')
     #print(original, s)
     return len(s)
 
@@ -46,6 +50,8 @@ def typeset(s, width=37):
     #print(sjis.split(b'[LN]'))
 
     if effective_length(sjis) <= width:
+        # Indent stuff
+        #s = s.replace('[LN]', '[LN] ')
         return s
 
     if b'\x82' in sjis:
@@ -70,7 +76,18 @@ def typeset(s, width=37):
             #if len(lines) > 0:
             #    line = b' '
             #else:
-            line = b''
+
+            # Indent non-initial lines (unless they start with a quote)
+            # Example: *clears throat*/n"The Dragon Gems...
+                # TODO: Still not working for throat-clearing lines.
+
+            #if len(lines) > 0 and not words[0].startswith(b'"'):
+            if not words[0].startswith(b'"'):
+                # Yes, it's a space. 
+                line = b' '
+            else:
+                line = b''
+
             while effective_length(line) <= width and words:
                 if effective_length(line + words[0] + space) > width:
                     break
@@ -97,7 +114,7 @@ def typeset(s, width=37):
         manual_lines[i] = '[LN]'.join(lines)
 
     # Join the segments of the string that were manually broken
-    return prefix + '[LN]'.join(manual_lines)
+    return prefix + '[LN] '.join(manual_lines)
 
 def sjis_punctuate(s):
     s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')

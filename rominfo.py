@@ -269,12 +269,12 @@ DICTIONARY_LOCATION = {
 COMPRESSION_DICTIONARY = {
 
 'ORFIELD.EXE': OrderedDict([
-    (b'~', b' '),
-    (b'[BLANK]', b''),
-    (b'[O]', b'O\x7e'),
-    (b'[o]', b'o\x7e'),
-    (b'[U]', b'U\x7e'),
-    (b'[u]', b'u\x7e'),
+    #(b'~', b' '),
+    #(b'[BLANK]', b''),
+    #(b'[O]', b'O\x7e'),
+    #(b'[o]', b'o\x7e'),
+    #(b'[U]', b'U\x7e'),
+    #(b'[u]', b'u\x7e'),
 
     (b'the', b'\xf0\r'),
     (b'with', b'\xf0\x11'),
@@ -568,12 +568,12 @@ COMPRESSION_DICTIONARY = {
 ]),
 
 'ORBTL.EXE': OrderedDict([
-    (b'~', b' '),
-    (b'[BLANK]', b''),
-    (b'[O]', b'O\x7e'),
-    (b'[o]', b'o\x7e'),
-    (b'[U]', b'U\x7e'),
-    (b'[u]', b'u\x7e'),
+    #(b'~', b' '),
+    #(b'[BLANK]', b''),
+    #(b'[O]', b'O\x7e'),
+    #(b'[o]', b'o\x7e'),
+    #(b'[U]', b'U\x7e'),
+    #(b'[u]', b'u\x7e'),
 
     (b'the', b'\xf0\r'),
     (b'with', b'\xf0\x11'),

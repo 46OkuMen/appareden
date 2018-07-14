@@ -673,8 +673,8 @@ if __name__ == '__main__':
                         'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
                        'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png']
-    #for f in FILES_TO_ENCODE:
-    #    encode(f)
+    for f in FILES_TO_ENCODE:
+        encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
@@ -684,4 +684,4 @@ if __name__ == '__main__':
     #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
     #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
 
-    decode('TMAP_00A.GEM')
+    #decode('TMAP_00A.GEM')

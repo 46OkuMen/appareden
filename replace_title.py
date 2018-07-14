@@ -25,6 +25,13 @@ if __name__ == '__main__':
 
     copyfile(gem_filename, "ORTITLE.GEM")
 
+    #with open("ORTITLE.GEM", 'rb+') as f:
+    #    # Red/grey   are between 4000-5000
+    #    # Green/blue are between 5000-6000.
+    #    N = 0x5504
+    #    f.seek(N)
+    #    f.write(b'\x00'*(0x8721 - N))
+
     d = Disk(DEST_DISK)
     d.insert("ORTITLE.GEM", path_in_disk='TGL/OR')
 
