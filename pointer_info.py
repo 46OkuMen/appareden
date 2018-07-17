@@ -173,8 +173,8 @@ POINTERS_TO_REASSIGN = {
             (0x26ec9, 0x26b64),      # &5Not enough gold.
             (0x27531, 0x26b64),
 
-            (0x271c1, 0x26e9d),      # Are you sure?
-            (0x27507, 0x26e9d),
+            #(0x271c1, 0x26e9d),      # Are you sure?
+            #(0x27507, 0x26e9d),
 
             (0x2666a, 0x26641),     # &f acquired
 

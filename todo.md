@@ -1,7 +1,8 @@
 # Appareden TODOs
 
 ## Last TODOs before beta testing
-* kuoushi's UI text updates
+* "Eternal" spell crash when all HP is full
+* "Are you sure?" windows have spaceing that is really hard to edit, what's up with that?
 
 ## ASM
 * Clean up and split FD/CD ORBTL ASM.

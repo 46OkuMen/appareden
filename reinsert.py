@@ -266,6 +266,11 @@ def reinsert(version):
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
 
+                    t.english = t.english.replace(b'[o]', b'o\x7e')
+                    t.english = t.english.replace(b'[u]', b'u\x7e')
+                    t.english = t.english.replace(b'[O]', b'O\x7e')
+                    t.english = t.english.replace(b'[U]', b'U\x7e')
+
                     #if filename in SHADOFF_COMPRESSED_EXES:
                     #    t.english = shadoff_compress(t.english)
                     for cc in POSTPROCESSING_CONTROL_CODES[filename]:
@@ -437,6 +442,11 @@ def reinsert(version):
                     for cc in CONTROL_CODES:
                         t.japanese = t.japanese.replace(cc, CONTROL_CODES[cc])
                         t.english = t.english.replace(cc, CONTROL_CODES[cc])
+
+                    t.english = t.english.replace(b'[o]', b'o\x7e')
+                    t.english = t.english.replace(b'[u]', b'u\x7e')
+                    t.english = t.english.replace(b'[O]', b'O\x7e')
+                    t.english = t.english.replace(b'[U]', b'U\x7e')
 
                     #if filename in SHADOFF_COMPRESSED_EXES:
                     #    t.english = shadoff_compress(t.english)
