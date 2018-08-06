@@ -774,6 +774,10 @@ MAX_LENGTH = {
     'Zen Name': 19,
     'Zen Description': 36,
 
+    # All item and equipment names will be be padded to an odd number.
+    # This should have no effect on stuff hopefully.
+    # Hopefully they will still fit in equipment name buffers!
+
     'Dictionary': 5000,
     "Don't Compress": 5000,
 }

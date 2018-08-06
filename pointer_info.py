@@ -161,7 +161,7 @@ POINTERS_TO_REASSIGN = {
             (0x2d1da, 0x2ee32),
             (0x2ee7b, 0x2ee32),
 
-            (0x27549, 0x26eec),      # &f purchased
+            #(0x27549, 0x26eec),      # &f purchased
 
             (0x2692c, 0x266a3),      # What will you do?
             (0x28044, 0x266a3), 
