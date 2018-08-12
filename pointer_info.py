@@ -191,7 +191,7 @@ POINTERS_TO_REASSIGN = {
             (0x27546, 0x26667),
             (0x28f7b, 0x26667),
             (0x28fe7, 0x26667),
-            (0x29079, 0x26667),
+            #(0x29079, 0x26667),  # &5 in zen target screeen
             (0x2d1d4, 0x26667),
             (0x2d200, 0x26667),
             (0x2d230, 0x26667),
@@ -240,7 +240,7 @@ POINTERS_TO_REASSIGN = {
             #(0x29051, 0x28cbd),   # Movement
 
             (0x28fea, 0x26ee1),   # &f
-            (0x2907c, 0x26ee1),
+            #(0x2907c, 0x26ee1),   # in Zen target screen
             (0x2d1d7, 0x26ee1),
             (0x2d203, 0x26ee1),
             (0x2d233, 0x26ee1),
@@ -281,7 +281,7 @@ POINTERS_TO_REASSIGN = {
 
             (0x271d2, 0x2718d), # &5You have nothing
 
-            (0x26e68, 0x26e32), # Sell Items
+            #(0x26e68, 0x26e32), # Sell Items
 
 
     ],
@@ -325,6 +325,7 @@ POINTERS_TO_REASSIGN = {
             (0x2eac4, 0x2ea7a),
             (0x2eac9, 0x2ea7f),
             (0x2ead8, 0x2ea8e),
+            (0x2eae9, 0x2ea9f),
             (0x2eaec, 0x2eaa2),
             (0x2eafd, 0x2ea8e),
     ]
