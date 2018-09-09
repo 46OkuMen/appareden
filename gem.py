@@ -255,20 +255,32 @@ def decode(filename):
     # Not very many at all!
     # Something is wrong.
     #for u in png_patterns:
-    #    #print(Pattern(u).color_sequence())
-    ##    for i in pattern_sequence:
-     #       #print(i[0])
-     #       if i[0] == Pattern(u):
-     #           print(Pattern(u), Pattern(u).color_sequence(), i[1])
+        #print(Pattern(u).color_sequence())
+        #for i in pattern_sequence:
+        #    print(i[0])
+        #    if i[0] == Pattern(u):
+        #        print(Pattern(u), Pattern(u).color_sequence(), i[1])
 
     # Let's try looking for .GEM patterns in the entire image patterns list.
-    for p, q in pattern_sequence:
-        if p not in png_patterns:
-            print(p, q)
-    # They basically all show up.
+    #for p, q in pattern_sequence:
+    #    if p not in png_patterns:
+    #        print(p, q)
+    # Every GEM pattern is present in the PNG pattern sequence.
+
+    print("Every shop-sign pattern that's present in the GEM patterns:")
+    for p in png_patterns:
+   		if p in [q[0] for q in pattern_sequence]:
+   			print(p.color_sequence())
+
+   	# TODO: Replace one of these patterns with something else in a new GEM, see what happens.
+   		# (Down the line I should get a PIL script that mentions all the differences between two images.
+   			# Wouldn't automate the taking of screenshots but might help in the harder-to-notice diffs.)
+
 
     # Hmm. 4402 unique patterns in GEM, 8637 unique patterns in PNG...
     # What's going on here?
+
+    # There are likely control codes that take previous patterns and modify them.
 
 
 
@@ -368,7 +380,7 @@ def encode(filename, dest_disk=DEST_DISK):
                     row_cursor %= total_rows
                     continue
                 """
-                
+
                 if i <= skip_past:
                     continue
 
@@ -389,7 +401,7 @@ def encode(filename, dest_disk=DEST_DISK):
                         row_cursor = pattern_locations[pattern][i+two_chain-1]
                         continue
                 """
-                
+
                 """
                 if i <= skip_past:
                     print("Skipping past", loc)
@@ -541,14 +553,14 @@ def get_tile(img, n):
     # TODO: Not sure I have the right idea here. What about the larger images?
     # There are more than 255 tiles in them, so clearly it can't just be one byte...
     width, height = img.size
-    pix = img.load()
+    #pix = img.load()
 
     x = (n*16) % width
     y = ((n*16) // width) * 16
 
     assert x < width
     if y >= height:
-         y = 0
+        y = 0
     assert y < height
 
     #$print(n, x, y)
@@ -670,11 +682,11 @@ if __name__ == '__main__':
     FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
                        'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
                        'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
-                        'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
+                       'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
                        'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png']
-    for f in FILES_TO_ENCODE:
-        encode(f)
+    #for f in FILES_TO_ENCODE:
+    #    encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
@@ -684,4 +696,4 @@ if __name__ == '__main__':
     #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
     #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
 
-    #decode('TMAP_00A.GEM')
+    decode('TMAP_00A.GEM')
