@@ -65,8 +65,8 @@ for filename in DICTIONARY_FILES:
     candidates = list(reversed(sorted(words, key=lambda x: x[1])))
     candidates = [c for c in candidates if c[1] > 1]
     print(candidates)
-    dictstring = b'Restore Pill[00]'
-    cursor = 13
+    dictstring = b'Restore Pill [00]'
+    cursor = len(dictstring) - 3
     for c in candidates[:1000]:
         upper_present, lower_present = False, False
         if c[0].capitalize() in ctrl_codes and filename in SHADOFF_COMPRESSED_EXES:
@@ -76,6 +76,8 @@ for filename in DICTIONARY_FILES:
         if b'.' in c[0]:
             continue
         if b'[00]' in c[0]:
+            continue
+        if b'\x81\x40' in c[0]:
             continue
         if c[0] != b'[BLANK]' and c[0].strip(b'~').strip(b'[00]') != b'':
             if len(dictstring.replace(b'[ee]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 3500:

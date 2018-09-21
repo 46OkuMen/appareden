@@ -187,7 +187,6 @@ def decode(filename):
     with open(filename, 'rb') as f:
         gem = f.read()
 
-
     start_writing = int.from_bytes(gem[0xc:0xe], 'little')
     print(hex(start_writing))
     pattern_bytes = gem[0x29:start_writing]
@@ -199,12 +198,13 @@ def decode(filename):
     pattern_sequence = []
     sequence = b''
     sentinel = start_writing
+    original_index = 0x29
     while sentinel < len(gem):
         while gem[sentinel] != 0:
             sequence += gem[sentinel].to_bytes(1, 'little')
             sentinel += 1
         pat = Pattern(patterns[0])
-        pattern_sequence.append((pat, sequence))
+        pattern_sequence.append((pat, sequence, original_index))
 
         #print(pat.color_sequence())
 
@@ -218,6 +218,7 @@ def decode(filename):
 
         sequence = b''
         patterns.pop(0)
+        original_index += 4
         sentinel += 1
 
     print(len(pattern_sequence), "unique patterns in GEM")
@@ -267,14 +268,38 @@ def decode(filename):
     #        print(p, q)
     # Every GEM pattern is present in the PNG pattern sequence.
 
-    print("Every shop-sign pattern that's present in the GEM patterns:")
-    for p in png_patterns:
-   		if p in [q[0] for q in pattern_sequence]:
-   			print(p.color_sequence())
 
-   	# TODO: Replace one of these patterns with something else in a new GEM, see what happens.
-   		# (Down the line I should get a PIL script that mentions all the differences between two images.
-   			# Wouldn't automate the taking of screenshots but might help in the harder-to-notice diffs.)
+    #for p in pattern_sequence:
+    #    print(p[0].color_sequence())
+
+    for q in png_patterns:
+        print(q.color_sequence())
+
+    print("Every shop-sign pattern that's present in the GEM patterns:")
+    shop_patterns = []
+    for p in png_patterns:
+        for q in pattern_sequence:
+            if p == q[0]:
+                shop_patterns.append(q)
+                print(p.color_sequence())
+                print(q[2])
+    # It appears to just be a mix of the different black, white, and grey colors.
+    # Nothing useful for the interior of the shop signs...
+
+
+    print()
+    target = 1
+    for s in shop_patterns[target:target+1]:
+        print(s[0].bytestring)
+        print(s[1])
+        #gem = gem.replace(s[0].bytestring, b'\xff\xff\xff\xff')
+
+    with open('patched/' + filename, 'wb') as f:
+        f.write(gem)
+
+    # TODO: Replace one of these patterns with something else in a new GEM, see what happens.
+        # (Down the line I should get a PIL script that mentions all the differences between two images.
+            # Wouldn't automate the taking of screenshots but might help in the harder-to-notice diffs.)
 
 
     # Hmm. 4402 unique patterns in GEM, 8637 unique patterns in PNG...
@@ -685,8 +710,8 @@ if __name__ == '__main__':
                        'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
                        'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png']
-    #for f in FILES_TO_ENCODE:
-    #    encode(f)
+    for f in FILES_TO_ENCODE:
+        encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
@@ -696,4 +721,4 @@ if __name__ == '__main__':
     #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
     #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
 
-    decode('TMAP_00A.GEM')
+    #decode('TMAP_00A.GEM')
