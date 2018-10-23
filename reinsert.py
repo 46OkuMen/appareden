@@ -45,8 +45,10 @@ gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.
                        'TMAP_27A.gem', 'TMAP_29B.gem', 'TMAP_32A.gem',
                        'ORTITLE.gem', 'GENTO.gem', 'BENIMARU.gem', 'HANZOU.gem', 'TAMAMO.gem', 'GOEMON.gem',
                        'HEILEE.gem', 'SHIROU.gem', 'MEIRIN.gem', 'GENNAI.gem', 'OUGI.gem',
-                       'GENNAIJ.gem', 'GOEMONJ.gem', 'SHIROUJ.gem', 'HANZOJ.gem']
-other_files_to_reinsert = ['SCN12307.COD',]
+                       'GENNAIJ.gem', 'GOEMONJ.gem', 'SHIROUJ.gem', 'HANZOJ.gem',
+                       'TEFF_00A.gem', 'TEFF_01A.gem', 'TEFF_02A.gem']
+other_files_to_reinsert = ['SCN12307.COD',
+                           'TEFF_00A.spz', 'TEFF_01A.spz', 'TEFF_02A.spz']
 
 FILES_TO_REINSERT += MSGS
 

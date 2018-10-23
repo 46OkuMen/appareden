@@ -292,7 +292,7 @@ def encode(filename, dest_disk=DEST_DISK):
     d = Disk(dest_disk)
     d.insert(gem_filename, path_in_disk='TGL/OR')
 
-def write_spz(filename, single_sprite=False):
+def write_spz(filename, mode="4x4"):
     """Write a SPZ sprite-sheet-spec for an image, with n sprites."""
     just_filename = filename.split('.')[0]
     spz_filename = just_filename + '.SPZ'
@@ -306,18 +306,31 @@ def write_spz(filename, single_sprite=False):
 
     # TODO: There appears to be a limit to the number of sprites/tiles?
     # "C'mon!" (24 tiles) is missing the last one,
-    # "Kiyaah!" (28 tiles) is missing the last 3(?).
+    # "Kiyaah!" (28 tiles) is missing the last 5.
     # The full images display fine as ORTITLE, and adding more entries to the TEFF has no effect.
     #   Make a sprite with numbered tiles (no blank spots) to figure out what's happening.
+        # Yeah, it only goes up to the 0x18th tile, regardless of how many sprites.
+        # Are there any in the original with more than that?
+            # Nope, the max is 7 characters.
+        # How do the larger sprites (bosses, etc) do it? Are they larger than 0x18?
+    # Safest solution might be to try doing halfwidth letters.
+        # Limit might still be 6 sprites dropping in? Try to put letters closer together.
+            # 2 letters will fall at a time, but that's OK if we can get more letters at all.
 
 
     with open(spz_filename, 'wb') as f:
         f.write(b'FSPR')
-        if single_sprite:
+        if mode == "single":
             tiles_per_sprite = n*4
+            tile_spec_length = n
             f.write(b'\x01\x00')
+        elif mode == "halfwidth":
+            tiles_per_sprite = 2
+            tile_spec_length = 8
+            f.write(n.to_bytes(2, byteorder='little'))
         else:
             tiles_per_sprite = 4
+            tile_spec_length = 0xf
             f.write(n.to_bytes(2, byteorder='little'))
             
         f.write(bytes(just_filename, encoding='ascii'))
@@ -330,11 +343,10 @@ def write_spz(filename, single_sprite=False):
 
         for sprite in range(n):
             f.write(pointer_start.to_bytes(2, byteorder='little'))
-            pointer_start += 0xf
+            pointer_start += tile_spec_length
 
-        if single_sprite:
-            tiles_per_sprite = n * 4
-            f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))
+        f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))
+        if mode == "single":
             f.write(b'\x14\x13')
 
             col = 0x13
@@ -356,9 +368,21 @@ def write_spz(filename, single_sprite=False):
                 bottom_cursor += 1
                 col += 1
 
+        elif mode == "halfwidth":
+            for sprite in range(n):
+                print(sprite)
+                f.write(b'\x14\x13')
+
+                f.write(b'\x13\x44')
+                f.write(top_cursor.to_bytes(1, 'little'))
+                top_cursor += 1
+
+                f.write(b'\x13\x48')
+                f.write(bottom_cursor.to_bytes(1, 'little'))
+                bottom_cursor += 1
+
         else:
             for sprite in range(n):
-                f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))     # number of 16x16 tiles in sprite
                 # TODO:  Write \x13\x44, etc. with a loop based on tiles_per_sprite.
                 f.write(b'\x14\x13') # which columns are used??
 
@@ -366,11 +390,11 @@ def write_spz(filename, single_sprite=False):
                 f.write(top_cursor.to_bytes(1, byteorder='little'))
                 top_cursor += 1
 
-                f.write(b'\x14\x44')
+                f.write(b'\x13\x48')
                 f.write(top_cursor.to_bytes(1, byteorder='little'))
                 top_cursor += 1
 
-                f.write(b'\x13\x48')
+                f.write(b'\x14\x44')
                 f.write(bottom_cursor.to_bytes(1, byteorder='little'))
                 bottom_cursor += 1
 
@@ -511,20 +535,21 @@ def decode_spz(filename, image):
 
 
 if __name__ == '__main__':
-    FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
-                       'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
-                       'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
-                        'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
-                       'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
-                       'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
-                       'TEFF_00A.png', 'TEFF_01A.png']
+    FILES_TO_ENCODE = ['TMAP_00.png', #'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
+                       #'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
+                       #'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
+                       # 'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
+                       #'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
+                       #'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
+                       'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png']
     for f in FILES_TO_ENCODE:
         encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
     write_spz('TEFF_00A.png')
-    write_spz('TEFF_01A.png', single_sprite=True)
+    write_spz('TEFF_01A.png', 'single')
+    write_spz('TEFF_02A.png')
     #decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
     #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
     #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
