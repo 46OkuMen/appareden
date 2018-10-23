@@ -292,48 +292,91 @@ def encode(filename, dest_disk=DEST_DISK):
     d = Disk(dest_disk)
     d.insert(gem_filename, path_in_disk='TGL/OR')
 
-def write_spz(filename, n):
+def write_spz(filename, single_sprite=False):
     """Write a SPZ sprite-sheet-spec for an image, with n sprites."""
     just_filename = filename.split('.')[0]
     spz_filename = just_filename + '.SPZ'
+    png_filename = just_filename + '.PNG'
 
-    # TODO: Any way I can programatically guess the n value from the image size?
+
+    img = Image.open(png_filename)
+    width, _ = img.size
+    # Number of sprites: width / 64
+    n = width // 64
+
+    # TODO: There appears to be a limit to the number of sprites/tiles?
+    # "C'mon!" (24 tiles) is missing the last one,
+    # "Kiyaah!" (28 tiles) is missing the last 3(?).
+    # The full images display fine as ORTITLE, and adding more entries to the TEFF has no effect.
+    #   Make a sprite with numbered tiles (no blank spots) to figure out what's happening.
+
 
     with open(spz_filename, 'wb') as f:
         f.write(b'FSPR')
-        f.write(n.to_bytes(2, byteorder='little'))
+        if single_sprite:
+            tiles_per_sprite = n*4
+            f.write(b'\x01\x00')
+        else:
+            tiles_per_sprite = 4
+            f.write(n.to_bytes(2, byteorder='little'))
+            
         f.write(bytes(just_filename, encoding='ascii'))
         f.write(b'\x00'*0x12)
-
-        # TODO: This is configured for simple 32x32 sprites. More flexibility comes later.
 
         top_cursor = 0
         bottom_cursor = n*2
         pointer_start = 0x20 + (n*2)
 
+
         for sprite in range(n):
             f.write(pointer_start.to_bytes(2, byteorder='little'))
-            pointer_start +=0xf
+            pointer_start += 0xf
 
-        for sprite in range(n):
-            f.write(b'\x04')     # number of 16x16 tiles in sprite
-            f.write(b'\x14\x13') # which columns are used??
+        if single_sprite:
+            tiles_per_sprite = n * 4
+            f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))
+            f.write(b'\x14\x13')
 
-            f.write(b'\x13\x44')
-            f.write(top_cursor.to_bytes(1, byteorder='little'))
-            top_cursor += 1
+            col = 0x13
+            row = 0x44
 
-            f.write(b'\x14\x44')
-            f.write(top_cursor.to_bytes(1, byteorder='little'))
-            top_cursor += 1
+            for _ in range(tiles_per_sprite // 2):
+                f.write(col.to_bytes(1, 'little'))
+                f.write(row.to_bytes(1, 'little'))
+                f.write(top_cursor.to_bytes(1, 'little'))
+                top_cursor += 1
+                col += 1
 
-            f.write(b'\x13\x48')
-            f.write(bottom_cursor.to_bytes(1, byteorder='little'))
-            bottom_cursor += 1
+            col = 0x13
+            row = 0x48
+            for _ in range(tiles_per_sprite // 2):
+                f.write(col.to_bytes(1, 'little'))
+                f.write(row.to_bytes(1, 'little'))
+                f.write(bottom_cursor.to_bytes(1, 'little'))
+                bottom_cursor += 1
+                col += 1
 
-            f.write(b'\x14\x48')
-            f.write(bottom_cursor.to_bytes(1, byteorder='little'))
-            bottom_cursor += 1*8 # TODO: ????
+        else:
+            for sprite in range(n):
+                f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))     # number of 16x16 tiles in sprite
+                # TODO:  Write \x13\x44, etc. with a loop based on tiles_per_sprite.
+                f.write(b'\x14\x13') # which columns are used??
+
+                f.write(b'\x13\x44')
+                f.write(top_cursor.to_bytes(1, byteorder='little'))
+                top_cursor += 1
+
+                f.write(b'\x14\x44')
+                f.write(top_cursor.to_bytes(1, byteorder='little'))
+                top_cursor += 1
+
+                f.write(b'\x13\x48')
+                f.write(bottom_cursor.to_bytes(1, byteorder='little'))
+                bottom_cursor += 1
+
+                f.write(b'\x14\x48')
+                f.write(bottom_cursor.to_bytes(1, byteorder='little'))
+                bottom_cursor += 1
 
     d = Disk(DEST_DISK)
     d.insert(spz_filename, path_in_disk='TGL/OR')
@@ -473,13 +516,15 @@ if __name__ == '__main__':
                        'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
                         'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                        'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
-                       'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png']
+                       'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
+                       'TEFF_00A.png', 'TEFF_01A.png']
     for f in FILES_TO_ENCODE:
         encode(f)
     #encode('TEFF_00A.png')
     #encode('ORTITLE.png')
     #encode('GENTO.png')
-    #write_spz('TEFF_00A.png', 6)
+    write_spz('TEFF_00A.png')
+    write_spz('TEFF_01A.png', single_sprite=True)
     #decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
     #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
     #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
