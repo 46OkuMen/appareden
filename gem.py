@@ -1,12 +1,13 @@
 """
     Utilities for encoding images as .GEM files, as used in Appareden.
-    Possibly useful for other TGL/GIGA games (Farland Story? Edge?) but untested.
+    Possibly useful for other TGL/GIGA games, but would need less hard-coding in the palettes.
 """
 
 from romtools.disk import Disk
-from rominfo import DEST_DISK
+from rominfo import DEST_DISK, DEST_CD_DISK
 from PIL import Image
 from bitstring import BitArray
+from shutil import copyfile
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
@@ -30,7 +31,7 @@ NAMETAG_PALETTE_RGB = [(0x00, 0x00, 0x00),
                        (0xaa, 0xcc, 0x33),
                        (0x88, 0xbb, 0xff),
                        (0x00, 0x77, 0x88),
-                       (0xff, 0xff, 0xff),]
+                       (0xff, 0xff, 0xff), ]
 
 
 MAP_PALETTE_RGB =    [(0x00, 0x00, 0x00),
@@ -48,7 +49,7 @@ MAP_PALETTE_RGB =    [(0x00, 0x00, 0x00),
                       (0xcc, 0xcc, 0x33),
                       (0x66, 0xcc, 0xdd),
                       (0xaa, 0x77, 0x55),
-                      (0xff, 0xff, 0xff),]
+                      (0xff, 0xff, 0xff), ]
 
 # TMAP_32A
 SHIP_PALETTE_RGB = [
@@ -133,29 +134,31 @@ PLANE_COLORS = [(1, 3, 5, 7, 9, 0xb, 0xd, 0xf),
                 (8, 9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf)]
 
 
-def encode(filename, dest_disk=DEST_DISK):
+def encode(filename):
     """Encode an image file as GEM and reinsert it."""
     just_filename = filename.split('.')[0]
-    gem_filename = just_filename + '.GEM'
+    gem_filename = just_filename.replace('img_edited', 'patched') + '.GEM'
+
+    unpathed_filename = just_filename.split('/')[-1]
 
     # "Polymorphism"
-    if just_filename in NAMETAG_PALETTE_IMAGES:
+    if unpathed_filename in NAMETAG_PALETTE_IMAGES:
         print("Using nametag palette")
         palette_bytes = NAMETAG_PALETTE
         palette_rgb = NAMETAG_PALETTE_RGB
-    elif just_filename in MAP_PALETTE_IMAGES:
+    elif unpathed_filename in MAP_PALETTE_IMAGES:
         print("Using map palette")
         palette_bytes = MAP_PALETTE
         palette_rgb = NAMETAG_PALETTE_RGB
-    elif just_filename in SHIP_PALETTE_IMAGES:
+    elif unpathed_filename in SHIP_PALETTE_IMAGES:
         print("Using ship palette")
         palette_bytes = SHIP_PALETTE
         palette_rgb = SHIP_PALETTE_RGB
-    elif just_filename in TITLE_PALETTE_IMAGES:
+    elif unpathed_filename in TITLE_PALETTE_IMAGES:
         print("Using title palette")
         palette_bytes = TITLE_PALETTE
         palette_rgb = TITLE_PALETTE_RGB
-    elif just_filename in TEFF_PALETTE_IMAGES:
+    elif unpathed_filename in TEFF_PALETTE_IMAGES:
         print("Using text effect palette")
         palette_bytes = TEFF_PALETTE
         palette_rgb = TEFF_PALETTE_RGB
@@ -289,50 +292,39 @@ def encode(filename, dest_disk=DEST_DISK):
 
         f.write(b'\x00'*80)  # for good measure. TODO: Still necessary?
 
-    d = Disk(dest_disk)
+    copyfile(gem_filename, gem_filename.replace('patched', 'patched_CD'))
+
+    # Reinsert into both disks
+    d = Disk(DEST_DISK)
     d.insert(gem_filename, path_in_disk='TGL/OR')
 
-def write_spz(filename, mode="4x4"):
+    cd = Disk(DEST_CD_DISK)
+    cd.insert(gem_filename, path_in_disk='TGL/OR')
+
+def write_spz(filename, single_sprite=False):
     """Write a SPZ sprite-sheet-spec for an image, with n sprites."""
     just_filename = filename.split('.')[0]
-    spz_filename = just_filename + '.SPZ'
+    spz_filename = just_filename.replace('img_edited', 'patched') + '.SPZ'
     png_filename = just_filename + '.PNG'
-
+    print(just_filename, spz_filename, png_filename)
 
     img = Image.open(png_filename)
     width, _ = img.size
     # Number of sprites: width / 64
     n = width // 64
 
-    # TODO: There appears to be a limit to the number of sprites/tiles?
-    # "C'mon!" (24 tiles) is missing the last one,
-    # "Kiyaah!" (28 tiles) is missing the last 5.
-    # The full images display fine as ORTITLE, and adding more entries to the TEFF has no effect.
-    #   Make a sprite with numbered tiles (no blank spots) to figure out what's happening.
-        # Yeah, it only goes up to the 0x18th tile, regardless of how many sprites.
-        # Are there any in the original with more than that?
-            # Nope, the max is 7 characters.
-        # How do the larger sprites (bosses, etc) do it? Are they larger than 0x18?
-    # Safest solution might be to try doing halfwidth letters.
-        # Limit might still be 6 sprites dropping in? Try to put letters closer together.
-            # 2 letters will fall at a time, but that's OK if we can get more letters at all.
-
+    # There's a limit of 7 sprites for the drop-in spell displays, and 24 tiles total.
+    # Squish multiple letters into a 32x32 sprite if necessary.
 
     with open(spz_filename, 'wb') as f:
         f.write(b'FSPR')
-        if mode == "single":
+        if single_sprite:
             tiles_per_sprite = n*4
-            tile_spec_length = n
             f.write(b'\x01\x00')
-        elif mode == "halfwidth":
-            tiles_per_sprite = 2
-            tile_spec_length = 8
-            f.write(n.to_bytes(2, byteorder='little'))
         else:
             tiles_per_sprite = 4
-            tile_spec_length = 0xf
             f.write(n.to_bytes(2, byteorder='little'))
-            
+
         f.write(bytes(just_filename, encoding='ascii'))
         f.write(b'\x00'*0x12)
 
@@ -340,13 +332,13 @@ def write_spz(filename, mode="4x4"):
         bottom_cursor = n*2
         pointer_start = 0x20 + (n*2)
 
-
         for sprite in range(n):
             f.write(pointer_start.to_bytes(2, byteorder='little'))
-            pointer_start += tile_spec_length
+            pointer_start += 0xf
 
-        f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))
-        if mode == "single":
+        if single_sprite:
+            tiles_per_sprite = n * 4
+            f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))
             f.write(b'\x14\x13')
 
             col = 0x13
@@ -368,21 +360,11 @@ def write_spz(filename, mode="4x4"):
                 bottom_cursor += 1
                 col += 1
 
-        elif mode == "halfwidth":
-            for sprite in range(n):
-                print(sprite)
-                f.write(b'\x14\x13')
-
-                f.write(b'\x13\x44')
-                f.write(top_cursor.to_bytes(1, 'little'))
-                top_cursor += 1
-
-                f.write(b'\x13\x48')
-                f.write(bottom_cursor.to_bytes(1, 'little'))
-                bottom_cursor += 1
-
         else:
             for sprite in range(n):
+                # Don't pull this out of the loop! It needs to be written for every /sprite/.
+                f.write(tiles_per_sprite.to_bytes(1, byteorder='little'))     # number of 16x16 tiles in sprite
+
                 # TODO:  Write \x13\x44, etc. with a loop based on tiles_per_sprite.
                 f.write(b'\x14\x13') # which columns are used??
 
@@ -390,11 +372,11 @@ def write_spz(filename, mode="4x4"):
                 f.write(top_cursor.to_bytes(1, byteorder='little'))
                 top_cursor += 1
 
-                f.write(b'\x13\x48')
+                f.write(b'\x14\x44')
                 f.write(top_cursor.to_bytes(1, byteorder='little'))
                 top_cursor += 1
 
-                f.write(b'\x14\x44')
+                f.write(b'\x13\x48')
                 f.write(bottom_cursor.to_bytes(1, byteorder='little'))
                 bottom_cursor += 1
 
@@ -402,8 +384,13 @@ def write_spz(filename, mode="4x4"):
                 f.write(bottom_cursor.to_bytes(1, byteorder='little'))
                 bottom_cursor += 1
 
+    copyfile(spz_filename, spz_filename.replace('patched', 'patched_CD'))
+
     d = Disk(DEST_DISK)
     d.insert(spz_filename, path_in_disk='TGL/OR')
+
+    cd = Disk(DEST_CD_DISK)
+    cd.insert(spz_filename, path_in_disk='TGL/OR')
 
 def get_tile(img, n):
     # TODO: Not sure I have the right idea here. What about the larger images?
@@ -426,8 +413,6 @@ def get_tile(img, n):
     region = img.crop(rect)
 
     return region
-
-
 
 def decode_spz(filename, image):
     just_filename = filename.split('.')[0]
@@ -535,24 +520,30 @@ def decode_spz(filename, image):
 
 
 if __name__ == '__main__':
-    FILES_TO_ENCODE = ['TMAP_00.png', #'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
-                       #'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
-                       #'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
-                       # 'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
-                       #'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
-                       #'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
-                       'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png']
-    for f in FILES_TO_ENCODE:
-        encode(f)
-    #encode('TEFF_00A.png')
-    #encode('ORTITLE.png')
-    #encode('GENTO.png')
-    write_spz('TEFF_00A.png')
-    write_spz('TEFF_01A.png', 'single')
-    write_spz('TEFF_02A.png')
-    #decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
-    #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
-    #decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
-    #decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
+    FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
+                       'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
+                       'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
+                       'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
+                       'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
+                       'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
+                       'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png', 'TEFF_03A.png', 'TEFF_04A.png', 'TEFF_05A.png',
+                       ]
+    TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png']
+    SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png']
 
-# TMAP00 is used: ??
+    for f in FILES_TO_ENCODE:
+        f = 'img_edited/' + f
+        encode(f)
+
+    for teff in TILED_TEFFS:
+        teff = 'img_edited/' + teff
+        write_spz(teff)
+
+    for teff in SINGLE_SPRITE_TEFFS:
+        teff = 'img_edited/' + teff
+        write_spz(teff, single_sprite=True)
+
+    # decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
+    # decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
+    # decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
+    # decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
