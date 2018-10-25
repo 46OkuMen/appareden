@@ -9,9 +9,23 @@ from PIL import Image
 from bitstring import BitArray
 from shutil import copyfile
 
+FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
+                   'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
+                   'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
+                   'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
+                   'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
+                   'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
+                   'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png', 'TEFF_03A.png', 'TEFF_04A.png', 'TEFF_05A.png',
+                   'TEFF_06A.png', 'TEFF_07A.png',
+                   'OP_02B.png',
+                   ]
+TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png', 'TEFF_06A.png', 'TEFF_07A.png']
+SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png']
+
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
 SHIP_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\xda\xcf\xff\x00'
+OP_PALETTE =      b'\x00\x04\x22\x63\x40\xd0\x38\x32\x95\x76\x6c\x55\x4b\x79\x88\x6d\x97\xfc\xec\xdb\xfd\xee\xef\xff\x00'
 TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57\xE1\x76\x87\x29\xBC\x7C\xFF\xFF\xFF\x00'
 TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xa6\xaf\xff\x32\x33\x00'
                   # TODO: Why is this longer than the others??
@@ -71,6 +85,8 @@ SHIP_PALETTE_RGB = [
     (0xff, 0xff, 0xff)
 ]
 
+
+
 TITLE_PALETTE_RGB = [(0x00, 0x00, 0x00),
                (0x11, 0x11, 0x11),
                (0x88, 0x44, 0x33),     # also 88 44 33,  84 46 38
@@ -105,6 +121,26 @@ TEFF_PALETTE_RGB = [(0x00, 0x00, 0x00),
                (0x66, 0xaa, 0xaa),
                (0xff, 0xff, 0xff),]
 
+# OP_02A
+OP_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x22, 0x22, 0x44),
+    (0x33, 0x44, 0x66),
+    (0xdd, 0x00, 0x00),
+    (0x88, 0x33, 0x33),
+    (0x99, 0x55, 0x22),
+    (0x66, 0x66, 0x77),
+    (0x55, 0x55, 0xcc),
+    (0xbb, 0x77, 0x44),
+    (0x88, 0x88, 0x99),
+    (0xdd, 0x99, 0x66),
+    (0xff, 0xcc, 0x77),
+    (0xcc, 0xdd, 0xee),
+    (0xff, 0xdd, 0xbb),
+    (0xee, 0xee, 0xee),
+    (0xff, 0xff, 0xff),
+]
+
 def get_closest_color_index(palette, rgb):
     hammings = [255]*16
     for i, color in enumerate(palette):
@@ -121,6 +157,7 @@ MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B', 'TMAP_03A',
                       'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A', 'TMAP_29B', ]
 SHIP_PALETTE_IMAGES = ['TMAP_32A',]
 TITLE_PALETTE_IMAGES = ['ORTITLE', 'GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ']
+OP_PALETTE_IMAGES = ['OP_02A', 'OP_02B']
 TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A', 'TEFF_03A', 'TEFF_04A', 'TEFF_05A',
                        'TEFF_06A', 'TEFF_07A', 'TEF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_14A', 'TEFF_15A',
                        'TEFF_16A', 'TEFF_17A',]
@@ -162,6 +199,10 @@ def encode(filename):
         print("Using text effect palette")
         palette_bytes = TEFF_PALETTE
         palette_rgb = TEFF_PALETTE_RGB
+    elif unpathed_filename in OP_PALETTE_IMAGES:
+        print("Using OP palette")
+        palette_bytes = OP_PALETTE
+        palette_rgb = OP_PALETTE_RGB
     else:
         print(filename)
         raise Exception
@@ -212,7 +253,7 @@ def encode(filename):
         f.write(b'\x00\x00') # not sure about these either
         f.write(palette_bytes)
         for p in unique_patterns:
-            print(p)
+            #print(p)
             f.write(p)
 
         row_cursor = 0
@@ -221,7 +262,7 @@ def encode(filename):
         for i, pattern in enumerate(unique_patterns):
             row_cursor = starting_row_cursor
             chain_count = 0
-            print("Start pattern %s. row_cursor: %s" % (pattern, row_cursor))
+            #print("Start pattern %s. row_cursor: %s" % (pattern, row_cursor))
             for loc in pattern_locations[pattern]:
                 if pattern == unique_patterns[0] and loc == 0:
                     row_cursor += 1
@@ -251,7 +292,7 @@ def encode(filename):
                         if loc == pattern_locations[pattern][0]:
                             starting_row_cursor = loc
                         row_cursor = loc
-                        print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor))
+                        #print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor))
 
                     elif loc - row_cursor >= 63:
                         first_byte = 0xc0 + ((loc - row_cursor) + 1) // 256
@@ -262,14 +303,14 @@ def encode(filename):
                         if loc == pattern_locations[pattern][0]:
                             starting_row_cursor = loc
                         row_cursor = loc
-                        print("Far skip: %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), row_cursor))
+                        #print("Far skip: %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), row_cursor))
                         assert row_cursor == loc
                     elif loc - row_cursor < 63:
                         skip_and_write_code = 0x81 + ((loc - row_cursor) % total_rows)
                         if loc == pattern_locations[pattern][0]:
                             starting_row_cursor = loc
                         f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
-                        print("Short skip: %s, row_cursor after: %s" % (hex(skip_and_write_code), row_cursor))
+                        #print("Short skip: %s, row_cursor after: %s" % (hex(skip_and_write_code), row_cursor))
                         row_cursor = loc
                     else:
                         raise Exception
@@ -295,8 +336,11 @@ def encode(filename):
     copyfile(gem_filename, gem_filename.replace('patched', 'patched_CD'))
 
     # Reinsert into both disks
-    d = Disk(DEST_DISK)
-    d.insert(gem_filename, path_in_disk='TGL/OR')
+    try:
+        d = Disk(DEST_DISK)
+        d.insert(gem_filename, path_in_disk='TGL/OR')
+    except:
+        print("That file isn't on this disk")
 
     cd = Disk(DEST_CD_DISK)
     cd.insert(gem_filename, path_in_disk='TGL/OR')
@@ -325,6 +369,7 @@ def write_spz(filename, single_sprite=False):
             tiles_per_sprite = 4
             f.write(n.to_bytes(2, byteorder='little'))
 
+        just_filename = just_filename.split('/')[-1]
         f.write(bytes(just_filename, encoding='ascii'))
         f.write(b'\x00'*0x12)
 
@@ -386,8 +431,11 @@ def write_spz(filename, single_sprite=False):
 
     copyfile(spz_filename, spz_filename.replace('patched', 'patched_CD'))
 
-    d = Disk(DEST_DISK)
-    d.insert(spz_filename, path_in_disk='TGL/OR')
+    try:
+        d = Disk(DEST_DISK)
+        d.insert(spz_filename, path_in_disk='TGL/OR')
+    except:
+        print("That file isn't on this disk")
 
     cd = Disk(DEST_CD_DISK)
     cd.insert(spz_filename, path_in_disk='TGL/OR')
@@ -520,16 +568,6 @@ def decode_spz(filename, image):
 
 
 if __name__ == '__main__':
-    FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
-                       'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
-                       'TMAP_27A.png', 'TMAP_29B.png', 'TMAP_32A.png',
-                       'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
-                       'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
-                       'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
-                       'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png', 'TEFF_03A.png', 'TEFF_04A.png', 'TEFF_05A.png',
-                       ]
-    TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png']
-    SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png']
 
     for f in FILES_TO_ENCODE:
         f = 'img_edited/' + f

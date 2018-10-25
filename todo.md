@@ -54,9 +54,6 @@
 * ZP recovery items say they're healing HP.
 	* Do the JP strings just say "points restored" generically?
 
-## ORBTL
-* Last party member's menu is a little wider than the rest?
-
 ## Graphics
 * Which MAP tileset goes to which place?
 	* 00 - not sure where
@@ -86,20 +83,22 @@
 		* Come on! - individual letters
 		* Kiyahh!
 		* Do your best! - individual letters
-		* Chest!
+		* Chestoh!
 		* Careful!
 		* Raagghh! - monolithic
 	* Haley
 		* Holy Light - individual letters
-		* Deus X Machina
-		* Santa Lucia
+		* Hallelujah - individual
+		* Deus X Machina - individual
+			* Need to redo this one, it is too wide & the bottom of the "a" gets cut off now.
+		* Santa Lucia - individual
 		* Judgment - monolithic
 		* Apocalypse - monolithic
 		* Apocalypse (2)
 			* (Where does this appear?)
 	* Gennai
-		* Eleheal
-		* Eleshot
+		* Eleheal - individual
+		* Eleshot - 
 		* Elerecover
 		* Elespark
 		* Elestun

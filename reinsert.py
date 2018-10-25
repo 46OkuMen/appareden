@@ -11,6 +11,7 @@ from appareden.rominfo import DUMP_XLS_PATH, POINTER_XLS_PATH, ITEM_NAME_CATEGOR
 from appareden.rominfo import FdRom
 from appareden.cd_rominfo import CdRom, CD_SRC_DISK, CD_DEST_DISK, CD_SRC_DIR, CD_DEST_DIR
 from appareden.utils import replace_control_codes
+from appareden.gem import FILES_TO_ENCODE as GEMS_TO_REINSERT
 
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
@@ -40,14 +41,14 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
 #FILES_TO_REINSERT = ['ORFIELD.EXE',]
 
-gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.gem', 'TMAP_03A.gem', 'TMAP_06A.gem',
-                       'TMAP_10B.gem', 'TMAP_11A.gem', 'TMAP_12B.gem', 'TMAP_14A.gem', "TMAP_16B.gem",
-                       'TMAP_27A.gem', 'TMAP_29B.gem', 'TMAP_32A.gem',
-                       'ORTITLE.gem', 'GENTO.gem', 'BENIMARU.gem', 'HANZOU.gem', 'TAMAMO.gem', 'GOEMON.gem',
-                       'HEILEE.gem', 'SHIROU.gem', 'MEIRIN.gem', 'GENNAI.gem', 'OUGI.gem',
-                       'GENNAIJ.gem', 'GOEMONJ.gem', 'SHIROUJ.gem', 'HANZOJ.gem',
-                       'TEFF_00A.gem', 'TEFF_01A.gem', 'TEFF_02A.gem', 'TEFF_03A.gem', 'TEFF_04A.gem',
-                       'TEFF_05A.gem']
+#gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.gem', 'TMAP_03A.gem', 'TMAP_06A.gem',
+#                       'TMAP_10B.gem', 'TMAP_11A.gem', 'TMAP_12B.gem', 'TMAP_14A.gem', "TMAP_16B.gem",
+#                       'TMAP_27A.gem', 'TMAP_29B.gem', 'TMAP_32A.gem',
+#                       'ORTITLE.gem', 'GENTO.gem', 'BENIMARU.gem', 'HANZOU.gem', 'TAMAMO.gem', 'GOEMON.gem',
+#                       'HEILEE.gem', 'SHIROU.gem', 'MEIRIN.gem', 'GENNAI.gem', 'OUGI.gem',
+#                       'GENNAIJ.gem', 'GOEMONJ.gem', 'SHIROUJ.gem', 'HANZOJ.gem',
+#                       'TEFF_00A.gem', 'TEFF_01A.gem', 'TEFF_02A.gem', 'TEFF_03A.gem', 'TEFF_04A.gem',
+#                       'TEFF_05A.gem']
 other_files_to_reinsert = ['SCN12307.COD',
                            'TEFF_00A.spz', 'TEFF_01A.spz', 'TEFF_02A.spz', 'TEFF_03A.spz', 'TEFF_04A.spz',
                            'TEFF_05A.spz']
@@ -528,10 +529,14 @@ def reinsert(version):
     if missing_string_count > 0:
         print("Strings missing in MSGs: %s" % missing_string_count)
 
-    for g in gems_to_reinsert:
+    for g in GEMS_TO_REINSERT:
         # This doesn't encode any of them, just inserts what's already there
+        g = g.replace('.png', '.gem')
         print("Inserting", g)
-        TargetAp.insert(os.path.join(DEST_DIR, g), path_in_disk='TGL/OR')
+        try:
+            TargetAp.insert(os.path.join('patched', g), path_in_disk='TGL/OR')
+        except:
+            print("That file wasn't in that disk")
         if version == 'FD':
             REINSERTED_STRING_COUNTS['Images'] += 1
 
