@@ -90,16 +90,13 @@
 		* Holy Light - individual letters
 		* Hallelujah - individual
 		* Deus X Machina - individual
-			* Need to redo this one, it is too wide & the bottom of the "a" gets cut off now.
 		* Santa Lucia - individual
 		* Judgment - monolithic
 		* Apocalypse - monolithic
-		* Apocalypse (2)
-			* (Where does this appear?)
 	* Gennai
 		* Eleheal - individual
 		* Eleshot - 
-		* Elerecover
+		* Elerecover - unused
 		* Elespark
 		* Elestun
 		* Elebuster

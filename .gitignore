@@ -137,3 +137,5 @@ DBLSPACE.BIN
 ND.EXE
 histogram.py
 row_access.py
+*.GEM
+*.png

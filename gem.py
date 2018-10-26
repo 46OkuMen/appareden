@@ -16,11 +16,12 @@ FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png'
                    'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',
                    'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
                    'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png', 'TEFF_03A.png', 'TEFF_04A.png', 'TEFF_05A.png',
-                   'TEFF_06A.png', 'TEFF_07A.png',
+                   'TEFF_06A.png', 'TEFF_07A.png', 'TEFF_08A.png', 'TEFF_09A.png', 'TEFF_0AA.png', 'TEFF_0BA.png',
                    'OP_02B.png',
                    ]
-TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png', 'TEFF_06A.png', 'TEFF_07A.png']
-SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png']
+TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png', 'TEFF_06A.png', 'TEFF_07A.png', 'TEFF_08A.png',
+               'TEFF_0AA.png']
+SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png', 'TEFF_09A.png', 'TEFF_0BA.png']
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
@@ -159,7 +160,7 @@ SHIP_PALETTE_IMAGES = ['TMAP_32A',]
 TITLE_PALETTE_IMAGES = ['ORTITLE', 'GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ']
 OP_PALETTE_IMAGES = ['OP_02A', 'OP_02B']
 TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A', 'TEFF_03A', 'TEFF_04A', 'TEFF_05A',
-                       'TEFF_06A', 'TEFF_07A', 'TEF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_14A', 'TEFF_15A',
+                       'TEFF_06A', 'TEFF_07A', 'TEFF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_14A', 'TEFF_15A',
                        'TEFF_16A', 'TEFF_17A',]
 
 
@@ -356,6 +357,7 @@ def write_spz(filename, single_sprite=False):
     width, _ = img.size
     # Number of sprites: width / 64
     n = width // 64
+    print(filename, width, "n = ", n)
 
     # There's a limit of 7 sprites for the drop-in spell displays, and 24 tiles total.
     # Squish multiple letters into a 32x32 sprite if necessary.
