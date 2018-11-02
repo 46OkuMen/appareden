@@ -101,8 +101,21 @@
 		* Elestun
 		* Elebuster
 
+* "Slurp" CHAR images
+	* 32A:
+		* Segment 1 in bottom-left corner: 64x16 top-right of Slurp
+		* Segment 2 at bottom-center: 80x16 middle of Slurp
+		* Segment 3 at bottom-right: 80x16 bottom of slurp
+	* 43A:
+		* Segment 1 on the left: 34(!)x16 middle-right of Slurp
+		* Segment 2 in the middle: 80x16 bottom of Slurp
+		* Segment 3 up-and-right of that: 64x16 top-right of Slurp (partially duplicates S1)
+		* Segment 4 on the right: 48x16 middle-left of Slurp (partially duplicates S1)
+		* (I think this might be a slightly different graphic than 32A. But it's probably fine)
+
 * Might be worth some attempt at optimizing the GEM encoder a little more.
 	* Control code for alternating chains? 10101 etc
+	* Nah, not worth it. Too hard
 
 ## Voice Scenes
 * What to do??

@@ -17,11 +17,13 @@ FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png'
                    'GENNAIJ.png', 'GOEMONJ.png', 'SHIROUJ.png', 'HANZOJ.png',
                    'TEFF_00A.png', 'TEFF_01A.png', 'TEFF_02A.png', 'TEFF_03A.png', 'TEFF_04A.png', 'TEFF_05A.png',
                    'TEFF_06A.png', 'TEFF_07A.png', 'TEFF_08A.png', 'TEFF_09A.png', 'TEFF_0AA.png', 'TEFF_0BA.png',
-                   'OP_02B.png',
+                   'OP_02B.png', 'TEFF_12A.png', 'TEFF_13A.png', 'TEFF_15A.png', 'TEFF_16A.png', 'TEFF_17A.png',
+                   'CHAR_32A.png', 'CHAR_43A.png',
                    ]
 TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png', 'TEFF_06A.png', 'TEFF_07A.png', 'TEFF_08A.png',
-               'TEFF_0AA.png']
-SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png', 'TEFF_09A.png', 'TEFF_0BA.png']
+               'TEFF_0AA.png', 'TEFF_12A.png']
+SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png', 'TEFF_09A.png', 'TEFF_0BA.png',
+                       'TEFF_13A.png', 'TEFF_15A.png', 'TEFF_16A.png', 'TEFF_17a.png']
 
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
@@ -86,41 +88,39 @@ SHIP_PALETTE_RGB = [
     (0xff, 0xff, 0xff)
 ]
 
-
-
 TITLE_PALETTE_RGB = [(0x00, 0x00, 0x00),
-               (0x11, 0x11, 0x11),
-               (0x88, 0x44, 0x33),     # also 88 44 33,  84 46 38
-               (0xdd, 0x44, 0x00),
-               (0xcc, 0x99, 0x55),
-               (0xff, 0xcc, 0x44),
-               (0xcc, 0xbb, 0xaa),
-               (0xee, 0xcc, 0x99),
-               (0x00, 0x22, 0x88),
-               (0x55, 0x77, 0x11),
-               (0x11, 0x77, 0xee),
-               (0x88, 0x77, 0x66),
-               (0x99, 0xbb, 0x22),
-               (0x77, 0xcc, 0xcc),
-               (0xfa, 0xfa, 0xfa),
-               (0xff, 0xff, 0xff),]
+                     (0x11, 0x11, 0x11),
+                     (0x88, 0x44, 0x33),     # also 88 44 33,  84 46 38
+                     (0xdd, 0x44, 0x00),
+                     (0xcc, 0x99, 0x55),
+                     (0xff, 0xcc, 0x44),
+                     (0xcc, 0xbb, 0xaa),
+                     (0xee, 0xcc, 0x99),
+                     (0x00, 0x22, 0x88),
+                     (0x55, 0x77, 0x11),
+                     (0x11, 0x77, 0xee),
+                     (0x88, 0x77, 0x66),
+                     (0x99, 0xbb, 0x22),
+                     (0x77, 0xcc, 0xcc),
+                     (0xfa, 0xfa, 0xfa),
+                     (0xff, 0xff, 0xff),]
 
 TEFF_PALETTE_RGB = [(0x00, 0x00, 0x00),
-               (0x33, 0x33, 0x33),
-               (0x88, 0x44, 0x33),
-               (0xff, 0x44, 0x00),
-               (0xdd, 0x99, 0x44),
-               (0xff, 0xbb, 0x44),
-               (0xcc, 0xbb, 0xaa),
-               (0xff, 0xdd, 0x99),
-               (0x00, 0x22, 0x88),
-               (0x55, 0x77, 0x11),
-               (0x00, 0x66, 0xdd),
-               (0x88, 0x77, 0x66),
-               (0xaa, 0xcc, 0x33),
-               (0x88, 0xbb, 0xff),
-               (0x66, 0xaa, 0xaa),
-               (0xff, 0xff, 0xff),]
+                   (0x33, 0x33, 0x33),
+                   (0x88, 0x44, 0x33),
+                   (0xff, 0x44, 0x00),
+                   (0xdd, 0x99, 0x44),
+                   (0xff, 0xbb, 0x44),
+                   (0xcc, 0xbb, 0xaa),
+                   (0xff, 0xdd, 0x99),
+                   (0x00, 0x22, 0x88),
+                   (0x55, 0x77, 0x11),
+                   (0x00, 0x66, 0xdd),
+                   (0x88, 0x77, 0x66),
+                   (0xaa, 0xcc, 0x33),
+                   (0x88, 0xbb, 0xff),
+                   (0x66, 0xaa, 0xaa),
+                   (0xff, 0xff, 0xff),]
 
 # OP_02A
 OP_PALETTE_RGB = [
@@ -152,15 +152,18 @@ def get_closest_color_index(palette, rgb):
     return hammings.index(min(hammings))
 
 
-
-NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE', 'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU']
-MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B', 'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
-                      'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A', 'TMAP_29B', ]
+NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE',
+                          'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU',
+                          'CHAR_32A', 'CHAR_43A']
+MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B',
+                      'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
+                      'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A',
+                      'TMAP_29B']
 SHIP_PALETTE_IMAGES = ['TMAP_32A',]
 TITLE_PALETTE_IMAGES = ['ORTITLE', 'GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ']
 OP_PALETTE_IMAGES = ['OP_02A', 'OP_02B']
 TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A', 'TEFF_03A', 'TEFF_04A', 'TEFF_05A',
-                       'TEFF_06A', 'TEFF_07A', 'TEFF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_14A', 'TEFF_15A',
+                       'TEFF_06A', 'TEFF_07A', 'TEFF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_15A',
                        'TEFF_16A', 'TEFF_17A',]
 
 
