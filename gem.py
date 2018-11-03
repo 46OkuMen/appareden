@@ -5,7 +5,7 @@
 
 from romtools.disk import Disk
 from rominfo import DEST_DISK, DEST_CD_DISK
-from PIL import Image
+from PIL import Image, ImageDraw
 from bitstring import BitArray
 from shutil import copyfile
 
@@ -19,6 +19,7 @@ FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png'
                    'TEFF_06A.png', 'TEFF_07A.png', 'TEFF_08A.png', 'TEFF_09A.png', 'TEFF_0AA.png', 'TEFF_0BA.png',
                    'OP_02B.png', 'TEFF_12A.png', 'TEFF_13A.png', 'TEFF_15A.png', 'TEFF_16A.png', 'TEFF_17A.png',
                    'CHAR_32A.png', 'CHAR_43A.png', 'OP_02C.png', 'OP_04B.png', 'OP_07B.png',
+                   'SFCHR_99.png'
                    ]
 TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png', 'TEFF_06A.png', 'TEFF_07A.png', 'TEFF_08A.png',
                'TEFF_0AA.png', 'TEFF_12A.png']
@@ -34,6 +35,26 @@ TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57
                   # TODO: Why is this longer than the others??
 
 OP_TEXT_PALETTE = b'\x00\x02\x32\x26\x32\xc6\x8e\xa9\xfb\xbf\xda\xcb\x79\x84\x54\x19\x11\xd1\xf2\x8b\x55\xf0\xdf\xff\x00'
+SFCHR_PALETTE =   b'\x00\x03\x33\x49\x52\xF5\x3C\x93\xEB\xAC\xB9\xFD\x80\x21\x77\xD0\x66\x87\x3C\xCF\x8B\xFB\xEF\xFF\x00'
+
+SFCHR_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x33, 0x33),
+    (0x99, 0x55, 0x44),
+    (0xff, 0x55, 0x22),
+    (0xcc, 0x99, 0x33),
+    (0xee, 0xbb, 0x33),
+    (0xcc, 0xbb, 0xaa),
+    (0xff, 0xdd, 0x99),
+    (0x00, 0x22, 0x88),
+    (0x77, 0x77, 0x11),
+    (0x00, 0x66, 0xdd),
+    (0x88, 0x77, 0x66),
+    (0xcc, 0xcc, 0x33),
+    (0x88, 0xbb, 0xff),
+    (0xbb, 0xee, 0xff),
+    (0xff, 0xff, 0xff)
+]
 
 OP_TEXT_PALETTE_RGB = [
     (0x00, 0x00, 0x00),
@@ -195,6 +216,8 @@ TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A
                        'TEFF_06A', 'TEFF_07A', 'TEFF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_15A',
                        'TEFF_16A', 'TEFF_17A',]
 
+SFCHR_PALETTE_IMAGES = ['SFCHR_99',]
+
 
 # Plane activation for each color in the palette.
 # Which bit is active there
@@ -240,6 +263,10 @@ def encode(filename):
         print("Using OP text palette")
         palette_bytes = OP_TEXT_PALETTE
         palette_rgb = OP_TEXT_PALETTE_RGB
+    elif unpathed_filename in SFCHR_PALETTE_IMAGES:
+        print("Using SFCHR palette")
+        palette_bytes = SFCHR_PALETTE
+        palette_rgb = SFCHR_PALETTE_RGB
     else:
         print(filename)
         raise Exception
@@ -382,6 +409,7 @@ def encode(filename):
     cd = Disk(DEST_CD_DISK)
     cd.insert(gem_filename, path_in_disk='TGL/OR')
 
+
 def write_spz(filename, single_sprite=False):
     """Write a SPZ sprite-sheet-spec for an image, with n sprites."""
     just_filename = filename.split('.')[0]
@@ -479,8 +507,6 @@ def write_spz(filename, single_sprite=False):
     cd.insert(spz_filename, path_in_disk='TGL/OR')
 
 def get_tile(img, n):
-    # TODO: Not sure I have the right idea here. What about the larger images?
-    # There are more than 255 tiles in them, so clearly it can't just be one byte...
     width, height = img.size
     pix = img.load()
 
@@ -489,7 +515,7 @@ def get_tile(img, n):
 
     assert x < width
     if y >= height:
-         y = 0
+        y = 0
     assert y < height
 
     #$print(n, x, y)
@@ -515,6 +541,7 @@ def decode_spz(filename, image):
     SPRITESHEET_MAX_Y = 4000
 
     dest_img = Image.new("RGB", (SPRITESHEET_MAX_X, SPRITESHEET_MAX_Y), "white")
+    dest_img_draw = ImageDraw.Draw(dest_img)
 
     sprite_offsets = []
     cursor = 0x20
@@ -577,8 +604,9 @@ def decode_spz(filename, image):
                 print("Weird tile Y here:", y_marker)
 
             tile = get_tile(img, tile_marker + tile_constant)
+            #print(tile)
 
-            #print(tile_marker)
+            print("Tile: " + str(tile_marker))
 
             #tile_xs.append(x_marker)
             #tile_ys.append(y_marker)
@@ -586,13 +614,25 @@ def decode_spz(filename, image):
             tile_x = (x_marker - 9) * 16
             tile_y = (y_marker - 0x44) * 4
 
-            print(tile_x)
+            #print(tile_x)
 
             if sprite_width < tile_x:
-                sprite_Width = tile_x
+                sprite_width = tile_x
 
             dest_img.paste(tile, (tile_x + dest_x, tile_y + dest_y))
 
+            if tile_constant == 0:
+                tile_color = (255, 0, 0, 0)
+            elif tile_constant == 256:
+                tile_color = (0, 255, 0, 0)
+            elif tile_constant == 512:
+                tile_color = (0, 0, 255, 0)
+            tile_name = hex(tile_marker)[2:]
+            #tile_name = "%s %s" % (tile_x, tile_y)
+            dest_img_draw.text((tile_x+dest_x, tile_y+dest_y), tile_name, fill=tile_color)
+
+
+        dest_img_draw.text((tile_x + dest_x - 32, tile_y + dest_y + 32), "Sprite %s" % (hex(i)[2:]), fill=(255, 0, 0, 0))
         print(i, "width", sprite_width)
         print(i, "tile x", tile_x)
         dest_x += tile_x + 64
@@ -621,5 +661,5 @@ if __name__ == '__main__':
 
     # decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
     # decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
-    # decode_spz('SFCHR_99.SPZ', 'SFCHR_99_background01.png' )    # Much more complex
+    #decode_spz('original/OR/SFCHR_99.SPZ', 'img_original/SFCHR_99_background01.png' )    # Much more complex
     # decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
