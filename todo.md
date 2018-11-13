@@ -113,9 +113,12 @@
 		* Segment 4 on the right: 48x16 middle-left of Slurp (partially duplicates S1)
 		* (I think this might be a slightly different graphic than 32A. But it's probably fine)
 
-* Might be worth some attempt at optimizing the GEM encoder a little more.
-	* Control code for alternating chains? 10101 etc
-	* Nah, not worth it. Too hard
+* SFCHR_99.GEM
+	* SF is located in Kobe (use state 3)
+	* Currently it's totally broken - were those extra parts of the palette (32, 33, etc) important??
+	* Need to edit the .SPZ manually.
+		* Gen   to sprite needs its parts to be placed adjacent
+		* "1 Round" / "2 Round" etc need to be rearranged.
 
 ## Voice Scenes
 * What to do??
