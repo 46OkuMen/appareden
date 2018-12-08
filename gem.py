@@ -53,6 +53,7 @@ TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57
 TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xa6\xaf\xff\x32\x33\x00'
 OP_TEXT_PALETTE = b'\x00\x02\x32\x26\x32\xc6\x8e\xa9\xfb\xbf\xda\xcb\x79\x84\x54\x19\x11\xd1\xf2\x8b\x55\xf0\xdf\xff\x00'
 SFCHR_PALETTE =   b'\x00\x03\x33\x49\x52\xF5\x3C\x93\xEB\xAC\xB9\xFD\x80\x21\x77\xD0\x66\x87\x3C\xCF\x8B\xFB\xEF\xFF\x35\x36\x33\x00'
+CHR_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\x80\x7f\xff\x33\x38\x39\x00'
 
 def edit(string, loc, replacement):
     return string[:loc] + replacement + string[loc+1:]
@@ -68,8 +69,8 @@ def get_closest_color_index(palette, rgb):
 
 
 NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE',
-                          'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU',
-                          'CHAR_32A', 'CHAR_43A']
+                          'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU']
+                          
 MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B',
                       'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
                       'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A',
@@ -85,6 +86,8 @@ TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A
                        'TEFF_16A', 'TEFF_17A',]
 
 SFCHR_PALETTE_IMAGES = ['SFCHR_99',]
+
+CHR_PALETTE_IMAGES = ['CHAR_32A', 'CHAR_43A']
 
 # Plane activation for each color in the palette.
 # Which bit is active there
@@ -126,6 +129,9 @@ def encode(filename):
     elif unpathed_filename in SFCHR_PALETTE_IMAGES:
         print("Using SFCHR palette")
         palette = Palette(SFCHR_PALETTE)
+    elif unpathed_filename in CHR_PALETTE_IMAGES:
+        print("Using CHR palette")
+        palette = Palette(CHR_PALETTE)
     else:
         print(filename)
         raise Exception
@@ -506,17 +512,17 @@ def decode_spz(filename, image):
 
 if __name__ == '__main__':
 
-    #for f in FILES_TO_ENCODE:
-    #    f = 'img_edited/' + f
-    #    encode(f)
+    for f in FILES_TO_ENCODE:
+        f = 'img_edited/' + f
+        encode(f)
 
-    #for teff in TILED_TEFFS:
-    #    teff = 'img_edited/' + teff
-    #    write_spz(teff)
+    for teff in TILED_TEFFS:
+        teff = 'img_edited/' + teff
+        write_spz(teff)
 
-    #for teff in SINGLE_SPRITE_TEFFS:
-    #    teff = 'img_edited/' + teff
-    #    write_spz(teff, single_sprite=True)
+    for teff in SINGLE_SPRITE_TEFFS:
+        teff = 'img_edited/' + teff
+        write_spz(teff, single_sprite=True)
 
     for spz in MANUAL_SPZS:
         with open('original/OR/%s' % spz, 'rb') as f:
