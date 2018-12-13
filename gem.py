@@ -26,37 +26,192 @@ TILED_TEFFS = ['TEFF_00A.png', 'TEFF_02A.png', 'TEFF_04A.png', 'TEFF_06A.png', '
 SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png', 'TEFF_09A.png', 'TEFF_0BA.png',
                        'TEFF_13A.png', 'TEFF_15A.png', 'TEFF_16A.png', 'TEFF_17a.png']
 
-MANUAL_SPZS = ["SFCHR_99.SPZ"]
+MANUAL_SPZS = ['SFCHR_99.SPZ']
 
-class Palette:
-    def __init__(self, palette_string):
-        self.string = palette_string
-        self.colors = self._string_to_rgb(palette_string)
-
-    def _string_to_rgb(self, palette_string):
-        result = []
-        palette_hex = palette_string.hex()
-        for _ in range(16):
-            r = int(palette_hex[1], 16) * 0x11
-            g = int(palette_hex[2], 16) * 0x11
-            b = int(palette_hex[0], 16) * 0x11
-            result.append((r, g, b))
-            palette_hex = palette_hex[3:]
-        return result
-
-# Some are longer than others - has something to do with spritesheets.
 NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
 MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
 SHIP_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\xda\xcf\xff\x00'
 OP_PALETTE =      b'\x00\x04\x22\x63\x40\xd0\x38\x32\x95\x76\x6c\x55\x4b\x79\x88\x6d\x97\xfc\xec\xdb\xfd\xee\xef\xff\x00'
 TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57\xE1\x76\x87\x29\xBC\x7C\xFF\xFF\xFF\x00'
 TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xa6\xaf\xff\x32\x33\x00'
+                  # TODO: Why is this longer than the others??
+
+
 OP_TEXT_PALETTE = b'\x00\x02\x32\x26\x32\xc6\x8e\xa9\xfb\xbf\xda\xcb\x79\x84\x54\x19\x11\xd1\xf2\x8b\x55\xf0\xdf\xff\x00'
 SFCHR_PALETTE =   b'\x00\x03\x33\x49\x52\xF5\x3C\x93\xEB\xAC\xB9\xFD\x80\x21\x77\xD0\x66\x87\x3C\xCF\x8B\xFB\xEF\xFF\x35\x36\x33\x00'
 CHR_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\x80\x7f\xff\x33\x38\x39\x00'
 
-def edit(string, loc, replacement):
-    return string[:loc] + replacement + string[loc+1:]
+CHR_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x33, 0x33),
+    (0x88, 0x44, 0x33),
+    (0xff, 0x44, 0x00),
+    (0xdd, 0x99, 0x44),
+    (0xff, 0xbb, 0x44),
+    (0xcc, 0xbb, 0xaa),
+    (0xff, 0xdd, 0x99),
+    (0x00, 0x22, 0x88),
+    (0x55, 0x77, 0x11),
+    (0x00, 0x66, 0xdd),
+    (0x88, 0x77, 0x66),
+    (0xaa, 0xcc, 0x33),
+    (0x88, 0xbb, 0xff),
+    (0x00, 0x77, 0x88),
+    (0xff, 0xff, 0xff),
+]
+
+
+SFCHR_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x33, 0x33),
+    (0x99, 0x55, 0x44),
+    (0xff, 0x55, 0x22),
+    (0xcc, 0x99, 0x33),
+    (0xee, 0xbb, 0x33),
+    (0xcc, 0xbb, 0xaa),
+    (0xff, 0xdd, 0x99),
+    (0x00, 0x22, 0x88),
+    (0x77, 0x77, 0x11),
+    (0x00, 0x66, 0xdd),
+    (0x88, 0x77, 0x66),
+    (0xcc, 0xcc, 0x33),
+    (0x88, 0xbb, 0xff),
+    (0xbb, 0xee, 0xff),
+    (0xff, 0xff, 0xff)
+]
+
+OP_TEXT_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x22, 0x22),
+    (0x66, 0x33, 0x22),
+    (0xcc, 0x66, 0x22),
+    (0xee, 0xaa, 0x88),
+    (0xff, 0xbb, 0x99),
+    (0xff, 0xdd, 0xbb),
+    (0xcc, 0xbb, 0xaa),
+    (0x99, 0x88, 0x77),
+    (0x55, 0x44, 0x44),
+    (0x99, 0x11, 0x11),
+    (0xdd, 0x11, 0x11),
+    (0x22, 0x88, 0xff),
+    (0x55, 0x55, 0xbb),
+    (0x00, 0xdd, 0xff),
+    (0xff, 0xff, 0xff)
+]
+
+NAMETAG_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x33, 0x33),
+    (0x88, 0x44, 0x33),
+    (0xff, 0x44, 0x00),
+    (0xdd, 0x99, 0x44),
+    (0xff, 0xbb, 0x44),
+    (0xcc, 0xbb, 0xaa),
+    (0xff, 0xdd, 0x99),
+    (0x00, 0x22, 0x88),
+    (0x55, 0x77, 0x11),
+    (0x00, 0x66, 0xdd),
+    (0x88, 0x77, 0x66),
+    (0xaa, 0xcc, 0x33),
+    (0x88, 0xbb, 0xff),
+    (0x00, 0x77, 0x88),
+    (0xff, 0xff, 0xff)
+]
+
+
+MAP_PALETTE_RGB = [
+  (0x00, 0x00, 0x00),
+  (0x33, 0x33, 0x33),
+  (0x88, 0x44, 0x33),
+  (0xff, 0x44, 0x00),
+  (0xdd, 0x99, 0x44),
+  (0xee, 0xbb, 0x44),
+  (0xcc, 0xbb, 0xaa),
+  (0xff, 0xdd, 0x99),
+  (0x00, 0x33, 0x66),
+  (0x77, 0x77, 0x11),
+  (0x00, 0x77, 0xbb),
+  (0x88, 0x77, 0x66),
+  (0xcc, 0xcc, 0x33),
+  (0x66, 0xcc, 0xdd),
+  (0xaa, 0x77, 0x55),
+  (0xff, 0xff, 0xff), 
+]
+
+# TMAP_32A
+SHIP_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x33, 0x33, 0x33),
+    (0x88, 0x44, 0x33),
+    (0xff, 0x44, 0x00),
+    (0xdd, 0x99, 0x44),
+    (0xff, 0xbb, 0x44),
+    (0xcc, 0xbb, 0xaa),
+    (0xff, 0xdd, 0x99),
+    (0x00, 0x33, 0x66),
+    (0x77, 0x77, 0x11),
+    (0x00, 0x77, 0xbb),
+    (0x88, 0x77, 0x66),
+    (0xcc, 0xcc, 0x33),
+    (0x66, 0xcc, 0xdd),
+    (0xaa, 0xcc, 0xdd),
+    (0xff, 0xff, 0xff)
+]
+
+TITLE_PALETTE_RGB = [(0x00, 0x00, 0x00),
+                     (0x11, 0x11, 0x11),
+                     (0x88, 0x44, 0x33),     # also 88 44 33,  84 46 38
+                     (0xdd, 0x44, 0x00),
+                     (0xcc, 0x99, 0x55),
+                     (0xff, 0xcc, 0x44),
+                     (0xcc, 0xbb, 0xaa),
+                     (0xee, 0xcc, 0x99),
+                     (0x00, 0x22, 0x88),
+                     (0x55, 0x77, 0x11),
+                     (0x11, 0x77, 0xee),
+                     (0x88, 0x77, 0x66),
+                     (0x99, 0xbb, 0x22),
+                     (0x77, 0xcc, 0xcc),
+                     (0xfa, 0xfa, 0xfa),
+                     (0xff, 0xff, 0xff)
+                     ]
+
+TEFF_PALETTE_RGB = [(0x00, 0x00, 0x00),
+                    (0x33, 0x33, 0x33),
+                    (0x88, 0x44, 0x33),
+                    (0xff, 0x44, 0x00),
+                    (0xdd, 0x99, 0x44),
+                    (0xff, 0xbb, 0x44),
+                    (0xcc, 0xbb, 0xaa),
+                    (0xff, 0xdd, 0x99),
+                    (0x00, 0x22, 0x88),
+                    (0x55, 0x77, 0x11),
+                    (0x00, 0x66, 0xdd),
+                    (0x88, 0x77, 0x66),
+                    (0xaa, 0xcc, 0x33),
+                    (0x88, 0xbb, 0xff),
+                    (0x66, 0xaa, 0xaa),
+                    (0xff, 0xff, 0xff)
+                    ]
+
+OP_PALETTE_RGB = [
+    (0x00, 0x00, 0x00),
+    (0x22, 0x22, 0x44),
+    (0x33, 0x44, 0x66),
+    (0xdd, 0x00, 0x00),
+    (0x88, 0x33, 0x33),
+    (0x99, 0x55, 0x22),
+    (0x66, 0x66, 0x77),
+    (0x55, 0x55, 0xcc),
+    (0xbb, 0x77, 0x44),
+    (0x88, 0x88, 0x99),
+    (0xdd, 0x99, 0x66),
+    (0xff, 0xcc, 0x77),
+    (0xcc, 0xdd, 0xee),
+    (0xff, 0xdd, 0xbb),
+    (0xee, 0xee, 0xee),
+    (0xff, 0xff, 0xff),
+]
 
 def get_closest_color_index(palette, rgb):
     hammings = [255]*16
@@ -67,17 +222,20 @@ def get_closest_color_index(palette, rgb):
         hammings[i] = hamming
     return hammings.index(min(hammings))
 
+def edit(string, loc, replacement):
+    return string[:loc] + replacement + string[loc+1:]
+
 
 NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE',
                           'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU']
-                          
+CHR_PALETTE_IMAGES = ['CHAR_32A', 'CHAR_43A']
 MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B',
                       'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
                       'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A',
                       'TMAP_29B']
-SHIP_PALETTE_IMAGES = ['TMAP_32A']
+SHIP_PALETTE_IMAGES = ['TMAP_32A',]
 TITLE_PALETTE_IMAGES = ['ORTITLE', 'GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ']
-
+# 04B has its own palette. Let's see what happens if we ignore that and put it here
 OP_PALETTE_IMAGES = ['OP_02B', 'OP_02C']
 OP_TEXT_PALETTE_IMAGES = ['OP_04B', 'OP_07B']
 
@@ -87,7 +245,6 @@ TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A
 
 SFCHR_PALETTE_IMAGES = ['SFCHR_99',]
 
-CHR_PALETTE_IMAGES = ['CHAR_32A', 'CHAR_43A']
 
 # Plane activation for each color in the palette.
 # Which bit is active there
@@ -107,31 +264,41 @@ def encode(filename):
     # "Polymorphism"
     if unpathed_filename in NAMETAG_PALETTE_IMAGES:
         print("Using nametag palette")
-        palette = Palette(NAMETAG_PALETTE)
+        palette_bytes = NAMETAG_PALETTE
+        palette_rgb = NAMETAG_PALETTE_RGB
     elif unpathed_filename in MAP_PALETTE_IMAGES:
         print("Using map palette")
-        palette = Palette(MAP_PALETTE)
+        palette_bytes = MAP_PALETTE
+        palette_rgb = NAMETAG_PALETTE_RGB
     elif unpathed_filename in SHIP_PALETTE_IMAGES:
         print("Using ship palette")
-        palette = Palette(SHIP_PALETTE)
+        palette_bytes = SHIP_PALETTE
+        palette_rgb = SHIP_PALETTE_RGB
     elif unpathed_filename in TITLE_PALETTE_IMAGES:
         print("Using title palette")
-        palette = Palette(TITLE_PALETTE)
+        palette_bytes = TITLE_PALETTE
+        palette_rgb = TITLE_PALETTE_RGB
     elif unpathed_filename in TEFF_PALETTE_IMAGES:
         print("Using text effect palette")
-        palette = Palette(TEFF_PALETTE)
+        palette_bytes = TEFF_PALETTE
+        palette_rgb = TEFF_PALETTE_RGB
     elif unpathed_filename in OP_PALETTE_IMAGES:
         print("Using OP palette")
-        palette = Palette(OP_PALETTE)
+        palette_bytes = OP_PALETTE
+        palette_rgb = OP_PALETTE_RGB
     elif unpathed_filename in OP_TEXT_PALETTE_IMAGES:
         print("Using OP text palette")
-        palette = Palette(OP_TEXT_PALETTE)
+        palette_bytes = OP_TEXT_PALETTE
+        palette_rgb = OP_TEXT_PALETTE_RGB
     elif unpathed_filename in SFCHR_PALETTE_IMAGES:
         print("Using SFCHR palette")
-        palette = Palette(SFCHR_PALETTE)
+        palette_bytes = SFCHR_PALETTE
+        palette_rgb = SFCHR_PALETTE_RGB
     elif unpathed_filename in CHR_PALETTE_IMAGES:
-        print("Using CHR palette")
-        palette = Palette(CHR_PALETTE)
+        print("Using chr palette")
+        palette_bytes = CHR_PALETTE
+        palette_rgb = CHR_PALETTE_RGB
+
     else:
         print(filename)
         raise Exception
@@ -156,9 +323,9 @@ def encode(filename):
 
                 for p in rowdata:
                     try:
-                        palette_index = palette.colors.index(p)
+                        palette_index = palette_rgb.index(p)
                     except ValueError:
-                        palette_index = get_closest_color_index(palette.colors, p)
+                        palette_index = get_closest_color_index(palette_rgb, p)
                     pattern.append(palette_index in PLANE_COLORS[plane])
 
             pattern = BitArray(pattern).bytes
@@ -171,7 +338,7 @@ def encode(filename):
 
             row_cursor += 1
 
-    IMAGE_DATA_LOCATION = 0x10 + len(palette.string) + (len(unique_patterns)*4)
+    IMAGE_DATA_LOCATION = 0x10 + len(palette_bytes) + (len(unique_patterns)*4)
 
     with open(gem_filename, 'wb') as f:
         f.write(b'Gem')
@@ -180,7 +347,7 @@ def encode(filename):
         f.write(height.to_bytes(2, byteorder='little'))
         f.write(IMAGE_DATA_LOCATION.to_bytes(2, byteorder='little'))
         f.write(b'\x00\x00') # not sure about these either
-        f.write(palette.string)
+        f.write(palette_bytes)
         for p in unique_patterns:
             #print(p)
             f.write(p)
@@ -527,55 +694,40 @@ if __name__ == '__main__':
     for spz in MANUAL_SPZS:
         with open('original/OR/%s' % spz, 'rb') as f:
             contents = f.read()
-
-        # Do edits
-
-        # 1 Round -> Round 1
+         # Do edits
+         # 1 Round -> Round 1
         contents = edit(contents, 0x932, b'\x19')
         contents = edit(contents, 0x935, b'\x1a')
         contents = edit(contents, 0x938, b'\x1b')
         contents = edit(contents, 0x93b, b'\x1c')
         contents = edit(contents, 0x93e, b'\x1d')
         contents = edit(contents, 0x941, b'\x1e')
-
         contents = edit(contents, 0x95c, b'\x19')
         contents = edit(contents, 0x95f, b'\x1a')
         contents = edit(contents, 0x962, b'\x1b')
         contents = edit(contents, 0x965, b'\x1c')
         contents = edit(contents, 0x968, b'\x1d')
         contents = edit(contents, 0x96b, b'\x1e')
-
-
-
-
-        # Gen______to -> Gento
+         # Gen______to -> Gento
         contents = edit(contents, 0xc1d, b'\x13')
         contents = edit(contents, 0xc20, b'\x14')
         contents = edit(contents, 0xc29, b'\x13')
         contents = edit(contents, 0xc2c, b'\x14')
         contents = edit(contents, 0xc35, b'\x13')
         contents = edit(contents, 0xc38, b'\x14')
-
-
-
         with open('patched/%s' % spz, 'wb') as f:
             f.write(contents)
-
         copyfile('patched/%s' % spz, 'patched_CD/%s' % spz)
-
-        # Reinsert into both disks
+         # Reinsert into both disks
         try:
             d = Disk(DEST_DISK)
             d.insert('patched/%s' % spz, path_in_disk='TGL/OR')
         except:
             print("That file isn't on this disk")
-
         cd = Disk(DEST_CD_DISK)
         cd.insert('patched_CD/%s' % spz, path_in_disk='TGL/OR')
 
-
-
     # decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
     # decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
-    #decode_spz('original/OR/NRCHR_99.SPZ', 'img_original/NRCHR_99_background1.png' )    # Much more complex
+    #decode_spz('original/OR/SFCHR_99.SPZ', 'img_original/SFCHR_99_background01.png' )    # Much more complex
     # decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')
