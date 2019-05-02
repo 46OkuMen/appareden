@@ -6,7 +6,7 @@ import os
 from collections import OrderedDict
 import rominfo
 import pointer_info
-from appareden.asm import CD_EDITS
+from appareden.asm import CD_EDITS, CD_CHEATS
 
 CD_SRC_DIR = 'original_CD'
 CD_DEST_DIR = 'patched_CD'
@@ -188,4 +188,4 @@ for src, dest in pointer_info.POINTERS_TO_REASSIGN['ORBTL.EXE']:
 
 CdRom = rominfo.Rominfo(FILE_BLOCKS, POINTER_CONSTANT, DICTIONARY_LOCATION, POINTER_TABLES,
                         COMPRESSION_DICTIONARY, POINTER_DISAMBIGUATION,
-                        POINTERS_TO_REASSIGN, CD_EDITS)
+                        POINTERS_TO_REASSIGN, CD_EDITS, CD_CHEATS)

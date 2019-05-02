@@ -248,6 +248,8 @@ FD_EDITS = {
         (0x1ab14, b'\xb2'),                       # Ailment buffer fix
 
         (0x8c0b, b''.join(ORFIELD_CODE))          # Text handling code
+
+
     ],
 
     'ORBTL.EXE': [
@@ -283,4 +285,16 @@ CD_EDITS = {
     ]
 
 
+}
+
+FD_CHEATS = {
+    'ORFIELD.EXE': [
+        (0x1a143, b'\x90\x90'),                    # Turn off random battles
+    ]
+}
+
+CD_CHEATS = {
+    'ORFIELD.EXE': [
+        (0x1a770, b'\x90\x90'),                    # Turn off random battles
+    ]
 }

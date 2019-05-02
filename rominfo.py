@@ -5,7 +5,7 @@
 import os
 from collections import OrderedDict
 from pointer_info import POINTER_DISAMBIGUATION, POINTERS_TO_REASSIGN
-from appareden.asm import FD_EDITS
+from appareden.asm import FD_EDITS, FD_CHEATS
 
 SRC_DIR = 'original'
 DEST_DIR = 'patched'
@@ -88,7 +88,7 @@ SJIS_FIRST_BYTES = [0x81, 0x82, 0x83, 0x84, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0xad, 
 class Rominfo:
     def __init__(self, file_blocks, pointer_constant, dictionary_location, pointer_tables,
                  compression_dictionary, pointer_disambiguation, pointers_to_reassign,
-                 asm_edits):
+                 asm_edits, cheats):
         self.file_blocks = file_blocks
         self.pointer_constant = pointer_constant
         self.dictionary_location = dictionary_location
@@ -97,6 +97,7 @@ class Rominfo:
         self.pointer_disambiguation = pointer_disambiguation
         self.pointers_to_reassign = pointers_to_reassign
         self.asm_edits = asm_edits
+        self.cheats = cheats
 
 FILE_BLOCKS = {
     'ENDING.EXE': [(0x64bb, 0x6512), ],  # memory error texts
@@ -791,4 +792,4 @@ ITEM_NAME_CATEGORIES = [
 
 FdRom = Rominfo(FILE_BLOCKS, POINTER_CONSTANT, DICTIONARY_LOCATION, POINTER_TABLES,
                 COMPRESSION_DICTIONARY, POINTER_DISAMBIGUATION,
-                POINTERS_TO_REASSIGN, FD_EDITS)
+                POINTERS_TO_REASSIGN, FD_EDITS, FD_CHEATS)

@@ -16,6 +16,8 @@ from appareden.gem import FILES_TO_ENCODE as GEMS_TO_REINSERT
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
+CHEATS_ON = True
+
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORFIELD.EXE': 1326,
@@ -160,6 +162,11 @@ def reinsert(version):
         if filename in Rom.asm_edits:
             for loc, code in Rom.asm_edits[filename]:
                 gamefile.edit(loc, code)
+
+        if CHEATS_ON:
+            if filename in Rom.cheats:
+                for loc, code in Rom.cheats[filename]:
+                    gamefile.edit(loc, code)
 
         if filename in Rom.pointers_to_reassign:
             reassignments = Rom.pointers_to_reassign[filename]

@@ -1,0 +1,66 @@
+Stuff to ignore (same on multiple dumps of the same situation)
+46b8: 01 -> 00
+494a: e3 77 -> c4 6b
+A few things around 4ad0-4aff
+4db6
+97d0
+9990
+9a70
+a090
+a0b0
+a110-a180
+a280-a310
+a5a0-a5e0
+a910-a920
+ae00
+ac2e
+3d860
+3d8c0
+3da10
+3da90
+3dac0
+496c0
+496e0
+4a822
+4c0c0
+4c0d0
+A bunch at 4c140-4c1d0
+
+ap_before ap_after:
+
+503: 00's -> 32 4b  (this is an input buffer)
+
+43cd: a8 e3 -> bc e7 -> 80 db (probably "which image was loaded")
+
+46b8: 01 -> 00 ( flips 0 to 1 while idling)
+
+4948: e3 77 -> c4 6b (flips while idling)
+
+4ab0-4af0: a lot (flips while idling)
+4bd0-4bf0: a lot (?)
+4c40-4c70: a lot (flips while idling)
+4d90-4db0 (looks related to opening the menu)
+97d0-99e0: flips while idling (looks like a bunch of timers, they just count up)
+9b00-9d60 - sparse values that flip while idling
+a5e2 -> Weird small values that count down and repeat from 02... battles only seem to occur when it's a 00.
+	But it doesn't seem to be affected by the repel item.
+11750: Save fiel/inventory count, probably
+1ac20 -> flips while idling
+
+3d8f0 -> this might be which "region" of the world map you're in? Changing it does crazy shit
+
+3d8ca -> Character x position
+3d8cb -> Character y position
+3d91e(*) -> Number of steps left in the repel.
+3d912 -> Counts up to 08 with every step (Poison damage counter)
+
+
+Before/after the repel wears off:
+3312: Some kind of step counter, goes up as you walk
+
+The solution is to just nop out the "75 03" branch right before the "check if the encounter type is 00, 01, or 02". So just skip the check entirely
+
+Side note: Need to fix the "it wore off" message. "rnal"
+Also, "Unable to disembark here(line)"
+In dungeons, "x acquired" needs one less or one fewer character
+Field menu header is now "Save to which journal entry?" for some reason
