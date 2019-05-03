@@ -61,6 +61,7 @@ Before/after the repel wears off:
 The solution is to just nop out the "75 03" branch right before the "check if the encounter type is 00, 01, or 02". So just skip the check entirely
 
 Side note: Need to fix the "it wore off" message. "rnal"
+	Oops, this is a totally new string.
 Also, "Unable to disembark here(line)"
 In dungeons, "x acquired" needs one less or one fewer character
 Field menu header is now "Save to which journal entry?" for some reason

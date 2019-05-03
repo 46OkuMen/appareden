@@ -125,6 +125,7 @@ FILE_BLOCKS = {
                     (0x2718d, 0x27557),
                     (0x275f0, 0x275fe),  # death msg
                     (0x2760e, 0x27627),  # ship msg
+                    (0x27ef0, 0x27f00),  # Repel wore off msg
                     (0x28044, 0x28851),  # Equip screen
                     (0x2894e, 0x29021), # Equipment and such
                     (0x29021, 0x290be),  # menu msgs
