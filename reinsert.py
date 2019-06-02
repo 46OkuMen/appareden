@@ -173,7 +173,8 @@ def reinsert(version):
             for src, dest in reassignments:
                 #print(hex(src), hex(dest))
                 if src not in gamefile.pointers or dest not in gamefile.pointers:
-                    print("Skipping this one: %s, %s" % (hex(src), hex(dest)))
+                    print("Skipping this one: %s:%s: %s, %s" % (version, filename, hex(src), hex(dest)))
+                    _ = input()
                     continue
                 assert src in gamefile.pointers
                 assert dest in gamefile.pointers

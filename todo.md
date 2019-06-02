@@ -2,7 +2,7 @@
 
 ## Last TODOs before beta testing
 * "Eternal" spell crash when all HP is full
-* "Are you sure?" windows have spaceing that is really hard to edit, what's up with that?
+* "Are you sure?" windows have spacing that is really hard to edit, what's up with that?
 
 ## ASM
 * Clean up and split FD/CD ORBTL ASM.
@@ -19,6 +19,7 @@
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## ORFIELD
+* Is the poiner-reassigner working at all??? The fire spell descriptions aren't reassigning and I have fixed a lot of bugs just by removing reassignments.
 * State of the menus:
 	* Menu
 		* OK
@@ -28,10 +29,12 @@
 		* OK
 	* Equipment Screen
 		* OK
-	* Item SCreen
-		* OK
+	* Item Screen
+		* Status is "aterasu"
 	* Zen Screen
-		* OK
+		* Strength status section is broken
+		* Description pointers are all off
+		* "can't use the zen arts"'s &f or &5 poiner is messed up, has "an admirable happi coat" in the middle
 	* Zen Target Screen
 		* Status is a little too close to the ZP. Might need to adjust the 232 spaces...
 		* Any buffer issues?
@@ -39,7 +42,7 @@
 		* Auto-Battle
 			* OK
 		* Order Change
-			* OK (Permanently)
+			* OK
 		* Exit
 			* OK
 	* Buy Items
