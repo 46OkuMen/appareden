@@ -58,6 +58,7 @@ POINTERS_TO_REASSIGN = {
     'ORFIELD.EXE': [
             (0x2dc17, 0x2dbf4),   # Blaze2, Blaze3 descriptions
             (0x2dc3a, 0x2dbf4),
+            
             (0x2dc80, 0x2dc5d),
             (0x2dca3, 0x2dc5d),
             (0x2dce9, 0x2dcc6),

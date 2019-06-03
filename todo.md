@@ -19,7 +19,8 @@
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
 
 ## ORFIELD
-* Is the poiner-reassigner working at all??? The fire spell descriptions aren't reassigning and I have fixed a lot of bugs just by removing reassignments.
+* Recovery spells do a rainbow flash on the target select screen...?
+	* This only happened in the cheat save file with Haley at a too-high level. Hasn't happened outside there
 * State of the menus:
 	* Menu
 		* OK
@@ -30,14 +31,11 @@
 	* Equipment Screen
 		* OK
 	* Item Screen
-		* Status is "aterasu"
+		* OK
 	* Zen Screen
-		* Strength status section is broken
-		* Description pointers are all off
-		* "can't use the zen arts"'s &f or &5 poiner is messed up, has "an admirable happi coat" in the middle
+		* OK
 	* Zen Target Screen
-		* Status is a little too close to the ZP. Might need to adjust the 232 spaces...
-		* Any buffer issues?
+		* OK
 	* Settings
 		* Auto-Battle
 			* OK
@@ -77,7 +75,7 @@
 	* 16B - Nikkou and Izumo Grand Shrine
 	* 27A - ?
 	* 29B - Edo
-	* (32A - Ships)
+
 * Further improvements to the SPZ decoder.
 	* At this point I mostly just need something to re-encode the SPZ decoder's output.
 		* I think the best thing to do would be to output separate sprites into their own image files. That way they can be edited and repacked more easily.

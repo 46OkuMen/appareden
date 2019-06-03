@@ -40,8 +40,8 @@ REINSERTED_STRING_COUNTS = {'ORTITLE.EXE': 0,
 Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 
-FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
-#FILES_TO_REINSERT = ['ORFIELD.EXE',]
+#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE',]
 
 #gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.gem', 'TMAP_03A.gem', 'TMAP_06A.gem',
 #                       'TMAP_10B.gem', 'TMAP_11A.gem', 'TMAP_12B.gem', 'TMAP_14A.gem', "TMAP_16B.gem",
@@ -55,7 +55,7 @@ other_files_to_reinsert = ['SCN12307.COD',
                            'TEFF_00A.spz', 'TEFF_01A.spz', 'TEFF_02A.spz', 'TEFF_03A.spz', 'TEFF_04A.spz',
                            'TEFF_05A.spz']
 
-FILES_TO_REINSERT += MSGS
+#FILES_TO_REINSERT += MSGS
 
 def results_table():
     """
@@ -171,7 +171,7 @@ def reinsert(version):
         if filename in Rom.pointers_to_reassign:
             reassignments = Rom.pointers_to_reassign[filename]
             for src, dest in reassignments:
-                #print(hex(src), hex(dest))
+                print(hex(src), hex(dest))
                 if src not in gamefile.pointers or dest not in gamefile.pointers:
                     print("Skipping this one: %s:%s: %s, %s" % (version, filename, hex(src), hex(dest)))
                     _ = input()
@@ -184,6 +184,10 @@ def reinsert(version):
                     p.edit(diff)
                 gamefile.pointers[dest] += gamefile.pointers[src]
                 gamefile.pointers.pop(src)
+                #if src == 0x2dc17:
+                #    print(gamefile.pointers[dest])
+                #    _ = input()
+
 
         if filename.endswith('.MSG'):
             # First, gotta replace all the control codes.
@@ -337,7 +341,9 @@ def reinsert(version):
                         if Rom == FdRom:
                             REINSERTED_STRING_COUNTS[filename] += 1
 
-                    gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
+                    gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff, allow_double_edits=True)
+                    if t.location == 0x2dc17:
+                        _ = input()
                     previous_text_offset = t.location
                     last_i = i
                     last_len = len(t.english)
@@ -499,10 +505,10 @@ def reinsert(version):
                     # Need to edit the pointers even if the length hasn't changed, too. diff should be initialized to the inter-block jump
                     if t == translations[0]:
                         diff = spare_to_use[0] - o[3]
-                        gamefile.edit_pointers_in_range((o[3]-1, o[3]), diff)
+                        gamefile.edit_pointers_in_range((o[3]-1, o[3]), diff, allow_double_edits=True)
                         print(t.english, "should now be at", hex(spare_to_use[0]))
                     else:
-                        gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
+                        gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff, allow_double_edits=True)
                     previous_text_offset = t.location
                     last_i = i                   # offset in the receiving block
                     last_len = len(t.english)
