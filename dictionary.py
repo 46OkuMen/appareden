@@ -79,6 +79,9 @@ for filename in DICTIONARY_FILES:
             continue
         if b'\x81\x40' in c[0]:
             continue
+        # Skipping 
+        if any([cc in c[0] for cc in (b'[o]', b'[O]', b'[u]', b'[U]')]):
+            continue
         if c[0] != b'[BLANK]' and c[0].strip(b'~').strip(b'[00]') != b'':
             if len(dictstring.replace(b'[ee]', b'0').replace(b'[00]', b'0')) + len(c[0]) + 2 > 3500:
                 print("Couldn't fit %s next" % c[0])

@@ -15,10 +15,12 @@
 * Need to clear the window when there's a bunch of long text, then short text, in the same window
 	* Example: SCN3100.MSG, border crossing after getting Tamamo
 	* (Is this still a problem?)
-* Rarieties Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
+* Rarities Shopkeeper's goodbye message labels him as Armor Shopmaster in Naniwa
 * Haley in SCN12800 - the control codes "n>k@(haley)n" might be wrong? They don't wait or clear the screen.
+* "The gates to the mausoleum haven't been opened"... is missing a starting quote
 
 ## ORFIELD
+* Going into the inn in Mito crashes?
 * Recovery spells do a rainbow flash on the target select screen...?
 	* This only happened in the cheat save file with Haley at a too-high level. Hasn't happened outside there
 * State of the menus:

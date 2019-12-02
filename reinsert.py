@@ -40,8 +40,8 @@ REINSERTED_STRING_COUNTS = {'ORTITLE.EXE': 0,
 Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 
-#FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
-FILES_TO_REINSERT = ['ORFIELD.EXE',]
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+#FILES_TO_REINSERT = ['ORFIELD.EXE',]
 
 #gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.gem', 'TMAP_03A.gem', 'TMAP_06A.gem',
 #                       'TMAP_10B.gem', 'TMAP_11A.gem', 'TMAP_12B.gem', 'TMAP_14A.gem', "TMAP_16B.gem",
@@ -55,7 +55,7 @@ other_files_to_reinsert = ['SCN12307.COD',
                            'TEFF_00A.spz', 'TEFF_01A.spz', 'TEFF_02A.spz', 'TEFF_03A.spz', 'TEFF_04A.spz',
                            'TEFF_05A.spz']
 
-#FILES_TO_REINSERT += MSGS
+FILES_TO_REINSERT += MSGS
 
 def results_table():
     """
@@ -342,8 +342,8 @@ def reinsert(version):
                             REINSERTED_STRING_COUNTS[filename] += 1
 
                     gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff, allow_double_edits=True)
-                    if t.location == 0x2dc17:
-                        _ = input()
+                    #if t.location == 0x2dc17:
+                    #    _ = input()
                     previous_text_offset = t.location
                     last_i = i
                     last_len = len(t.english)
