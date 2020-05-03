@@ -162,6 +162,8 @@ for m in msgs_to_typeset:
 
                     # Prevent windows with a nametag prefix from giving a false-positive "overflow"
                     if starts_with_nametag(window):
+                        print("Starts with nametag")
+                        window_lines[1] = window_lines[1].lstrip()
                         line_count += 1
 
                     if line_count < 0:

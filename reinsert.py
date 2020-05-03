@@ -21,7 +21,7 @@ CHEATS_ON = True
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
                  'ORFIELD.EXE': 1326,
-                 'ORBTL.EXE': 810,
+                 'ORBTL.EXE': 792,
                  'Dialogue': 5592,
                  'Images': 55,
                  }
