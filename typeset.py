@@ -14,12 +14,16 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 
 filenames = ['ORFIELD.EXE', 'ORBTL.EXE']
 
-def safe_print(s):
+def safe_print(s, fileObj=None):
     if '\u014d' in s:
         s = s.replace('\u014d', '[o]')
     if '\u016b' in s:
         s = s.replace('\u016b', '[u]')
     print(s)
+    if fileObj:
+        fileObj.write(s)
+        fileObj.write("\n")
+        
 
 
 def starts_with_nametag(s):
@@ -85,7 +89,10 @@ overflows = 0
 
 most_recent_nametag = None
 
+f = open("typeset_script.txt", "w")
+
 for m in msgs_to_typeset:
+
     #portrait_window_counter = 0
     for row in worksheet.rows:
         nametag = False
@@ -98,6 +105,8 @@ for m in msgs_to_typeset:
 
             if english is None:
                 continue
+
+           # safe_print(english, f)  
 
             # If a character with a portrait is given a nametag in this line,
             # the next line needs to be typeset more aggressively due to less screen space.
@@ -120,14 +129,19 @@ for m in msgs_to_typeset:
                 # For Haley's lines
                 window = sjis_punctuate(window)
 
+                #safe_print(window, f)
+
                 #if portrait_window_counter > 0:
                 if portrait:
                     window = typeset(window, 36)
                 else:
                     window = typeset(window, 57)
 
+                #safe_print(window, f)
 
                 window_lines = window.split('[LN]')
+
+                #safe_print(",".join(window_lines), f)
 
                 # Terminal [LN] sometimes messes it up, so ignore those
                 if window_lines[-1] == '':
@@ -138,7 +152,11 @@ for m in msgs_to_typeset:
                 line_count = 5
 
                 if i > 0:
-                    safe_print("%s%s" % (" "*20, most_recent_nametag))
+                    safe_print("%s%s" % (" "*20, most_recent_nametag), f)
+
+                if starts_with_nametag(window):
+                    #print("Starts with nametag")
+                    window_lines[1] = window_lines[1].lstrip()
 
                 for e in window_lines:
 
@@ -147,28 +165,28 @@ for m in msgs_to_typeset:
                         e = e.replace(w, '')
 
                     if portrait:
-                        safe_print("%s%s" % (" "*20, e))
+                        safe_print("%s%s" % (" "*20, e), f)
                     else:
-                        safe_print(e)
+                        safe_print(e, f)
                     line_count -= 1
 
                 if not nametag:
 
                     while line_count > 0:
-                        print()
+                        safe_print("", f)
                         line_count -= 1
 
-                    print('-'*57)
+                    safe_print('-'*57, f)
 
                     # Prevent windows with a nametag prefix from giving a false-positive "overflow"
                     if starts_with_nametag(window):
-                        print("Starts with nametag")
-                        window_lines[1] = window_lines[1].lstrip()
+                        #safe_print("Starts with nametag", f)
+                        #window_lines[1] = window_lines[1].lstrip()
                         line_count += 1
 
                     if line_count < 0:
                         # Mark the overflowing cells with a mint green background
-                        print("^ This window overflows\n")
+                        safe_print("^ This window overflows\n", f)
                         row[en_col].fill = PatternFill(fgColor="c6ffe2", fill_type='solid')
                         overflows += 1
                     else:
@@ -194,4 +212,4 @@ for m in msgs_to_typeset:
 
 Dump.workbook.save(DUMP_XLS_PATH)
 
-print("%s windows overflow" % overflows)
+safe_print("%s windows overflow" % overflows, f)

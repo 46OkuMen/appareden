@@ -5,9 +5,12 @@ import re
 from .rominfo import S_CONTROL_CODES
 
 WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
-NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Okitsugu', 'Masamune', 'Flame Dragon',
+NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Goemon', 'Meiling', 'Okitsugu', 'Masamune', 'Flame Dragon',
          'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]', 'Genpaku', 
-         'Izunokami', 'Gennai', 'Ginpei', 'King Shikai', 'O-Toki', 'Benkei']
+         'Izunokami', 'Gennai', 'Ginpei', 'King Shikai', 'O-Toki', 'Benkei',
+         'Commoner', 'Nobunaga', 'Dealer', 'Sacrosanct Dragon']
+
+LONG_NAMES = ["Thunder Dragon", "Sacrosanct Dragon"]
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
@@ -32,27 +35,63 @@ def effective_length(s):
 def typeset(s, width=37):
     s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')
 
-    #print(s_safe)
+    nametag_included = False
+
     # SJIS lines, like Haley's, must be split by SJIS spaces
     prefix = ''
-    #print(s_safe)
-    #print(s_safe.split('[LN]'))
     for n in NAMES:
-
+        #print(n)
         if s_safe.split('[LN]')[0] == n:
+            #print(n)
+            print("Nametag is included")
+            nametag_included = True
             if s_safe.split('[LN]')[1] != '':
                 prefix = n
-                s_safe = s_safe.lstrip(n)
+                #s_safe = s_safe.lstrip(n)
+                s_safe = s_safe.replace(n, '', 1)
                 #print("Prefix")
 
     sjis = s_safe.encode('shift-jis')
 
-    #print(sjis.split(b'[LN]'))
+    #if b'tough as' in sjis:
+    #    print(sjis)
+    #    input()
 
+    # NOTE: Still need to indent stuff even if it's already short
     if effective_length(sjis) <= width:
+        print("Effective length is less than width")
         # Indent stuff
         #s = s.replace('[LN]', '[LN] ')
-        return s
+
+        lines = s.split('[LN]')
+        result = lines.pop(0) + '[LN]'
+        if lines:
+            while lines:
+                l = lines.pop(0)
+                if l:
+                    if all([not l.startswith(x) for x in ('"', '*', '(')]):
+                        result += ' ' + l + '[LN]'
+                    else:
+                        result += l + '[LN]'
+
+        #print(result)
+        #input()
+        if result.startswith("[LN]"):
+            result = result[4:]
+
+        #if sjis.endswith(b'[LN]'):
+        #    return s
+        #else if all([not words[0].startswith(x) for x in (b'"', b'*', b'(')]):
+
+        #if b'Anki' in sjis:
+        #    print(sjis)
+        #    #input()
+
+        #if 'tough as always' in result:
+        #    print(result)
+        #    input()
+
+        return result
 
     if b'\x82' in sjis:
         space = b'\x81\x40'
@@ -60,13 +99,21 @@ def typeset(s, width=37):
     else:
         space = b' '
 
+    print("Effective length is greater than width")
+
     # LNs are breaks too. Let's replace them with spaces and see what happens
     #sjis = sjis.replace(b'[LN]', space)
 
+    print(sjis);
+    if sjis.startswith(b'[LN]'):
+        sjis = sjis[4:]
+
     manual_lines = sjis.split(b'[LN]')
+    print("manual lines before anything:", manual_lines)
 
     for i, manual_line in enumerate(manual_lines):
         words = manual_line.split(space)
+        print(words)
 
         lines = []
 
@@ -78,15 +125,15 @@ def typeset(s, width=37):
             #else:
 
             # Indent non-initial lines (unless they start with a quote)
-            # Example: *clears throat*/n"The Dragon Gems...
-                # TODO: Still not working for throat-clearing lines.
-
-            #if len(lines) > 0 and not words[0].startswith(b'"'):
-            if not words[0].startswith(b'"'):
-                # Yes, it's a space. 
-                line = b' '
-            else:
+            if nametag_included and lines == []:
                 line = b''
+            else:
+                if all([not words[0].startswith(x) for x in (b'"', b'*', b'(')]):
+                    print(words)
+                    print("Start with space")
+                    line = b' '
+                else:
+                    line = b''
 
             while effective_length(line) <= width and words:
                 if effective_length(line + words[0] + space) > width:
@@ -104,6 +151,7 @@ def typeset(s, width=37):
                 if line == lines[-1]:
                     print("That line is the same as the last one. Continuing onward")
                     break
+
             lines.append(line)
 
         lines = [l.decode('shift-jis') for l in lines]
@@ -112,9 +160,29 @@ def typeset(s, width=37):
 
         # Re-join the lines that weren't manually broken
         manual_lines[i] = '[LN]'.join(lines)
+    print("manual lines before result: ", manual_lines)
 
     # Join the segments of the string that were manually broken
-    return prefix + '[LN] '.join(manual_lines)
+    result = prefix
+    for line in manual_lines:
+        if all([not  line.startswith(x) for x in ('"', '*', '(')]):
+            result += '[LN] ' + line
+        else:
+            result += '[LN]' + line
+    #result = prefix + '[LN] '.join(manual_lines)
+
+    if result.startswith("[LN]"):
+        result = result[4:]
+
+    #if "[o]LN]" in result:
+    #    print(result)
+    #    input()
+
+    #if "Hizen" in result:
+    #    print(result)
+    #    input()
+
+    return result
 
 def sjis_punctuate(s):
     s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')
