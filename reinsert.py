@@ -219,7 +219,9 @@ def reinsert(version):
 
                 # Handle the SPLIT control coddes
                 if b'[SPLIT]' in t.english:
-                    t.english = t.english.replace(b'[SPLIT]', b'/>k@%s/' % last_nametag, 1)
+                    #t.english = t.english.replace(b'[SPLIT]', b'/>k@%s/' % last_nametag)
+                    t.english = t.english.replace(b'[SPLIT]', b'/>p@%s/' % last_nametag)
+
                     #print(t.english)
                     #input()
 

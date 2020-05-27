@@ -8,7 +8,7 @@ WAITS = ['[WAIT%s]' % n for n in range(1, 7)]
 NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Goemon', 'Meiling', 'Okitsugu', 'Masamune', 'Flame Dragon',
          'Ice Dragon', 'Thunder Dragon', 'Shir[o]', 'Hanz[o]', 'Genpaku', 
          'Izunokami', 'Gennai', 'Ginpei', 'King Shikai', 'O-Toki', 'Benkei',
-         'Commoner', 'Nobunaga', 'Dealer', 'Sacrosanct Dragon']
+         'Commoner', 'Nobunaga', 'Dealer', 'Sacrosanct Dragon', 'Shrine Maiden', 'Shinto Priest', 'Official',]
 
 LONG_NAMES = ["Thunder Dragon", "Sacrosanct Dragon"]
 
