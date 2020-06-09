@@ -254,7 +254,9 @@ FD_EDITS = {
 
     'ORBTL.EXE': [
        #(0x3647, b''.join(ORBTL_CODE)),
-       (0x3647, ORBTL_CODE)
+       (0x3647, ORBTL_CODE),
+
+       (0x11e17, b'\x90\x90\x90')  # Remove enemy-name-limiter
     ]
 }
 
@@ -281,7 +283,10 @@ CD_EDITS = {
     ],
 
     'ORBTL.EXE': [
-        (0x3647, CD_ORBTL_CODE)
+        (0x3647, CD_ORBTL_CODE),
+
+        (0x11e1f, b'\x90\x90\x90')  # Remove enemy-name-limiter
+
     ]
 
 
