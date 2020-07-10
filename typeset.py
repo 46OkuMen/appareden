@@ -4,7 +4,7 @@
 """
 from appareden.rominfo import WAITS, MSGS
 from appareden.rominfo import DUMP_XLS_PATH, MAX_LENGTH
-from appareden.utils import typeset, sjis_punctuate, WAITS, NAMES
+from appareden.utils import typeset, ending_typeset, sjis_punctuate, WAITS, NAMES
 #from appareden.reinsert import MSGS
 
 from romtools.dump import DumpExcel
@@ -76,7 +76,7 @@ for f in filenames:
 #msg_files = [f for f in os.listdir(os.path.join('original', 'OR')) if f.endswith('MSG') and not f.startswith('ENDING')]
 msgs_to_typeset = MSGS
 rownum = 0
-worksheet = Dump.workbook.get_sheet_by_name('MSG')
+worksheet = Dump.workbook['MSG']
 first_row = list(worksheet.rows)[0]
 header_values = [t.value for t in first_row]
 en_col = header_values.index('English (Ingame)')
@@ -106,10 +106,25 @@ for m in msgs_to_typeset:
             if english is None:
                 continue
 
+            if (file == "ENDING.MSG"):
+                english = ending_typeset(english)
+                row[en_typeset_col].value = english
+                #input()
+                continue
+
            # safe_print(english, f)  
 
             # If a character with a portrait is given a nametag in this line,
             # the next line needs to be typeset more aggressively due to less screen space.
+
+            long_names = ['Ultimate Benkei', 'Thunder Dragon', 'Sacrosanct Dragon']
+
+            #print(english, any([english == t for t in long_names]))
+
+            #if any([english.replace('[LN]') == t for t in long_names]):
+            #    english += "[LN]"
+            #    print(english)
+            #    input()
 
             windows = []
             if '[SPLIT]' in english:
@@ -136,6 +151,18 @@ for m in msgs_to_typeset:
                     window = typeset(window, 36)
                 else:
                     window = typeset(window, 57)
+
+                #if portrait in [68000, 77001, ]
+
+                for line in window.split("[LN]"):
+                    print(line)
+                    #window = window.replace("")
+                    if line.replace("[LN]", "") in long_names:
+                        name = line.replace("[LN]", "")
+                        window = window.replace(name, name + "[LN][LN]")
+                        #print(line)
+                        #input()
+
 
                 #safe_print(window, f)
 
@@ -207,6 +234,10 @@ for m in msgs_to_typeset:
                 if japanese.endswith('[LN]') and not english.endswith('[LN]'):
                     english += '[LN]'
                 #print("There should be a terminal [LN] here")
+
+            #if 'Ultimate Benkei' in english:
+            #    print(english)
+            #    input()
 
             row[en_typeset_col].value = english
 

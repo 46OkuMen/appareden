@@ -10,18 +10,30 @@ NAMES = ['Gento', 'Benimaru', 'Haley', 'Tamamo', 'Goemon', 'Meiling', 'Okitsugu'
          'Izunokami', 'Gennai', 'Ginpei', 'King Shikai', 'O-Toki', 'Benkei',
          'Commoner', 'Nobunaga', 'Dealer', 'Sacrosanct Dragon', 'Shrine Maiden', 'Shinto Priest', 'Official',]
 
-LONG_NAMES = ["Thunder Dragon", "Sacrosanct Dragon"]
+LONG_NAMES = ["Thunder Dragon", "Sacrosanct Dragon", "Ultimate Benkei"]
 
 def effective_length(s):
     """The length of a string, ignoring the control codes."""
-
-    # TODO: Rough so far. Only removes stuff in brackets.
 
     #pattern = rb'\[.*?\]'
     #print (s, re.sub(pattern, b'', s))
     #return len(re.sub(pattern, b'', s))
     original = s
-    s = s.replace(b'[LN]', b' ')
+
+    try:
+        s = s.replace(b'[LN]', b' ')
+    except:
+        # Normal string
+        #print(s)
+        # Replace overlined characters with dummy characters
+        if '\u014d' in s:
+            s = s.replace('\u014d', 'x')
+        if '\u016b' in s:
+            s = s.replace('\u016b', 'x')
+
+        s = bytes(s, encoding='shift-jis')
+        s = s.replace(b'[LN]', b' ')
+
     for w in WAITS:
         s = s.replace(bytes(w, encoding='ascii'), b'')
 
@@ -36,6 +48,7 @@ def typeset(s, width=37):
     s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')
 
     nametag_included = False
+    long_name = False
 
     # SJIS lines, like Haley's, must be split by SJIS spaces
     prefix = ''
@@ -50,6 +63,10 @@ def typeset(s, width=37):
                 #s_safe = s_safe.lstrip(n)
                 s_safe = s_safe.replace(n, '', 1)
                 #print("Prefix")
+    #for ln in LONG_NAMES:
+    #    if ln + "[LN]" in 
+    #        long_name = True
+    #        s_safe = s_safe.replace(ln, ln + '[LN]')
 
     sjis = s_safe.encode('shift-jis')
 
@@ -57,9 +74,15 @@ def typeset(s, width=37):
     #    print(sjis)
     #    input()
 
+    if b'\x82' in sjis:
+        space = b'\x81\x40'
+        width = 37
+    else:
+        space = b' '
+
     # NOTE: Still need to indent stuff even if it's already short
     if effective_length(sjis) <= width:
-        print("Effective length is less than width")
+        #print("Effective length is less than width")
         # Indent stuff
         #s = s.replace('[LN]', '[LN] ')
 
@@ -79,37 +102,27 @@ def typeset(s, width=37):
         if result.startswith("[LN]"):
             result = result[4:]
 
-        #if sjis.endswith(b'[LN]'):
-        #    return s
-        #else if all([not words[0].startswith(x) for x in (b'"', b'*', b'(')]):
 
-        #if b'Anki' in sjis:
-        #    print(sjis)
-        #    #input()
-
-        #if 'tough as always' in result:
-        #    print(result)
-        #    input()
+        # Space out the rest of the line, to avoid the "half-assed refresh" bug
+        diff = width - effective_length(sjis)
+        #result += ' '*diff
+        #print(result)
 
         return result
 
-    if b'\x82' in sjis:
-        space = b'\x81\x40'
-        width = 40
-    else:
-        space = b' '
 
-    print("Effective length is greater than width")
+
+    #print("Effective length is greater than width")
 
     # LNs are breaks too. Let's replace them with spaces and see what happens
     #sjis = sjis.replace(b'[LN]', space)
 
-    print(sjis);
+    #print(sjis);
     if sjis.startswith(b'[LN]'):
         sjis = sjis[4:]
 
     manual_lines = sjis.split(b'[LN]')
-    print("manual lines before anything:", manual_lines)
+    #print("manual lines before anything:", manual_lines)
 
     for i, manual_line in enumerate(manual_lines):
         words = manual_line.split(space)
@@ -160,7 +173,18 @@ def typeset(s, width=37):
 
         # Re-join the lines that weren't manually broken
         manual_lines[i] = '[LN]'.join(lines)
-    print("manual lines before result: ", manual_lines)
+
+    # TODO: Trying half-assed refresh fix, not working
+    #print("manual lines before result: ", manual_lines)
+    #padded_lines = []
+    #for l in manual_lines:
+    #    diff = width - effective_length(l)
+    #    l += ' '*diff
+    #    padded_lines.append(l)
+
+    #for l in padded_lines:
+    #    print(l)
+    #manual_lines = padded_lines
 
     # Join the segments of the string that were manually broken
     result = prefix
@@ -169,20 +193,21 @@ def typeset(s, width=37):
             result += '[LN] ' + line
         else:
             result += '[LN]' + line
-    #result = prefix + '[LN] '.join(manual_lines)
 
     if result.startswith("[LN]"):
         result = result[4:]
 
-    #if "[o]LN]" in result:
-    #    print(result)
-    #    input()
-
-    #if "Hizen" in result:
-    #    print(result)
-    #    input()
-
+    print(result)
     return result
+
+def ending_typeset(s):
+    s = s.lstrip()
+    half_length = int(len(s) / 2)
+    #print(half_length)
+    s = " "*(18 - half_length) + s
+
+    print(s)
+    return s
 
 def sjis_punctuate(s):
     s_safe = s.replace('\u014d', '[o]').replace('\u016b', '[u]')

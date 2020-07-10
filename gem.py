@@ -654,10 +654,13 @@ def decode_spz(filename, image):
             dest_img.paste(tile, (tile_x + dest_x, tile_y + dest_y))
 
             if tile_constant == 0:
+                # Red
                 tile_color = (255, 0, 0, 0)
             elif tile_constant == 256:
+                # Green
                 tile_color = (0, 255, 0, 0)
             elif tile_constant == 512:
+                # Blue
                 tile_color = (0, 0, 255, 0)
             tile_name = hex(tile_marker)[2:]
             #tile_name = "%s %s" % (tile_x, tile_y)
@@ -696,18 +699,28 @@ if __name__ == '__main__':
             contents = f.read()
          # Do edits
          # 1 Round -> Round 1
+        """
         contents = edit(contents, 0x932, b'\x19')
         contents = edit(contents, 0x935, b'\x1a')
         contents = edit(contents, 0x938, b'\x1b')
         contents = edit(contents, 0x93b, b'\x1c')
         contents = edit(contents, 0x93e, b'\x1d')
         contents = edit(contents, 0x941, b'\x1e')
+
         contents = edit(contents, 0x95c, b'\x19')
         contents = edit(contents, 0x95f, b'\x1a')
         contents = edit(contents, 0x962, b'\x1b')
         contents = edit(contents, 0x965, b'\x1c')
         contents = edit(contents, 0x968, b'\x1d')
         contents = edit(contents, 0x96b, b'\x1e')
+        """
+
+        # 2 Round starts: 0x995?
+        # 87 88 89
+        # aa a9 aa
+
+        #contents = edit(contents, 0x996, )
+
          # Gen______to -> Gento
         contents = edit(contents, 0xc1d, b'\x13')
         contents = edit(contents, 0xc20, b'\x14')
@@ -728,6 +741,6 @@ if __name__ == '__main__':
         cd.insert('patched_CD/%s' % spz, path_in_disk='TGL/OR')
 
     # decode_spz('SFCHR_98.SPZ', 'SFCHR_98.png')
-    # decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
+     #decode_spz('TEFF_00A.SPZ', 'TEFF_00A.png')   # Simple and already documented
     #decode_spz('original/OR/SFCHR_99.SPZ', 'img_original/SFCHR_99_background01.png' )    # Much more complex
     # decode_spz('CHAR_32A.SPZ', 'CHAR_32A.png')

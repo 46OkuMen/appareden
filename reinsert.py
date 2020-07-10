@@ -196,6 +196,7 @@ def reinsert(version):
 
             last_i = 0
             last_nametag = b''
+            last_portrait = b''
 
             for t in Dump.get_translations(filename, sheet_name='MSG'):
 
@@ -217,10 +218,19 @@ def reinsert(version):
                     #print(t.english.strip(b"/"))
                     last_nametag = t.english.strip(b'/')
 
+                # (Portraits only appear in namteags, right...?)
+                if t.portrait:
+                    last_portrait = str(t.portrait).encode('shift_jis')
+                    print(last_portrait)
+
                 # Handle the SPLIT control coddes
                 if b'[SPLIT]' in t.english:
                     #t.english = t.english.replace(b'[SPLIT]', b'/>k@%s/' % last_nametag)
-                    t.english = t.english.replace(b'[SPLIT]', b'/>p@%s/' % last_nametag)
+                    new_window = b'/>p'
+                    if last_portrait:
+                        new_window += b'>f' + last_portrait
+                    new_window += b'@%s/' % last_nametag
+                    t.english = t.english.replace(b'[SPLIT]', new_window)
 
                     #print(t.english)
                     #input()
