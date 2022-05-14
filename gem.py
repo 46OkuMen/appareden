@@ -9,8 +9,11 @@ from PIL import Image, ImageDraw
 from bitstring import BitArray
 from shutil import copyfile
 
-FILES_TO_ENCODE = ['TMAP_00.png', 'TMAP_00A.png', 'TMAP_01A.png', 'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
-                   'TMAP_10B.png', 'TMAP_11A.png', 'TMAP_12B.png', 'TMAP_14A.png', "TMAP_16B.png",
+FILES_TO_ENCODE = ['TMAP_00.png', 
+                   #'TMAP_00A.png', 'TMAP_0B.png', 'TMAP_12B.png',   # Files that crash new versions of np21/W
+                   'TMAP_01A.png', 
+                   'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
+                   'TMAP_11A.png', 'TMAP_14A.png', "TMAP_16B.png",
                    'TMAP_27A.png', 'TMAP_29B.png',
                    'ORTITLE.png', 'GENTO.png', 'BENIMARU.png', 'HANZOU.png', 'TAMAMO.png', 'GOEMON.png',
                    'HEILEE.png', 'SHIROU.png', 'MEIRIN.png', 'GENNAI.png', 'OUGI.png',

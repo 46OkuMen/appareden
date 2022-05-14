@@ -40,22 +40,21 @@ REINSERTED_STRING_COUNTS = {'ORTITLE.EXE': 0,
 Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 
+#FILES_TO_REINSERT = []
 FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
-#FILES_TO_REINSERT = ['ORFIELD.EXE',]
+#gems_to_reinsert = []
+gems_to_reinsert = GEMS_TO_REINSERT
 
-#gems_to_reinsert =    ['TMAP_00.gem', 'TMAP_00A.gem', 'TMAP_01A.gem', 'TMAP_01B.gem', 'TMAP_03A.gem', 'TMAP_06A.gem',
-#                       'TMAP_10B.gem', 'TMAP_11A.gem', 'TMAP_12B.gem', 'TMAP_14A.gem', "TMAP_16B.gem",
-#                       'TMAP_27A.gem', 'TMAP_29B.gem', 'TMAP_32A.gem',
-#                       'ORTITLE.gem', 'GENTO.gem', 'BENIMARU.gem', 'HANZOU.gem', 'TAMAMO.gem', 'GOEMON.gem',
-#                       'HEILEE.gem', 'SHIROU.gem', 'MEIRIN.gem', 'GENNAI.gem', 'OUGI.gem',
-#                       'GENNAIJ.gem', 'GOEMONJ.gem', 'SHIROUJ.gem', 'HANZOJ.gem',
-#                       'TEFF_00A.gem', 'TEFF_01A.gem', 'TEFF_02A.gem', 'TEFF_03A.gem', 'TEFF_04A.gem',
-#                       'TEFF_05A.gem']
+
 other_files_to_reinsert = ['SCN12307.COD',
                            'TEFF_00A.spz', 'TEFF_01A.spz', 'TEFF_02A.spz', 'TEFF_03A.spz', 'TEFF_04A.spz',
                            'TEFF_05A.spz']
 
+other_files_to_reinsert = []
+
 FILES_TO_REINSERT += MSGS
+
+long_names = ['Ultimate Benkei', 'Thunder Dragon', 'Sacrosanct Dragon']
 
 def results_table():
     """
@@ -555,7 +554,7 @@ def reinsert(version):
     if missing_string_count > 0:
         print("Strings missing in MSGs: %s" % missing_string_count)
 
-    for g in GEMS_TO_REINSERT:
+    for g in gems_to_reinsert:
         # This doesn't encode any of them, just inserts what's already there
         g = g.replace('.png', '.gem')
         print("Inserting", g)

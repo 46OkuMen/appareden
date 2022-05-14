@@ -119,13 +119,6 @@ for m in msgs_to_typeset:
 
             long_names = ['Ultimate Benkei', 'Thunder Dragon', 'Sacrosanct Dragon']
 
-            #print(english, any([english == t for t in long_names]))
-
-            #if any([english.replace('[LN]') == t for t in long_names]):
-            #    english += "[LN]"
-            #    print(english)
-            #    input()
-
             windows = []
             if '[SPLIT]' in english:
                 windows = english.split('[SPLIT]')
