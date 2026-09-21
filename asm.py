@@ -227,7 +227,21 @@ B_CONTROL_CODES = {
   b'n': b'/'
 }
 
+try:
+    from appareden.ending_overline import build as _ending_overline
+except ImportError:
+    from ending_overline import build as _ending_overline
+
+# Overlines in the credits (ENDING.EXE): see ending_overline.py. The credits are
+# drawn in text VRAM, so the ORFIELD trick above doesn't apply; this builds
+# gaiji instead. build() gives image offsets; the MZ header is 0xA00 bytes, and
+# the CD build has the same code 0xA bytes later.
+ENDING_FD_EDITS = [(0xa00 + off, code) for off, code in _ending_overline()]
+ENDING_CD_EDITS = [(0xa0a + off, code) for off, code in _ending_overline()]
+
 FD_EDITS = {
+    'ENDING.EXE': ENDING_FD_EDITS,
+
     # ORFIELD
     'ORFIELD.EXE': [
         (0x151b7, B_CONTROL_CODES[b'w']),         # w = "}"
@@ -261,6 +275,8 @@ FD_EDITS = {
 }
 
 CD_EDITS = {
+    'ENDING.EXE': ENDING_CD_EDITS,
+
     'ORFIELD.EXE': [
         (0x157c9, B_CONTROL_CODES[b'w']),
         (0x1612b, B_CONTROL_CODES[b'w']),

@@ -16,7 +16,7 @@ from appareden.gem import FILES_TO_ENCODE as GEMS_TO_REINSERT
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
-CHEATS_ON = True
+CHEATS_ON = False
 
 # TODO: Calculate these, don't hardcode them
 STRING_COUNTS = {'ORTITLE.EXE': 18,
@@ -41,7 +41,7 @@ Dump = DumpExcel(DUMP_XLS_PATH)
 PtrDump = PointerExcel(POINTER_XLS_PATH)
 
 #FILES_TO_REINSERT = []
-FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE']
+FILES_TO_REINSERT = ['ORFIELD.EXE', 'ORBTL.EXE', 'ORTITLE.EXE', 'ENDING.EXE']   # ENDING: ASM only (credits overlines)
 #gems_to_reinsert = []
 gems_to_reinsert = GEMS_TO_REINSERT
 
@@ -50,7 +50,7 @@ other_files_to_reinsert = ['SCN12307.COD',
                            'TEFF_00A.spz', 'TEFF_01A.spz', 'TEFF_02A.spz', 'TEFF_03A.spz', 'TEFF_04A.spz',
                            'TEFF_05A.spz']
 
-other_files_to_reinsert = []
+#other_files_to_reinsert = []
 
 FILES_TO_REINSERT += MSGS
 
@@ -109,6 +109,7 @@ def write_table_to_readme(table):
         readme = readme.replace(readme[old_table_start:old_table_stop], table)
         f.seek(0)
         f.write(readme)
+        f.truncate()
 
 def final_overflow_length(o, translations):
     # The length a string will have when its J strings are replaced by E strings.
@@ -220,7 +221,7 @@ def reinsert(version):
                 # (Portraits only appear in namteags, right...?)
                 if t.portrait:
                     last_portrait = str(t.portrait).encode('shift_jis')
-                    print(last_portrait)
+                    #print(last_portrait)
 
                 # Handle the SPLIT control coddes
                 if b'[SPLIT]' in t.english:
@@ -252,7 +253,8 @@ def reinsert(version):
                         print("%s " % hex(b)[2:], end="\t")
 
 
-        if filename.endswith('.EXE'):
+        # ENDING.EXE has text blocks in rominfo but no sheet (its text is untranslated); it only gets asm edits.
+        if filename.endswith('.EXE') and filename in Rom.file_blocks and filename in Dump.workbook.sheetnames:
             block_objects = [Block(gamefile, block) for block in Rom.file_blocks[filename]]
             overflow_strings = []
             spares = []
@@ -558,8 +560,11 @@ def reinsert(version):
         # This doesn't encode any of them, just inserts what's already there
         g = g.replace('.png', '.gem')
         print("Inserting", g)
+        # gem.py encodes each disk's GEMs against that disk's originals, so the CD
+        # takes patched_CD/'s copy when there is one (e.g. the CD-only OP_* images).
+        gem_dir = CD_DEST_DIR if version == 'CD' and os.path.isfile(os.path.join(CD_DEST_DIR, g)) else DEST_DIR
         try:
-            TargetAp.insert(os.path.join('patched', g), path_in_disk='TGL/OR')
+            TargetAp.insert(os.path.join(gem_dir, g), path_in_disk='TGL/OR')
         except:
             print("That file wasn't in that disk")
         if version == 'FD':

@@ -6,35 +6,14 @@ Romhacking utilities and notes developed as part of [46 OkuMen](http://46okumen.
 ### Draft Reinsertion Progress
 
 
-| Segment      | %      |  Strings            |
-| -------------|-------:|:-------------------:|
-| ORTITLE.EXE  | 100%   | (18 / 18)           |
-| ORFIELD.EXE  | 100%   | (1326 / 1326)       |
-| ORBTL.EXE    | 100%   | (792 / 792)         |
-| Dialogue     | 100%   | (5601 / 5592)       |
-| Images       | 89%    | (49 / 55)           |
-| **Total**    |**100%**|  **(7786 / 7783)**  |
-
-### Project notes
-* This game's script is longer than our three released projects's scripts combined.
-* The game is available on both floppy and CD versions, and our patch targets both.
-* A few hacks unique to this project:
-	* Dictionary compression - the patch implements compression of the most-common words, and adds ASM to decompress these words at display time.
-	* .GEM encoder - this project re-encodes a fairly complex file format used for all iamges in the game.
-* Because the game is long and testing is time-consuming, we spent some time on stuff to make it a little easiser:
-	* Deciphering save-file format
-	* Developing a few cheats
-	* Generating a world map from lots of game screenshots
-* File types:
-	* .MSG - game script file
-	* .EXE - system text
-	* .GEM - custom image format
-	* .SPZ - sprite sheet format
-	* .COD - dialogue event routine file format
-	* Some of these formats may exist in other TGL games, such as the Farland Story games.
-* This is a fullscreen 16-color RPG, so it is an absolute memory hog. It was fairly prone to memory issues upon release, and is still fairly unstable even after the developer's patch.
-
-## Development
+| Segment      | %    |  Strings            |
+| -------------|-----:|:-------------------:|
+| ORTITLE.EXE  | 100%  | (18 / 18)           |
+| ORFIELD.EXE  | 99%   | (1322 / 1326)       |
+| ORBTL.EXE    | 100%  | (792 / 792)         |
+| Dialogue     | 100%  | (5601 / 5592)       |
+| Images       | 94%   | (52 / 55)           |
+| **Total**    |**100%**|  **(7785 / 7783)**  |
 
 ### Requirements
 * A working hard-disk dump of *Appareden*
@@ -78,6 +57,11 @@ Now, `patched/Appareden.hdi` should be playable in English as far as you've tran
 * reinsert.py - Replaces the JP strings with the translated ones in the dump excel, adjusts pointers, and reinserts the translated files into the HDI.
 
 ### Other scripts (used by the above)
+* gem_codec.py - decoder and size-optimizing encoder for the .GEM image format, written from the game's own decoder. Its docstring is the format reference.
+* ending_overline.py - ASM patch for ENDING.EXE so the credits show macrons (Jado~ -> Jadō), using user-defined characters; applied through asm.py's FD_EDITS/CD_EDITS by reinsert.py.
+* spz.py - reader/writer for .SPZ sprite tables (which 16x16 tiles of a .GEM sheet make up each sprite), written from NEKORUN.EXE's sprite drawer.
+* nrchr_text.py - renders the English "Ah!" / "There it is!!" / "Wait!!" sprites for the Neko Run minigame and repacks them into NRCHR_99.GEM/.SPZ (called from gem.py).
+* automation/ - drives the game headless under np2core: replays scenes, renders every message block of every scene for text QA, and opens every shop to check description widths (see automation/README.md).
 * rominfo.py - maps out many properties of the game files, including text blocks, pointer blocks, control codes, etc.
 * asm.py - holds the ASM strings used for various text/game modification hacks. Some will be in the final patch (text compression routines, bugfixes), others are just for testing ("turn off random battles" cheat, etc).
 * pointer_info.py - list of pointers to reassign. There are lots of duplicate strings - we can save space by re-pointing duplicates to the same text location.

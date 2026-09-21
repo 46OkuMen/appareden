@@ -139,3 +139,5 @@ histogram.py
 row_access.py
 *.GEM
 *.png
+# automation scratch output (disk images, screenshots, states)
+automation/out/

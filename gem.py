@@ -3,15 +3,23 @@
     Possibly useful for other TGL/GIGA games, but would need less hard-coding in the palettes.
 """
 
+import os
 from romtools.disk import Disk
-from rominfo import DEST_DISK, DEST_CD_DISK
+from rominfo import SRC_DISK, DEST_DISK, DEST_CD_DISK
 from PIL import Image, ImageDraw
-from bitstring import BitArray
 from shutil import copyfile
+import gem_codec
+import nrchr_text
 
-FILES_TO_ENCODE = ['TMAP_00.png', 
-                   #'TMAP_00A.png', 'TMAP_0B.png', 'TMAP_12B.png',   # Files that crash new versions of np21/W
-                   'TMAP_01A.png', 
+SRC_CD_DISK = os.path.join('original_CD', 'Appareden (CD-UPDATED).hdi')
+PRISTINE_CACHE = os.path.join('original', 'pristine')
+
+FILES_TO_ENCODE = ['TMAP_00.png',
+                   # These used to be left out: the old encoder made them bigger than the
+                   # 64KB EMS page frame ORFIELD loads tilesets into. gem_codec gets them
+                   # under their original sizes.
+                   'TMAP_00A.png', 'TMAP_10B.png', 'TMAP_12B.png',
+                   'TMAP_01A.png',
                    'TMAP_01B.png', 'TMAP_03A.png', 'TMAP_06A.png',
                    'TMAP_11A.png', 'TMAP_14A.png', "TMAP_16B.png",
                    'TMAP_27A.png', 'TMAP_29B.png',
@@ -31,418 +39,82 @@ SINGLE_SPRITE_TEFFS = ['TEFF_01A.png', 'TEFF_03A.png', 'TEFF_05A.png', 'TEFF_09A
 
 MANUAL_SPZS = ['SFCHR_99.SPZ']
 
-NAMETAG_PALETTE = b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xff\xff\xff\x00'
-MAP_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xeb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\x6a\x7f\xff\x00'
-SHIP_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x60\x31\x77\xb0\x76\x87\x3c\xcd\x6c\xda\xcf\xff\x00'
-OP_PALETTE =      b'\x00\x04\x22\x63\x40\xd0\x38\x32\x95\x76\x6c\x55\x4b\x79\x88\x6d\x97\xfc\xec\xdb\xfd\xee\xef\xff\x00'
-TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57\xE1\x76\x87\x29\xBC\x7C\xFF\xFF\xFF\x00'
-TEFF_PALETTE =    b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\xa6\xaf\xff\x32\x33\x00'
-                  # TODO: Why is this longer than the others??
-
-
-OP_TEXT_PALETTE = b'\x00\x02\x32\x26\x32\xc6\x8e\xa9\xfb\xbf\xda\xcb\x79\x84\x54\x19\x11\xd1\xf2\x8b\x55\xf0\xdf\xff\x00'
-SFCHR_PALETTE =   b'\x00\x03\x33\x49\x52\xF5\x3C\x93\xEB\xAC\xB9\xFD\x80\x21\x77\xD0\x66\x87\x3C\xCF\x8B\xFB\xEF\xFF\x35\x36\x33\x00'
-CHR_PALETTE =     b'\x00\x03\x33\x38\x40\xf4\x4d\x94\xfb\xac\xb9\xfd\x80\x21\x57\xd0\x66\x87\x3a\xcf\x8b\x80\x7f\xff\x33\x38\x39\x00'
-
-CHR_PALETTE_RGB = [
-    (0x00, 0x00, 0x00),
-    (0x33, 0x33, 0x33),
-    (0x88, 0x44, 0x33),
-    (0xff, 0x44, 0x00),
-    (0xdd, 0x99, 0x44),
-    (0xff, 0xbb, 0x44),
-    (0xcc, 0xbb, 0xaa),
-    (0xff, 0xdd, 0x99),
-    (0x00, 0x22, 0x88),
-    (0x55, 0x77, 0x11),
-    (0x00, 0x66, 0xdd),
-    (0x88, 0x77, 0x66),
-    (0xaa, 0xcc, 0x33),
-    (0x88, 0xbb, 0xff),
-    (0x00, 0x77, 0x88),
-    (0xff, 0xff, 0xff),
-]
-
-
-SFCHR_PALETTE_RGB = [
-    (0x00, 0x00, 0x00),
-    (0x33, 0x33, 0x33),
-    (0x99, 0x55, 0x44),
-    (0xff, 0x55, 0x22),
-    (0xcc, 0x99, 0x33),
-    (0xee, 0xbb, 0x33),
-    (0xcc, 0xbb, 0xaa),
-    (0xff, 0xdd, 0x99),
-    (0x00, 0x22, 0x88),
-    (0x77, 0x77, 0x11),
-    (0x00, 0x66, 0xdd),
-    (0x88, 0x77, 0x66),
-    (0xcc, 0xcc, 0x33),
-    (0x88, 0xbb, 0xff),
-    (0xbb, 0xee, 0xff),
-    (0xff, 0xff, 0xff)
-]
-
-OP_TEXT_PALETTE_RGB = [
-    (0x00, 0x00, 0x00),
-    (0x33, 0x22, 0x22),
-    (0x66, 0x33, 0x22),
-    (0xcc, 0x66, 0x22),
-    (0xee, 0xaa, 0x88),
-    (0xff, 0xbb, 0x99),
-    (0xff, 0xdd, 0xbb),
-    (0xcc, 0xbb, 0xaa),
-    (0x99, 0x88, 0x77),
-    (0x55, 0x44, 0x44),
-    (0x99, 0x11, 0x11),
-    (0xdd, 0x11, 0x11),
-    (0x22, 0x88, 0xff),
-    (0x55, 0x55, 0xbb),
-    (0x00, 0xdd, 0xff),
-    (0xff, 0xff, 0xff)
-]
-
-NAMETAG_PALETTE_RGB = [
-    (0x00, 0x00, 0x00),
-    (0x33, 0x33, 0x33),
-    (0x88, 0x44, 0x33),
-    (0xff, 0x44, 0x00),
-    (0xdd, 0x99, 0x44),
-    (0xff, 0xbb, 0x44),
-    (0xcc, 0xbb, 0xaa),
-    (0xff, 0xdd, 0x99),
-    (0x00, 0x22, 0x88),
-    (0x55, 0x77, 0x11),
-    (0x00, 0x66, 0xdd),
-    (0x88, 0x77, 0x66),
-    (0xaa, 0xcc, 0x33),
-    (0x88, 0xbb, 0xff),
-    (0x00, 0x77, 0x88),
-    (0xff, 0xff, 0xff)
-]
-
-
-MAP_PALETTE_RGB = [
-  (0x00, 0x00, 0x00),
-  (0x33, 0x33, 0x33),
-  (0x88, 0x44, 0x33),
-  (0xff, 0x44, 0x00),
-  (0xdd, 0x99, 0x44),
-  (0xee, 0xbb, 0x44),
-  (0xcc, 0xbb, 0xaa),
-  (0xff, 0xdd, 0x99),
-  (0x00, 0x33, 0x66),
-  (0x77, 0x77, 0x11),
-  (0x00, 0x77, 0xbb),
-  (0x88, 0x77, 0x66),
-  (0xcc, 0xcc, 0x33),
-  (0x66, 0xcc, 0xdd),
-  (0xaa, 0x77, 0x55),
-  (0xff, 0xff, 0xff), 
-]
-
-# TMAP_32A
-SHIP_PALETTE_RGB = [
-    (0x00, 0x00, 0x00),
-    (0x33, 0x33, 0x33),
-    (0x88, 0x44, 0x33),
-    (0xff, 0x44, 0x00),
-    (0xdd, 0x99, 0x44),
-    (0xff, 0xbb, 0x44),
-    (0xcc, 0xbb, 0xaa),
-    (0xff, 0xdd, 0x99),
-    (0x00, 0x33, 0x66),
-    (0x77, 0x77, 0x11),
-    (0x00, 0x77, 0xbb),
-    (0x88, 0x77, 0x66),
-    (0xcc, 0xcc, 0x33),
-    (0x66, 0xcc, 0xdd),
-    (0xaa, 0xcc, 0xdd),
-    (0xff, 0xff, 0xff)
-]
-
-TITLE_PALETTE_RGB = [(0x00, 0x00, 0x00),
-                     (0x11, 0x11, 0x11),
-                     (0x88, 0x44, 0x33),     # also 88 44 33,  84 46 38
-                     (0xdd, 0x44, 0x00),
-                     (0xcc, 0x99, 0x55),
-                     (0xff, 0xcc, 0x44),
-                     (0xcc, 0xbb, 0xaa),
-                     (0xee, 0xcc, 0x99),
-                     (0x00, 0x22, 0x88),
-                     (0x55, 0x77, 0x11),
-                     (0x11, 0x77, 0xee),
-                     (0x88, 0x77, 0x66),
-                     (0x99, 0xbb, 0x22),
-                     (0x77, 0xcc, 0xcc),
-                     (0xfa, 0xfa, 0xfa),
-                     (0xff, 0xff, 0xff)
-                     ]
-
-TEFF_PALETTE_RGB = [(0x00, 0x00, 0x00),
-                    (0x33, 0x33, 0x33),
-                    (0x88, 0x44, 0x33),
-                    (0xff, 0x44, 0x00),
-                    (0xdd, 0x99, 0x44),
-                    (0xff, 0xbb, 0x44),
-                    (0xcc, 0xbb, 0xaa),
-                    (0xff, 0xdd, 0x99),
-                    (0x00, 0x22, 0x88),
-                    (0x55, 0x77, 0x11),
-                    (0x00, 0x66, 0xdd),
-                    (0x88, 0x77, 0x66),
-                    (0xaa, 0xcc, 0x33),
-                    (0x88, 0xbb, 0xff),
-                    (0x66, 0xaa, 0xaa),
-                    (0xff, 0xff, 0xff)
-                    ]
-
-OP_PALETTE_RGB = [
-    (0x00, 0x00, 0x00),
-    (0x22, 0x22, 0x44),
-    (0x33, 0x44, 0x66),
-    (0xdd, 0x00, 0x00),
-    (0x88, 0x33, 0x33),
-    (0x99, 0x55, 0x22),
-    (0x66, 0x66, 0x77),
-    (0x55, 0x55, 0xcc),
-    (0xbb, 0x77, 0x44),
-    (0x88, 0x88, 0x99),
-    (0xdd, 0x99, 0x66),
-    (0xff, 0xcc, 0x77),
-    (0xcc, 0xdd, 0xee),
-    (0xff, 0xdd, 0xbb),
-    (0xee, 0xee, 0xee),
-    (0xff, 0xff, 0xff),
-]
-
-def get_closest_color_index(palette, rgb):
-    hammings = [255]*16
-    for i, color in enumerate(palette):
-        hamming = 0
-        for val in range(3):
-            hamming += abs(color[val] - rgb[val])
-        hammings[i] = hamming
-    return hammings.index(min(hammings))
+# Images redrawn against a different palette than their original file's.
+# Everything else uses its original GEM's palette.
+TITLE_PALETTE =   b'\x00\x01\x11\x38\x40\xD4\x5C\x94\xFC\xAC\xB9\xEC\x80\x21\x57\xE1\x76\x87\x29\xBC\x7C\xFF\xFF\xFF'
+OP_TEXT_PALETTE = b'\x00\x02\x32\x26\x32\xc6\x8e\xa9\xfb\xbf\xda\xcb\x79\x84\x54\x19\x11\xd1\xf2\x8b\x55\xf0\xdf\xff'
+PALETTE_OVERRIDES = {
+    'GENNAIJ': TITLE_PALETTE, 'GOEMONJ': TITLE_PALETTE,
+    'HANZOJ': TITLE_PALETTE, 'SHIROUJ': TITLE_PALETTE,
+    'OP_07B': OP_TEXT_PALETTE,
+}
 
 def edit(string, loc, replacement):
     return string[:loc] + replacement + string[loc+1:]
 
 
-NAMETAG_PALETTE_IMAGES = ['BENIMARU', 'GENNAI', 'GENTO', 'HANZOU', 'HEILEE',
-                          'MEIRIN', 'OUGI', 'TAMAMO', 'GOEMON', 'SHIROU']
-CHR_PALETTE_IMAGES = ['CHAR_32A', 'CHAR_43A']
-MAP_PALETTE_IMAGES = ['TMAP_00', 'TMAP_00A', 'TMAP_01A', 'TMAP_01B',
-                      'TMAP_03A', 'TMAP_06A', 'TMAP_10B', 'TMAP_11A',
-                      'TMAP_12B', 'TMAP_14A', 'TMAP_16B', 'TMAP_27A',
-                      'TMAP_29B']
-SHIP_PALETTE_IMAGES = ['TMAP_32A',]
-TITLE_PALETTE_IMAGES = ['ORTITLE', 'GENNAIJ', 'GOEMONJ', 'HANZOJ', 'SHIROUJ']
-# 04B has its own palette. Let's see what happens if we ignore that and put it here
-OP_PALETTE_IMAGES = ['OP_02B', 'OP_02C']
-OP_TEXT_PALETTE_IMAGES = ['OP_04B', 'OP_07B']
+def pristine(filename, src_disk):
+    """A file as it is on the untouched source disk image (cached under
+    original/pristine/). The loose copies in original/OR and original/CD
+    can't be trusted: some were overwritten during 2018 experiments
+    (CHAR_43A.GEM and OP_04B.GEM had their transparent color edited,
+    NRCHR_99.GEM was re-encoded, SCN12307.COD was blanked)."""
+    tag = 'FD' if src_disk == SRC_DISK else 'CD'
+    d = os.path.join(PRISTINE_CACHE, tag)
+    path = os.path.join(d, filename.upper())
+    if not os.path.exists(path):
+        os.makedirs(d, exist_ok=True)
+        try:
+            Disk(src_disk).extract(filename.upper(), path_in_disk='TGL/OR', dest_path=d)
+        except Exception:
+            return None
+    with open(path, 'rb') as f:
+        return f.read()
 
-TEFF_PALETTE_IMAGES = ['TEFF_00A', 'TEFF_0AA', 'TEFF_0BA', 'TEFF_01A', 'TEFF_02A', 'TEFF_03A', 'TEFF_04A', 'TEFF_05A',
-                       'TEFF_06A', 'TEFF_07A', 'TEFF_08A', 'TEFF_09A', 'TEFF_12A', 'TEFF_13A', 'TEFF_15A',
-                       'TEFF_16A', 'TEFF_17A',]
 
-SFCHR_PALETTE_IMAGES = ['SFCHR_99',]
-
-
-# Plane activation for each color in the palette.
-# Which bit is active there
-PLANE_COLORS = [(1, 3, 5, 7, 9, 0xb, 0xd, 0xf),
-                (2, 3, 6, 7, 0xa, 0xb, 0xe, 0xf),
-                (4, 5, 6, 7, 0xc, 0xd, 0xe, 0xf),
-                (8, 9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf)]
+TARGETS = [(SRC_DISK, 'patched', DEST_DISK),
+           (SRC_CD_DISK, 'patched_CD', DEST_CD_DISK)]
 
 
 def encode(filename):
-    """Encode an image file as GEM and reinsert it."""
-    just_filename = filename.split('.')[0]
-    gem_filename = just_filename.replace('img_edited', 'patched') + '.GEM'
+    """Encode an edited image as GEM and reinsert it into both disks.
 
-    unpathed_filename = just_filename.split('/')[-1]
-
-    # "Polymorphism"
-    if unpathed_filename in NAMETAG_PALETTE_IMAGES:
-        print("Using nametag palette")
-        palette_bytes = NAMETAG_PALETTE
-        palette_rgb = NAMETAG_PALETTE_RGB
-    elif unpathed_filename in MAP_PALETTE_IMAGES:
-        print("Using map palette")
-        palette_bytes = MAP_PALETTE
-        palette_rgb = NAMETAG_PALETTE_RGB
-    elif unpathed_filename in SHIP_PALETTE_IMAGES:
-        print("Using ship palette")
-        palette_bytes = SHIP_PALETTE
-        palette_rgb = SHIP_PALETTE_RGB
-    elif unpathed_filename in TITLE_PALETTE_IMAGES:
-        print("Using title palette")
-        palette_bytes = TITLE_PALETTE
-        palette_rgb = TITLE_PALETTE_RGB
-    elif unpathed_filename in TEFF_PALETTE_IMAGES:
-        print("Using text effect palette")
-        palette_bytes = TEFF_PALETTE
-        palette_rgb = TEFF_PALETTE_RGB
-    elif unpathed_filename in OP_PALETTE_IMAGES:
-        print("Using OP palette")
-        palette_bytes = OP_PALETTE
-        palette_rgb = OP_PALETTE_RGB
-    elif unpathed_filename in OP_TEXT_PALETTE_IMAGES:
-        print("Using OP text palette")
-        palette_bytes = OP_TEXT_PALETTE
-        palette_rgb = OP_TEXT_PALETTE_RGB
-    elif unpathed_filename in SFCHR_PALETTE_IMAGES:
-        print("Using SFCHR palette")
-        palette_bytes = SFCHR_PALETTE
-        palette_rgb = SFCHR_PALETTE_RGB
-    elif unpathed_filename in CHR_PALETTE_IMAGES:
-        print("Using chr palette")
-        palette_bytes = CHR_PALETTE
-        palette_rgb = CHR_PALETTE_RGB
-
-    else:
-        print(filename)
-        raise Exception
-
+    Each disk's version is encoded against that disk's original GEM, taken
+    from the untouched source disk image: the original supplies the palette
+    (unless overridden) and transparent color, and unedited pixels keep their
+    original palette indices exactly. See gem_codec.py for the format."""
+    name = os.path.splitext(os.path.basename(filename))[0].upper()
     img = Image.open(filename)
-    width, height = img.size
-    pix = img.load()
 
-    blocks = img.size[0]//8
-    total_rows = blocks*height
-    unique_patterns = []
-    pattern_locations = {}
-
-    row_cursor = 0
-    for b in range(blocks):
-        for row in range(height):
-            rowdata =[pix[col, row][0:3] for col in range(b*8, (b*8)+8)]
-
-            pattern = []
-
-            for plane in range(4):
-
-                for p in rowdata:
-                    try:
-                        palette_index = palette_rgb.index(p)
-                    except ValueError:
-                        palette_index = get_closest_color_index(palette_rgb, p)
-                    pattern.append(palette_index in PLANE_COLORS[plane])
-
-            pattern = BitArray(pattern).bytes
-
-            if pattern in unique_patterns:
-                pattern_locations[pattern].append(row_cursor)
-            else:
-                unique_patterns.append(pattern)
-                pattern_locations[pattern] = [row_cursor,]
-
-            row_cursor += 1
-
-    IMAGE_DATA_LOCATION = 0x10 + len(palette_bytes) + (len(unique_patterns)*4)
-
-    with open(gem_filename, 'wb') as f:
-        f.write(b'Gem')
-        f.write(b'\x02\x04\x00\x0e\x00')
-        f.write(b'\x30\x00') # not sure what these bytes do. 18 for nametag, 30 for teff, doesn't seem to matter
-        f.write(height.to_bytes(2, byteorder='little'))
-        f.write(IMAGE_DATA_LOCATION.to_bytes(2, byteorder='little'))
-        f.write(b'\x00\x00') # not sure about these either
-        f.write(palette_bytes)
-        for p in unique_patterns:
-            #print(p)
-            f.write(p)
-
-        row_cursor = 0
-        starting_row_cursor = 0
-
-        for i, pattern in enumerate(unique_patterns):
-            row_cursor = starting_row_cursor
-            chain_count = 0
-            #print("Start pattern %s. row_cursor: %s" % (pattern, row_cursor))
-            for loc in pattern_locations[pattern]:
-                if pattern == unique_patterns[0] and loc == 0:
-                    row_cursor += 1
-                    row_cursor %= total_rows
-                    continue
-
-                if loc == row_cursor:
-                    chain_count += 1
-                else:
-                    while chain_count > 31:
-                        f.write(b'\x5f')
-                        chain_count -= 31
-                    while chain_count > 0:
-                        chain = 0x40 + chain_count
-                        f.write(chain.to_bytes(1, byteorder='little'))
-                        chain_count = 0
-
-                    if loc - row_cursor > 16065: # above far skip "ff ff"
-                        first_byte = 0x80
-                        second_byte = ((loc - row_cursor) + 1) // 256
-                        third_byte = ((loc - row_cursor) + 1) % 256
-                        f.write(first_byte.to_bytes(1, byteorder='little'))
-                        f.write(second_byte.to_bytes(1, byteorder='little'))
-                        f.write(third_byte.to_bytes(1, byteorder='little'))
+    for src_disk, out_dir, disk in TARGETS:
+        original = pristine(name + '.GEM', src_disk)
+        if original is None:
+            print("%s: not on %s" % (name, disk))
+            continue
+        data, stats = gem_codec.encode_edit(original, img, PALETTE_OVERRIDES.get(name))
+        if len(data) > gem_codec.MAX_TMAP_SIZE and name.startswith('TMAP'):
+            raise Exception("%s is %d bytes; ORFIELD loads tilesets into a 64KB EMS "
+                            "page frame" % (name, len(data)))
+        gem_filename = os.path.join(out_dir, name + '.GEM')
+        with open(gem_filename, 'wb') as f:
+            f.write(data)
+        print("%s: %d bytes (original %d), %d pixels quantized" % (gem_filename, len(data),
+                                                                   len(original), stats['quantized']))
+        Disk(disk).insert(gem_filename, path_in_disk='TGL/OR')
 
 
-                        if loc == pattern_locations[pattern][0]:
-                            starting_row_cursor = loc
-                        row_cursor = loc
-                        #print("Ultra skip: %s %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), hex(third_byte), row_cursor))
-
-                    elif loc - row_cursor >= 63:
-                        first_byte = 0xc0 + ((loc - row_cursor) + 1) // 256
-                        second_byte = ((loc - row_cursor) + 1) % 256
-                        f.write(first_byte.to_bytes(1, byteorder='little'))
-                        f.write(second_byte.to_bytes(1, byteorder='little'))
-
-                        if loc == pattern_locations[pattern][0]:
-                            starting_row_cursor = loc
-                        row_cursor = loc
-                        #print("Far skip: %s %s, row_cursor after: %s" % (hex(first_byte), hex(second_byte), row_cursor))
-                        assert row_cursor == loc
-                    elif loc - row_cursor < 63:
-                        skip_and_write_code = 0x81 + ((loc - row_cursor) % total_rows)
-                        if loc == pattern_locations[pattern][0]:
-                            starting_row_cursor = loc
-                        f.write(skip_and_write_code.to_bytes(1, byteorder='little'))
-                        #print("Short skip: %s, row_cursor after: %s" % (hex(skip_and_write_code), row_cursor))
-                        row_cursor = loc
-                    else:
-                        raise Exception
-
-                row_cursor += 1
-                row_cursor %= total_rows
-
-            # Catch the last chain
-            while chain_count > 31:
-                f.write(b'\x5f')
-                chain_count -= 31
-            while chain_count > 0:
-                chain = 0x40 + chain_count
-                f.write(chain.to_bytes(1, byteorder='little'))
-                chain_count = 0
-
-            f.write(b'\x00')
-            starting_row_cursor += 1
-            starting_row_cursor %= total_rows
-
-        f.write(b'\x00'*80)  # for good measure. TODO: Still necessary?
-
-    copyfile(gem_filename, gem_filename.replace('patched', 'patched_CD'))
-
-    # Reinsert into both disks
-    try:
-        d = Disk(DEST_DISK)
-        d.insert(gem_filename, path_in_disk='TGL/OR')
-    except:
-        print("That file isn't on this disk")
-
-    cd = Disk(DEST_CD_DISK)
-    cd.insert(gem_filename, path_in_disk='TGL/OR')
+def encode_nekorun_text():
+    """Neko Run's three Japanese text sprites in NRCHR_99 -> English
+    (nrchr_text.py renders the art and repacks the sheet and its SPZ)."""
+    for src_disk, out_dir, disk in TARGETS:
+        gem, spz_bytes, report = nrchr_text.build(pristine('NRCHR_99.GEM', src_disk),
+                                                  pristine('NRCHR_99.SPZ', src_disk))
+        for ext, data in (('GEM', gem), ('SPZ', spz_bytes)):
+            path = os.path.join(out_dir, 'NRCHR_99.' + ext)
+            with open(path, 'wb') as f:
+                f.write(data)
+            Disk(disk).insert(path, path_in_disk='TGL/OR')
+        print("%s: NRCHR_99 %s" % (out_dir, report))
 
 
 def write_spz(filename, single_sprite=False):
@@ -689,6 +361,8 @@ if __name__ == '__main__':
         f = 'img_edited/' + f
         encode(f)
 
+    encode_nekorun_text()
+
     for teff in TILED_TEFFS:
         teff = 'img_edited/' + teff
         write_spz(teff)
@@ -698,8 +372,7 @@ if __name__ == '__main__':
         write_spz(teff, single_sprite=True)
 
     for spz in MANUAL_SPZS:
-        with open('original/OR/%s' % spz, 'rb') as f:
-            contents = f.read()
+        contents = pristine(spz, SRC_DISK)
          # Do edits
          # 1 Round -> Round 1
         """

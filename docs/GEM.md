@@ -1,3 +1,7 @@
+**Superseded:** the complete format, taken from the game's own decoder, is documented in
+the docstring of `gem_codec.py` (all opcodes, including the step-2/step-4 repeats and the
+"literal run" 08-0F). The notes below are the original experiments, kept for history.
+
 A horribly organized set of notes produced during the reversing of the GEM format.
 
 Current understanding of the format:
